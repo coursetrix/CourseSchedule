@@ -37,6 +37,111 @@ const suggestedAssignmentTypes = [
     'Simulation'
 ];
 
+// Demo course data for new users
+const demoCourse = {
+    courseName: 'ENG 101 - Introduction to College Writing',
+    courseStartDate: '2025-01-13',
+    courseEndDate: '2025-05-02',
+    cllos: [
+        { id: 'demo-cllo-1', description: 'Develop and articulate clear thesis statements supported by evidence' },
+        { id: 'demo-cllo-2', description: 'Apply revision strategies to improve clarity, coherence, and style' },
+        { id: 'demo-cllo-3', description: 'Evaluate and integrate sources using proper citation methods' },
+        { id: 'demo-cllo-4', description: 'Demonstrate proficiency in standard written English conventions' }
+    ],
+    assignmentTypes: ['Discussion', 'Quiz', 'Paper/Essay', 'Peer Review', 'Reflection'],
+    modules: [
+        {
+            id: 'demo-mod-1',
+            name: 'Module 1',
+            startDate: '2025-01-13',
+            endDate: '2025-01-24',
+            topic: 'Introduction to College Writing',
+            assignments: [
+                { id: 'demo-a-1', name: 'Introductions Discussion', type: 'Discussion', points: 25, dueDate: '2025-01-17', clloIds: ['demo-cllo-4'] },
+                { id: 'demo-a-2', name: 'Diagnostic Essay', type: 'Paper/Essay', points: 50, dueDate: '2025-01-24', clloIds: ['demo-cllo-1', 'demo-cllo-4'] }
+            ]
+        },
+        {
+            id: 'demo-mod-2',
+            name: 'Module 2',
+            startDate: '2025-01-27',
+            endDate: '2025-02-07',
+            topic: 'The Writing Process',
+            assignments: [
+                { id: 'demo-a-3', name: 'Writing Process Discussion', type: 'Discussion', points: 25, dueDate: '2025-01-31', clloIds: ['demo-cllo-2'] },
+                { id: 'demo-a-4', name: 'Narrative Essay', type: 'Paper/Essay', points: 100, dueDate: '2025-02-07', clloIds: ['demo-cllo-1', 'demo-cllo-2', 'demo-cllo-4'] }
+            ]
+        },
+        {
+            id: 'demo-mod-3',
+            name: 'Module 3',
+            startDate: '2025-02-10',
+            endDate: '2025-02-21',
+            topic: 'Argument and Evidence',
+            assignments: [
+                { id: 'demo-a-5', name: 'Argument Analysis Discussion', type: 'Discussion', points: 25, dueDate: '2025-02-14', clloIds: ['demo-cllo-1'] },
+                { id: 'demo-a-6', name: 'Quiz 1: Writing Fundamentals', type: 'Quiz', points: 50, dueDate: '2025-02-21', clloIds: ['demo-cllo-4'] }
+            ]
+        },
+        {
+            id: 'demo-mod-4',
+            name: 'Module 4',
+            startDate: '2025-02-24',
+            endDate: '2025-03-07',
+            topic: 'Research Fundamentals',
+            assignments: [
+                { id: 'demo-a-7', name: 'Finding Sources Discussion', type: 'Discussion', points: 25, dueDate: '2025-02-28', clloIds: ['demo-cllo-3'] },
+                { id: 'demo-a-8', name: 'Argumentative Essay Draft', type: 'Paper/Essay', points: 50, dueDate: '2025-03-07', clloIds: ['demo-cllo-1', 'demo-cllo-3'] }
+            ]
+        },
+        {
+            id: 'demo-mod-5',
+            name: 'Module 5',
+            startDate: '2025-03-10',
+            endDate: '2025-03-21',
+            topic: 'Source Integration',
+            assignments: [
+                { id: 'demo-a-9', name: 'Peer Review 1', type: 'Peer Review', points: 50, dueDate: '2025-03-14', clloIds: ['demo-cllo-2'] },
+                { id: 'demo-a-10', name: 'Argumentative Essay Final', type: 'Paper/Essay', points: 150, dueDate: '2025-03-21', clloIds: ['demo-cllo-1', 'demo-cllo-3', 'demo-cllo-4'] }
+            ]
+        },
+        {
+            id: 'demo-mod-6',
+            name: 'Module 6',
+            startDate: '2025-03-24',
+            endDate: '2025-04-04',
+            topic: 'Revision Strategies',
+            assignments: [
+                { id: 'demo-a-11', name: 'Revision Techniques Discussion', type: 'Discussion', points: 25, dueDate: '2025-03-28', clloIds: ['demo-cllo-2'] },
+                { id: 'demo-a-12', name: 'Midterm Reflection', type: 'Reflection', points: 50, dueDate: '2025-04-04', clloIds: ['demo-cllo-2', 'demo-cllo-4'] }
+            ]
+        },
+        {
+            id: 'demo-mod-7',
+            name: 'Module 7',
+            startDate: '2025-04-07',
+            endDate: '2025-04-18',
+            topic: 'Style and Voice',
+            assignments: [
+                { id: 'demo-a-13', name: 'Quiz 2: Research & Citation', type: 'Quiz', points: 50, dueDate: '2025-04-11', clloIds: ['demo-cllo-3', 'demo-cllo-4'] },
+                { id: 'demo-a-14', name: 'Research Essay Draft', type: 'Paper/Essay', points: 50, dueDate: '2025-04-18', clloIds: ['demo-cllo-1', 'demo-cllo-3'] }
+            ]
+        },
+        {
+            id: 'demo-mod-8',
+            name: 'Module 8',
+            startDate: '2025-04-21',
+            endDate: '2025-05-02',
+            topic: 'Final Portfolio',
+            assignments: [
+                { id: 'demo-a-15', name: 'Peer Review 2', type: 'Peer Review', points: 50, dueDate: '2025-04-25', clloIds: ['demo-cllo-2'] },
+                { id: 'demo-a-16', name: 'Research Essay Final', type: 'Paper/Essay', points: 200, dueDate: '2025-05-01', clloIds: ['demo-cllo-1', 'demo-cllo-2', 'demo-cllo-3', 'demo-cllo-4'] },
+                { id: 'demo-a-17', name: 'Course Reflection', type: 'Reflection', points: 25, dueDate: '2025-05-02', clloIds: ['demo-cllo-2', 'demo-cllo-4'] }
+            ]
+        }
+    ]
+};
+
 let state = {
     courseName: '',
     courseStartDate: '',
@@ -1040,6 +1145,18 @@ function loadFromJson(file) {
     reader.readAsText(file);
 }
 
+function loadDemoCourse() {
+    if (!confirm('Loading the demo course will replace your current work. Continue?')) {
+        return;
+    }
+
+    // Deep copy the demo course to avoid modifying the original
+    state = JSON.parse(JSON.stringify(demoCourse));
+    saveToLocalStorage();
+    renderAll();
+    showToast('Demo course loaded!', 'success');
+}
+
 // ============================================
 // UTILITY FUNCTIONS
 // ============================================
@@ -1164,6 +1281,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Save/Load buttons
     document.getElementById('newCourseBtn').addEventListener('click', newCourse);
+    document.getElementById('loadDemoBtn').addEventListener('click', loadDemoCourse);
     document.getElementById('saveBtn').addEventListener('click', saveToJson);
     document.getElementById('loadBtn').addEventListener('click', () => {
         document.getElementById('fileInput').click();

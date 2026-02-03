@@ -7,12 +7,12 @@
     --success-color: #10b981;
     --danger-color: #ef4444;
     --danger-hover: #dc2626;
-    --background: #f8fafc;
+    --background: #f3f4f6;
     --panel-bg: #ffffff;
-    --border-color: #e2e8f0;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --text-muted: #94a3b8;
+    --border-color: #e5e7eb;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
 }
 
 /* Reset & Base */
@@ -42,12 +42,13 @@ header {
     align-items: center;
     margin-bottom: 24px;
     padding-bottom: 16px;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
 }
 
 header h1 {
-    font-size: 1.75rem;
-    font-weight: 600;
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #1e3a8a;
 }
 
 .header-actions {
@@ -66,7 +67,7 @@ main {
     background: var(--panel-bg);
     border-radius: 12px;
     padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     border: 1px solid var(--border-color);
 }
 
@@ -198,12 +199,14 @@ select:focus {
 }
 
 .btn-secondary {
-    background: var(--secondary-color);
-    color: white;
+    background: white;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-    background: var(--secondary-hover);
+    background: #f9fafb;
+    border-color: #d1d5db;
 }
 
 .btn-add {
@@ -279,6 +282,26 @@ select:focus {
 .cllo-actions {
     display: flex;
     gap: 4px;
+}
+
+/* Summary Table */
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 0.875rem;
+}
+
+.summary-table th,
+.summary-table td {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.summary-table th {
+    background: var(--background);
+    font-weight: 600;
 }
 
 /* Assignment Type Tags */
@@ -460,6 +483,15 @@ select:focus {
     font-size: 0.75rem;
     margin-right: 8px;
 }
+
+    .assignment-points {
+        background: var(--border-color);
+        color: var(--text-secondary);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        margin-right: 8px;
+    }
 
 .assignment-cllos {
     color: var(--text-muted);

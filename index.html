@@ -13,8 +13,9 @@
         <header>
             <h1>Coursetrix</h1>
             <div class="header-actions">
-                <button id="loadBtn" class="btn btn-secondary">Load JSON</button>
-                <button id="saveBtn" class="btn btn-secondary">Save JSON</button>
+                <button id="newCourseBtn" class="btn btn-primary">New Course</button>
+                <button id="loadBtn" class="btn btn-secondary">Import Course</button>
+                <button id="saveBtn" class="btn btn-secondary">Save Course</button>
                 <input type="file" id="fileInput" accept=".json" hidden>
             </div>
         </header>
@@ -51,8 +52,18 @@
                     <p class="help-text">Customize the assignment types available for your course.</p>
                     <div id="assignmentTypeList" class="tag-list"></div>
                     <div class="inline-form">
+                        <select id="suggestedTypeSelect" style="max-width: 160px;">
+                            <option value="">💡 Ideas...</option>
+                        </select>
                         <input type="text" id="newAssignmentType" placeholder="New type...">
                         <button id="addTypeBtn" class="btn btn-small">Add</button>
+                    </div>
+                    <p class="help-text" style="margin-top: 16px; margin-bottom: 0;"><em>Note: Point totals will populate as you add assignments in the Schedule Builder.</em></p>
+                    <div id="assignmentTypeSummary"></div>
+                    <div id="summaryExportActions" class="export-actions" style="margin-top: 16px; display: none;">
+                        <button id="copySummaryBtn" class="btn btn-primary">Copy Summary to Clipboard</button>
+                        <button id="copySummaryMarkdownBtn" class="btn btn-secondary">Copy as Markdown</button>
+                        <button id="downloadSummaryCsvBtn" class="btn btn-secondary">Download CSV</button>
                     </div>
                 </div>
             </section>
@@ -100,9 +111,15 @@
                 <label for="assignmentName">Assignment Name</label>
                 <input type="text" id="assignmentName" placeholder="e.g., Discussion 1">
             </div>
-            <div class="form-group">
-                <label for="assignmentType">Type</label>
-                <select id="assignmentType"></select>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="assignmentType">Type</label>
+                    <select id="assignmentType"></select>
+                </div>
+                <div class="form-group">
+                    <label for="assignmentPoints">Points</label>
+                    <input type="number" id="assignmentPoints" placeholder="e.g., 100" min="0">
+                </div>
             </div>
             <div class="form-group">
                 <label>CLLOs</label>

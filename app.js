@@ -17,12 +17,32 @@ const defaultAssignmentTypes = [
     'Lab'
 ];
 
+const suggestedAssignmentTypes = [
+    'Annotated Bibliography',
+    'Case Study',
+    'Critique',
+    'Debate',
+    'Field Work',
+    'Final Exam',
+    'Group Project',
+    'Infographic',
+    'Interview',
+    'Journal/Blog',
+    'Literature Review',
+    'Midterm',
+    'Podcast/Video',
+    'Portfolio',
+    'Poster',
+    'Research Proposal',
+    'Simulation'
+];
+
 let state = {
     courseName: '',
     courseStartDate: '',
     courseEndDate: '',
     cllos: [],
-    assignmentTypes: [...defaultAssignmentTypes],
+    assignmentTypes: [],
     modules: []
 };
 
@@ -150,6 +170,7 @@ function addAssignmentType() {
         state.assignmentTypes.push(type);
         saveToLocalStorage();
         renderAssignmentTypes();
+        renderAssignmentTypeSummary();
         input.value = '';
     }
 }
@@ -173,6 +194,150 @@ function removeAssignmentType(type) {
     state.assignmentTypes = state.assignmentTypes.filter(t => t !== type);
     saveToLocalStorage();
     renderAssignmentTypes();
+    renderAssignmentTypeSummary();
+}
+
+function renderAssignmentTypeSummary() {
+    const container = document.getElementById('assignmentTypeSummary');
+    const exportContainer = document.getElementById('summaryExportActions');
+    if (!container || !exportContainer) return;
+
+    if (state.assignmentTypes.length === 0) {
+        container.innerHTML = '';
+        exportContainer.style.display = 'none';
+        return;
+    }
+
+    // Calculate totals per type
+    const totals = {};
+    state.assignmentTypes.forEach(type => totals[type] = 0);
+
+    state.modules.forEach(module => {
+        module.assignments.forEach(assignment => {
+            if (assignment.type && totals.hasOwnProperty(assignment.type)) {
+                totals[assignment.type] += (assignment.points || 0);
+            }
+        });
+    });
+
+    const html = `
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Assignment Type</th>
+                    <th>Total Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${state.assignmentTypes.map(type => `
+                    <tr>
+                        <td>${escapeHtml(type)}</td>
+                        <td>${totals[type]}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+
+    container.innerHTML = html;
+    exportContainer.style.display = 'flex';
+}
+
+function getSummaryData() {
+    const totals = {};
+    state.assignmentTypes.forEach(type => totals[type] = 0);
+
+    state.modules.forEach(module => {
+        module.assignments.forEach(assignment => {
+            if (assignment.type && totals.hasOwnProperty(assignment.type)) {
+                totals[assignment.type] += (assignment.points || 0);
+            }
+        });
+    });
+    return totals;
+}
+
+function generateSummaryWordTable() {
+    const totals = getSummaryData();
+    let html = `
+<table style="width:100%; border-collapse:collapse; font-family:Calibri,Arial,sans-serif; font-size:11pt;">
+    <thead>
+        <tr style="background-color:#f2f2f2;">
+            <th style="width:60%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignment Type</th>
+            <th style="width:40%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Total Points</th>
+        </tr>
+    </thead>
+    <tbody>`;
+
+    state.assignmentTypes.forEach(type => {
+        html += `
+        <tr>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(type)}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${totals[type]}</td>
+        </tr>`;
+    });
+
+    html += `
+    </tbody>
+</table>`;
+    return html;
+}
+
+function copySummaryTableToClipboard() {
+    if (state.assignmentTypes.length === 0) {
+        showToast('No summary to copy.');
+        return;
+    }
+    const html = generateSummaryWordTable();
+    const blob = new Blob([html], { type: 'text/html' });
+    const clipboardItem = new ClipboardItem({ 'text/html': blob });
+    navigator.clipboard.write([clipboardItem]).then(() => {
+        showToast('Summary table copied!', 'success');
+    }).catch(() => {
+        showToast('Failed to copy summary table.');
+    });
+}
+
+function generateSummaryMarkdown() {
+    const totals = getSummaryData();
+    let md = '| **Assignment Type** | **Total Points** |\n';
+    md += '| ------------------- | ---------------- |\n';
+
+    state.assignmentTypes.forEach(type => {
+        md += `| ${escapeHtml(type)} | ${totals[type]} |\n`;
+    });
+    return md;
+}
+
+function copySummaryAsMarkdown() {
+    if (state.assignmentTypes.length === 0) {
+        showToast('No summary to copy.');
+        return;
+    }
+    const markdown = generateSummaryMarkdown();
+    navigator.clipboard.writeText(markdown).then(() => {
+        showToast('Summary markdown copied!', 'success');
+    }).catch(() => {
+        showToast('Failed to copy summary markdown.');
+    });
+}
+
+function generateSummaryCsv() {
+    const totals = getSummaryData();
+    let csv = 'Assignment Type,Total Points\n';
+    state.assignmentTypes.forEach(type => {
+        csv += `"${escapeHtml(type)}",${totals[type]}\n`;
+    });
+    return csv;
+}
+
+function downloadSummaryCsv() {
+    if (state.assignmentTypes.length === 0) {
+        showToast('No summary to download.');
+        return;
+    }
+    const csv = generateSummaryCsv();
+    downloadFile('assignment-summary.csv', csv, 'text/csv');
 }
 
 // ============================================
@@ -195,7 +360,7 @@ function renderModules() {
                 <button class="collapse-toggle" onclick="toggleModuleCollapse('${module.id}')" title="Expand/Collapse">▼</button>
                 <span class="drag-handle">≡</span>
                 <div class="module-info">
-                    <div class="module-title">Module ${index + 1}: ${escapeHtml(module.name) || 'Untitled'}</div>
+                    <div class="module-title">${escapeHtml(module.name) || 'Untitled Module'}</div>
                     <div class="module-dates">${formatDateRange(module.startDate, module.endDate)}</div>
                     ${module.topic ? `<div class="module-topic">${escapeHtml(module.topic)}</div>` : ''}
                 </div>
@@ -229,6 +394,7 @@ function renderAssignments(module) {
                 <div class="assignment-name">${escapeHtml(assignment.name)}</div>
                 <div class="assignment-meta">
                     <span class="assignment-type">${escapeHtml(assignment.type)}</span>
+                    ${assignment.points ? `<span class="assignment-points">${assignment.points} pts</span>` : ''}
                     <span class="assignment-cllos">${formatCllos(assignment.clloIds)}</span>
                 </div>
             </div>
@@ -400,6 +566,7 @@ function deleteModule(id) {
         saveToLocalStorage();
         renderModules();
         renderPreview();
+        renderAssignmentTypeSummary();
     }
 }
 
@@ -448,6 +615,7 @@ function openAssignmentModal(moduleId, assignmentId = null) {
 
         document.getElementById('assignmentName').value = assignment.name || '';
         document.getElementById('assignmentType').value = assignment.type || state.assignmentTypes[0];
+        document.getElementById('assignmentPoints').value = assignment.points || '';
         dueInput.value = assignment.dueDate || '';
 
         // Check the appropriate CLLOs
@@ -459,6 +627,7 @@ function openAssignmentModal(moduleId, assignmentId = null) {
         title.textContent = 'Add Assignment';
         document.getElementById('assignmentName').value = '';
         document.getElementById('assignmentType').value = state.assignmentTypes[0];
+        document.getElementById('assignmentPoints').value = '';
 
         // Default to module end date for due date (common pattern)
         dueInput.value = module.endDate || '';
@@ -483,6 +652,7 @@ function closeAssignmentModal() {
 function saveAssignment() {
     const name = document.getElementById('assignmentName').value.trim();
     const type = document.getElementById('assignmentType').value;
+    const points = document.getElementById('assignmentPoints').value;
     const dueDate = document.getElementById('assignmentDue').value;
 
     // Get selected CLLOs
@@ -505,6 +675,7 @@ function saveAssignment() {
         const assignment = module.assignments.find(a => a.id === editingAssignmentId);
         assignment.name = name;
         assignment.type = type;
+        assignment.points = points ? parseInt(points, 10) : null;
         assignment.dueDate = dueDate;
         assignment.clloIds = clloIds;
     } else {
@@ -512,6 +683,7 @@ function saveAssignment() {
             id: generateId(),
             name,
             type,
+            points: points ? parseInt(points, 10) : null,
             dueDate,
             clloIds
         });
@@ -520,6 +692,7 @@ function saveAssignment() {
     saveToLocalStorage();
     renderModules();
     renderPreview();
+    renderAssignmentTypeSummary();
     closeAssignmentModal();
 }
 
@@ -534,6 +707,7 @@ function deleteAssignment(moduleId, assignmentId) {
         saveToLocalStorage();
         renderModules();
         renderPreview();
+        renderAssignmentTypeSummary();
     }
 }
 
@@ -601,6 +775,8 @@ function renderPreview() {
         return;
     }
 
+    let totalPoints = 0;
+
     let html = `
         <table>
             <thead>
@@ -608,7 +784,8 @@ function renderPreview() {
                     <th>Module</th>
                     <th>Dates</th>
                     <th>Topic</th>
-                    <th>Assignments (CLLO#)</th>
+                    <th>Assignment</th>
+                    <th>CLLO</th>
                     <th>Due Date</th>
                 </tr>
             </thead>
@@ -619,30 +796,40 @@ function renderPreview() {
         if (module.assignments.length === 0) {
             html += `
                 <tr>
-                    <td>${moduleIndex + 1}</td>
+                    <td>${escapeHtml(module.name)}</td>
                     <td>${formatDateRange(module.startDate, module.endDate)}</td>
                     <td>${escapeHtml(module.topic) || ''}</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                 </tr>
             `;
         } else {
             module.assignments.forEach((assignment, aIndex) => {
+                if (assignment.points) totalPoints += assignment.points;
                 const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
-                const clloStr = clloNums ? ` (CLLO ${clloNums})` : '';
 
                 html += `
                     <tr>
-                        <td>${aIndex === 0 ? moduleIndex + 1 : ''}</td>
+                        <td>${aIndex === 0 ? escapeHtml(module.name) : ''}</td>
                         <td>${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''}</td>
                         <td>${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</td>
-                        <td>${escapeHtml(assignment.name)}${clloStr}</td>
+                        <td>${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}</td>
+                        <td>${clloNums}</td>
                         <td>${formatDate(assignment.dueDate)}</td>
                     </tr>
                 `;
             });
         }
     });
+
+    html += `
+        <tr style="font-weight: bold; background-color: var(--background);">
+            <td colspan="3" style="text-align: right;">Total Points</td>
+            <td>${totalPoints}</td>
+            <td colspan="2"></td>
+        </tr>
+    `;
 
     html += '</tbody></table>';
     container.innerHTML = html;
@@ -684,15 +871,17 @@ function copyTableToClipboard() {
 
 function generateWordTable() {
     // Column widths optimized for Word (total ~6.5 inches for letter paper with 1" margins)
-    // Module: 8%, Dates: 15%, Topic: 22%, Assignments: 40%, Due: 15%
+    // Module: 8%, Dates: 15%, Topic: 20%, Assignments: 30%, CLLO: 12%, Due: 15%
+    let totalPoints = 0;
     let html = `
 <table style="width:100%; border-collapse:collapse; font-family:Calibri,Arial,sans-serif; font-size:11pt;">
     <thead>
         <tr style="background-color:#f2f2f2;">
             <th style="width:8%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Module</th>
             <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Dates</th>
-            <th style="width:22%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Topic</th>
-            <th style="width:40%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignments (CLLO#)</th>
+            <th style="width:20%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Topic</th>
+            <th style="width:30%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignment</th>
+            <th style="width:12%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">CLLO</th>
             <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Due Date</th>
         </tr>
     </thead>
@@ -702,28 +891,37 @@ function generateWordTable() {
         if (module.assignments.length === 0) {
             html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${moduleIndex + 1}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(module.name)}</td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(formatDateRange(module.startDate, module.endDate))}</td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(module.topic) || ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
         </tr>`;
         } else {
             module.assignments.forEach((assignment, aIndex) => {
+                if (assignment.points) totalPoints += assignment.points;
                 const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
-                const clloStr = clloNums ? ` (CLLO ${clloNums})` : '';
 
                 html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? moduleIndex + 1 : ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(module.name) : ''}</td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(formatDateRange(module.startDate, module.endDate)) : ''}</td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(assignment.name)}${clloStr}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${clloNums}</td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">${formatDate(assignment.dueDate)}</td>
         </tr>`;
             });
         }
     });
+
+    html += `
+        <tr style="font-weight:bold; background-color:#f2f2f2;">
+            <td colspan="3" style="border:1px solid #000; padding:6px; text-align:right;">Total Points</td>
+            <td style="border:1px solid #000; padding:6px;">${totalPoints}</td>
+            <td colspan="2" style="border:1px solid #000; padding:6px;"></td>
+        </tr>`;
 
     html += `
     </tbody>
@@ -742,18 +940,17 @@ function copyAsMarkdown() {
 }
 
 function generateMarkdown() {
-    let md = '| **Module** | **Dates** | **Topic** | **Assignments (CLLO#)** | **Due Date** |\n';
-    md += '| ---------- | --------- | --------- | ----------------------- | ------------ |\n';
+    let md = '| **Module** | **Dates** | **Topic** | **Assignment** | **CLLO** | **Due Date** |\n';
+    md += '| ---------- | --------- | --------- | -------------- | -------- | ------------ |\n';
 
     state.modules.forEach((module, moduleIndex) => {
         if (module.assignments.length === 0) {
-            md += `| ${moduleIndex + 1} | ${formatDateRange(module.startDate, module.endDate)} | ${module.topic || ''} | | |\n`;
+            md += `| ${module.name || ''} | ${formatDateRange(module.startDate, module.endDate)} | ${module.topic || ''} | | | |\n`;
         } else {
             module.assignments.forEach((assignment, aIndex) => {
                 const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
-                const clloStr = clloNums ? ` (CLLO ${clloNums})` : '';
 
-                md += `| ${aIndex === 0 ? moduleIndex + 1 : ''} | ${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''} | ${aIndex === 0 ? module.topic || '' : ''} | ${assignment.name}${clloStr} | ${formatDate(assignment.dueDate)} |\n`;
+                md += `| ${aIndex === 0 ? module.name || '' : ''} | ${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''} | ${aIndex === 0 ? module.topic || '' : ''} | ${assignment.name} ${assignment.points ? `(${assignment.points} pts)` : ''} | ${clloNums} | ${formatDate(assignment.dueDate)} |\n`;
             });
         }
     });
@@ -766,12 +963,12 @@ function downloadCsv() {
 
     state.modules.forEach((module, moduleIndex) => {
         if (module.assignments.length === 0) {
-            csv += `"${moduleIndex + 1}","${formatDateRange(module.startDate, module.endDate)}","${module.topic || ''}","","",""\n`;
+            csv += `"${module.name || ''}","${formatDateRange(module.startDate, module.endDate)}","${module.topic || ''}","","",""\n`;
         } else {
             module.assignments.forEach((assignment, aIndex) => {
                 const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
 
-                csv += `"${aIndex === 0 ? moduleIndex + 1 : ''}","${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''}","${aIndex === 0 ? module.topic || '' : ''}","${assignment.name}","${clloNums}","${formatDate(assignment.dueDate)}"\n`;
+                csv += `"${aIndex === 0 ? module.name || '' : ''}","${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''}","${aIndex === 0 ? module.topic || '' : ''}","${assignment.name} ${assignment.points ? `(${assignment.points} pts)` : ''}","${clloNums}","${formatDate(assignment.dueDate)}"\n`;
             });
         }
     });
@@ -783,16 +980,45 @@ function downloadCsv() {
 // JSON SAVE/LOAD
 // ============================================
 
+function newCourse() {
+    if (confirm('Are you sure you want to start a new course? All current data will be cleared.\n\nMake sure to click "Save Course" if you want to keep your work for later.')) {
+        // Reset state to its initial default
+        state = {
+            courseName: '',
+            courseStartDate: '',
+            courseEndDate: '',
+            cllos: [],
+            assignmentTypes: [],
+            modules: []
+        };
+        saveToLocalStorage(); // Persist the cleared state
+        renderAll(); // Re-render the entire UI
+        showToast('New course started.', 'success');
+    }
+}
+
 function saveToJson() {
     const data = JSON.stringify(state, null, 2);
-    const filename = state.courseName
-        ? `${state.courseName.replace(/[^a-z0-9]/gi, '-')}-schedule.json`
-        : 'course-schedule.json';
-    downloadFile(filename, data, 'application/json');
-    showToast('Schedule saved!', 'success');
+    const defaultFilename = state.courseName
+        ? `${state.courseName.replace(/[^a-z0-9]/gi, '-')}-schedule`
+        : 'course-schedule';
+
+    const filename = prompt('Enter a filename for your course:', defaultFilename);
+
+    if (filename) {
+        const finalFilename = filename.toLowerCase().endsWith('.json') ? filename : filename + '.json';
+        downloadFile(finalFilename, data, 'application/json');
+        showToast('Schedule saved!', 'success');
+    }
 }
 
 function loadFromJson(file) {
+    if (!confirm('Importing a course file will overwrite your current work. Are you sure you want to continue?')) {
+        // Clear the file input so the same file can be selected again if the user changes their mind
+        document.getElementById('fileInput').value = '';
+        return;
+    }
+
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
@@ -856,6 +1082,7 @@ function renderAll() {
     renderAssignmentTypes();
     renderModules();
     renderPreview();
+    renderAssignmentTypeSummary();
 }
 
 // ============================================
@@ -896,6 +1123,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') addAssignmentType();
     });
 
+    // Populate suggested types
+    const suggestedSelect = document.getElementById('suggestedTypeSelect');
+    suggestedAssignmentTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        suggestedSelect.appendChild(option);
+    });
+
+    suggestedSelect.addEventListener('change', function() {
+        if (this.value) {
+            const input = document.getElementById('newAssignmentType');
+            input.value = this.value;
+            this.value = ''; // Reset dropdown
+            input.focus(); // Focus input so user can edit or hit enter
+        }
+    });
+
     // Module buttons
     document.getElementById('addModuleBtn').addEventListener('click', () => openModuleModal());
     document.getElementById('cancelModuleBtn').addEventListener('click', closeModuleModal);
@@ -912,7 +1157,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('copyMarkdownBtn').addEventListener('click', copyAsMarkdown);
     document.getElementById('downloadCsvBtn').addEventListener('click', downloadCsv);
 
+    // Summary Export buttons
+    document.getElementById('copySummaryBtn').addEventListener('click', copySummaryTableToClipboard);
+    document.getElementById('copySummaryMarkdownBtn').addEventListener('click', copySummaryAsMarkdown);
+    document.getElementById('downloadSummaryCsvBtn').addEventListener('click', downloadSummaryCsv);
+
     // Save/Load buttons
+    document.getElementById('newCourseBtn').addEventListener('click', newCourse);
     document.getElementById('saveBtn').addEventListener('click', saveToJson);
     document.getElementById('loadBtn').addEventListener('click', () => {
         document.getElementById('fileInput').click();

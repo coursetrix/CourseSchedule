@@ -99,7 +99,7 @@
     </div>
 
         <footer class="app-footer">
-            <p><strong>Coursetrix</strong> by Martin Versluis | <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">View on GitHub</a></p>
+            <p><strong>Coursetrix</strong> by Martin Versluis | <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">View on GitHub</a> | <a href="#" id="aboutLink">About</a></p>
             <p class="footer-note">An open-source tool for faculty to build course schedules aligned with learning outcomes.</p>
         </footer>
     </div>
@@ -162,6 +162,19 @@
             <div class="modal-actions">
                 <button id="cancelModuleBtn" class="btn btn-secondary">Cancel</button>
                 <button id="saveModuleBtn" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>About Coursetrix</h3>
+            <p>As an Instructional Designer and Educational Technologist, I spent too much time wrestling with Word tables to create course schedules. I built Coursetrix to solve that problem - a simple tool that lets educators focus on course design instead of formatting.</p>
+            <p style="margin-top: 16px;"><strong>Created by Martin Versluis</strong></p>
+            <p><a href="https://www.linkedin.com/in/martinversluis" target="_blank">Connect on LinkedIn</a></p>
+            <div class="modal-actions">
+                <button id="closeAboutBtn" class="btn btn-primary">Close</button>
             </div>
         </div>
     </div>

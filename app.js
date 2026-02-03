@@ -1157,6 +1157,10 @@ function loadDemoCourse() {
     showToast('Demo course loaded!', 'success');
 }
 
+function closeAboutModal() {
+    document.getElementById('aboutModal').classList.add('hidden');
+}
+
 // ============================================
 // UTILITY FUNCTIONS
 // ============================================
@@ -1300,12 +1304,23 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('moduleModal').addEventListener('click', function(e) {
         if (e.target === this) closeModuleModal();
     });
+    document.getElementById('aboutModal').addEventListener('click', function(e) {
+        if (e.target === this) closeAboutModal();
+    });
+
+    // About modal
+    document.getElementById('aboutLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('aboutModal').classList.remove('hidden');
+    });
+    document.getElementById('closeAboutBtn').addEventListener('click', closeAboutModal);
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeAssignmentModal();
             closeModuleModal();
+            closeAboutModal();
         }
     });
 });

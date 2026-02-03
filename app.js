@@ -1146,7 +1146,7 @@ function loadFromJson(file) {
 }
 
 function loadDemoCourse() {
-    if (!confirm('Loading the demo course will replace your current work. Continue?')) {
+    if (!confirm('Loading the demo course will replace your current work.\n\nMake sure to click "Save Course" if you want to keep your work for later.')) {
         return;
     }
 

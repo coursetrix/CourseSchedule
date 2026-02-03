@@ -51,6 +51,11 @@ header h1 {
     color: #1e3a8a;
 }
 
+.header-logo {
+    height: 60px;
+    width: auto;
+}
+
 .header-actions {
     display: flex;
     gap: 8px;

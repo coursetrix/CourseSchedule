@@ -2,7 +2,7 @@
 
 A simple, free tool for faculty to create course schedules with learning outcome alignment. Build your syllabus schedule in minutes, then copy directly into Word.
 
-**[Live Demo](https://coursetrix.github.io/CourseSchedule)**
+**[Live Demo](https://coursetrix.com)**
 
 ## The Problem
 
@@ -30,17 +30,20 @@ Coursetrix provides a drag-and-drop interface that makes schedule creation fast 
 - **Module-based structure** - Organize by modules with date ranges (like an LMS)
 - **Smart date defaults** - New modules auto-calculate dates based on previous module
 - **Assignment types** - Pre-defined types (Discussion, Quiz, Assignment, etc.) with custom options
+- **Suggested types dropdown** - Quick access to common assignment types (Case Study, Portfolio, Peer Review, etc.)
+- **Points tracking** - Add point values to assignments, see totals in preview
+- **Assignment Type Summary** - View total points by assignment type with export options
 - **Drag-and-drop** - Reorder modules and move assignments between modules
 - **Collapsible modules** - Keep the interface clean while working
 - **Word-optimized export** - Copy table that pastes cleanly into Word documents
-- **Multiple export formats** - HTML table, Markdown, and CSV
-- **Local save/load** - Save your work as JSON, load it anytime
+- **Multiple export formats** - HTML table, Markdown, and CSV for both schedule and summary
+- **New Course / Import / Save** - Start fresh, import previous work, or save for later
 - **Auto-save** - Browser remembers your work between sessions
 - **No account required** - Works entirely in your browser
 
 ## Quick Start
 
-1. Open `index.html` in any modern browser (or visit the [live demo](https://coursetrix.github.io/CourseSchedule))
+1. Open `index.html` in any modern browser (or visit the [live demo](https://coursetrix.com))
 2. Set your course name and date range
 3. Add your CLLOs (learning outcomes)
 4. Create modules and add assignments
@@ -83,7 +86,6 @@ Contributions welcome! This project is open source under the MIT License.
 Ideas for future enhancements:
 - Import from CSV/Excel
 - Multiple export templates
-- Points/weighting for assignments
 - CLLO coverage visualization
 - Print-friendly view
 

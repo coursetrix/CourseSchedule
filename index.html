@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coursetrix - Course Schedule Builder</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- SortableJS for drag-and-drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Coursetrix</h1>
+            <div class="header-actions">
+                <button id="loadBtn" class="btn btn-secondary">Load JSON</button>
+                <button id="saveBtn" class="btn btn-secondary">Save JSON</button>
+                <input type="file" id="fileInput" accept=".json" hidden>
+            </div>
+        </header>
+
+        <main>
+            <!-- Course Setup Section -->
+            <section class="panel" id="courseSetup">
+                <h2>Course Setup</h2>
+                <div class="form-group">
+                    <label for="courseName">Course Name/Number</label>
+                    <input type="text" id="courseName" placeholder="e.g., ENG 101 - Composition">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="courseStartDate">Course Start Date</label>
+                        <input type="date" id="courseStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="courseEndDate">Course End Date</label>
+                        <input type="date" id="courseEndDate">
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>Course-Level Learning Outcomes (CLLOs)</h3>
+                    <p class="help-text">Define the learning outcomes for your course. These will be referenced in assignments.</p>
+                    <div id="clloList" class="item-list"></div>
+                    <button id="addClloBtn" class="btn btn-add">+ Add CLLO</button>
+                </div>
+
+                <div class="subsection">
+                    <h3>Assignment Types</h3>
+                    <p class="help-text">Customize the assignment types available for your course.</p>
+                    <div id="assignmentTypeList" class="tag-list"></div>
+                    <div class="inline-form">
+                        <input type="text" id="newAssignmentType" placeholder="New type...">
+                        <button id="addTypeBtn" class="btn btn-small">Add</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Schedule Builder Section -->
+            <section class="panel" id="scheduleBuilder">
+                <div class="section-header">
+                    <div>
+                        <h2>Schedule Builder</h2>
+                        <p class="help-text">Drag modules to reorder. Drag assignments within or between modules.</p>
+                    </div>
+                    <div class="section-actions">
+                        <button id="expandAllBtn" class="btn btn-small btn-secondary">Expand All</button>
+                        <button id="collapseAllBtn" class="btn btn-small btn-secondary">Collapse All</button>
+                    </div>
+                </div>
+                <div id="moduleList" class="module-list"></div>
+                <button id="addModuleBtn" class="btn btn-add">+ Add Module</button>
+            </section>
+
+            <!-- Preview & Export Section -->
+            <section class="panel" id="previewExport">
+                <h2>Preview & Export</h2>
+                <div class="export-actions">
+                    <button id="copyBtn" class="btn btn-primary">Copy Table to Clipboard</button>
+                    <button id="copyMarkdownBtn" class="btn btn-secondary">Copy as Markdown</button>
+                    <button id="downloadCsvBtn" class="btn btn-secondary">Download CSV</button>
+                </div>
+                <div id="tablePreview" class="table-preview"></div>
+            </section>
+        </main>
+    </div>
+
+        <footer class="app-footer">
+            <p><strong>Coursetrix</strong> by Martin Versluis | <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">View on GitHub</a></p>
+            <p class="footer-note">An open-source tool for faculty to build course schedules aligned with learning outcomes.</p>
+        </footer>
+    </div>
+
+    <!-- Modal for adding/editing assignments -->
+    <div id="assignmentModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="modalTitle">Add Assignment</h3>
+            <div class="form-group">
+                <label for="assignmentName">Assignment Name</label>
+                <input type="text" id="assignmentName" placeholder="e.g., Discussion 1">
+            </div>
+            <div class="form-group">
+                <label for="assignmentType">Type</label>
+                <select id="assignmentType"></select>
+            </div>
+            <div class="form-group">
+                <label>CLLOs</label>
+                <div id="clloCheckboxes" class="checkbox-group"></div>
+            </div>
+            <div class="form-group">
+                <label for="assignmentDue">Due Date</label>
+                <input type="date" id="assignmentDue">
+            </div>
+            <div class="modal-actions">
+                <button id="cancelAssignmentBtn" class="btn btn-secondary">Cancel</button>
+                <button id="saveAssignmentBtn" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for editing modules -->
+    <div id="moduleModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="moduleModalTitle">Add Module</h3>
+            <div class="form-group">
+                <label for="moduleName">Module Name</label>
+                <input type="text" id="moduleName" placeholder="e.g., Introduction to Research">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="moduleStartDate">Start Date</label>
+                    <input type="date" id="moduleStartDate">
+                </div>
+                <div class="form-group">
+                    <label for="moduleEndDate">End Date</label>
+                    <input type="date" id="moduleEndDate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="moduleTopic">Topic(s)</label>
+                <input type="text" id="moduleTopic" placeholder="e.g., Research ethics, Literature review">
+            </div>
+            <div class="modal-actions">
+                <button id="cancelModuleBtn" class="btn btn-secondary">Cancel</button>
+                <button id="saveModuleBtn" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

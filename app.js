@@ -1,0 +1,942 @@
+// Course Schedule Builder - Main Application
+
+// ============================================
+// STATE MANAGEMENT
+// ============================================
+
+const defaultAssignmentTypes = [
+    'Discussion',
+    'Quiz',
+    'Assignment',
+    'Paper/Essay',
+    'Project',
+    'Presentation',
+    'Exam/Test',
+    'Reflection',
+    'Peer Review',
+    'Lab'
+];
+
+let state = {
+    courseName: '',
+    courseStartDate: '',
+    courseEndDate: '',
+    cllos: [],
+    assignmentTypes: [...defaultAssignmentTypes],
+    modules: []
+};
+
+// Generate unique IDs
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+// ============================================
+// LOCAL STORAGE
+// ============================================
+
+function saveToLocalStorage() {
+    localStorage.setItem('courseScheduleData', JSON.stringify(state));
+}
+
+function loadFromLocalStorage() {
+    const saved = localStorage.getItem('courseScheduleData');
+    if (saved) {
+        try {
+            state = JSON.parse(saved);
+            // Ensure assignmentTypes exists (for backwards compatibility)
+            if (!state.assignmentTypes) {
+                state.assignmentTypes = [...defaultAssignmentTypes];
+            }
+        } catch (e) {
+            console.error('Failed to load saved data:', e);
+        }
+    }
+}
+
+// ============================================
+// CLLO MANAGEMENT
+// ============================================
+
+function renderCllos() {
+    const container = document.getElementById('clloList');
+
+    if (state.cllos.length === 0) {
+        container.innerHTML = '<div class="empty-state">No CLLOs defined yet. Add your first learning outcome.</div>';
+        return;
+    }
+
+    container.innerHTML = state.cllos.map((cllo, index) => `
+        <div class="cllo-item" data-id="${cllo.id}">
+            <span class="cllo-number">CLLO ${index + 1}</span>
+            <input type="text" class="cllo-description" value="${escapeHtml(cllo.description)}"
+                   placeholder="Enter learning outcome description..."
+                   onchange="updateClloDescription('${cllo.id}', this.value)">
+            <div class="cllo-actions">
+                <button class="btn btn-icon danger" onclick="deleteCllo('${cllo.id}')" title="Delete">×</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addCllo() {
+    state.cllos.push({
+        id: generateId(),
+        description: ''
+    });
+    saveToLocalStorage();
+    renderCllos();
+    renderPreview();
+
+    // Focus the new input
+    const inputs = document.querySelectorAll('.cllo-description');
+    if (inputs.length > 0) {
+        inputs[inputs.length - 1].focus();
+    }
+}
+
+function updateClloDescription(id, description) {
+    const cllo = state.cllos.find(c => c.id === id);
+    if (cllo) {
+        cllo.description = description;
+        saveToLocalStorage();
+    }
+}
+
+function deleteCllo(id) {
+    if (confirm('Are you sure you want to delete this CLLO? It will be removed from all assignments.')) {
+        const index = state.cllos.findIndex(c => c.id === id);
+        state.cllos = state.cllos.filter(c => c.id !== id);
+
+        // Remove this CLLO from all assignments
+        state.modules.forEach(module => {
+            module.assignments.forEach(assignment => {
+                assignment.clloIds = assignment.clloIds.filter(cId => cId !== id);
+            });
+        });
+
+        saveToLocalStorage();
+        renderCllos();
+        renderModules();
+        renderPreview();
+    }
+}
+
+function getClloNumber(id) {
+    const index = state.cllos.findIndex(c => c.id === id);
+    return index >= 0 ? index + 1 : '?';
+}
+
+// ============================================
+// ASSIGNMENT TYPE MANAGEMENT
+// ============================================
+
+function renderAssignmentTypes() {
+    const container = document.getElementById('assignmentTypeList');
+
+    container.innerHTML = state.assignmentTypes.map(type => `
+        <span class="tag">
+            ${escapeHtml(type)}
+            <span class="remove-tag" onclick="removeAssignmentType('${escapeHtml(type)}')" title="Remove">×</span>
+        </span>
+    `).join('');
+}
+
+function addAssignmentType() {
+    const input = document.getElementById('newAssignmentType');
+    const type = input.value.trim();
+
+    if (type && !state.assignmentTypes.includes(type)) {
+        state.assignmentTypes.push(type);
+        saveToLocalStorage();
+        renderAssignmentTypes();
+        input.value = '';
+    }
+}
+
+function removeAssignmentType(type) {
+    // Check if any assignments use this type
+    let inUse = false;
+    state.modules.forEach(module => {
+        module.assignments.forEach(assignment => {
+            if (assignment.type === type) {
+                inUse = true;
+            }
+        });
+    });
+
+    if (inUse) {
+        alert('This assignment type is in use and cannot be removed.');
+        return;
+    }
+
+    state.assignmentTypes = state.assignmentTypes.filter(t => t !== type);
+    saveToLocalStorage();
+    renderAssignmentTypes();
+}
+
+// ============================================
+// MODULE MANAGEMENT
+// ============================================
+
+let moduleSortable = null;
+
+function renderModules() {
+    const container = document.getElementById('moduleList');
+
+    if (state.modules.length === 0) {
+        container.innerHTML = '<div class="empty-state">No modules yet. Add your first module to get started.</div>';
+        return;
+    }
+
+    container.innerHTML = state.modules.map((module, index) => `
+        <div class="module-item ${module.collapsed ? 'collapsed' : ''}" data-id="${module.id}">
+            <div class="module-header">
+                <button class="collapse-toggle" onclick="toggleModuleCollapse('${module.id}')" title="Expand/Collapse">▼</button>
+                <span class="drag-handle">≡</span>
+                <div class="module-info">
+                    <div class="module-title">Module ${index + 1}: ${escapeHtml(module.name) || 'Untitled'}</div>
+                    <div class="module-dates">${formatDateRange(module.startDate, module.endDate)}</div>
+                    ${module.topic ? `<div class="module-topic">${escapeHtml(module.topic)}</div>` : ''}
+                </div>
+                <span class="assignment-count">${module.assignments.length} assignment${module.assignments.length !== 1 ? 's' : ''}</span>
+                <div class="module-actions">
+                    <button class="btn btn-icon" onclick="editModule('${module.id}')" title="Edit">✎</button>
+                    <button class="btn btn-icon danger" onclick="deleteModule('${module.id}')" title="Delete">×</button>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="assignment-list" data-module-id="${module.id}">
+                    ${renderAssignments(module)}
+                </div>
+                <button class="btn-add-assignment" onclick="openAssignmentModal('${module.id}')">+ Add Assignment</button>
+            </div>
+        </div>
+    `).join('');
+
+    initializeSortables();
+}
+
+function renderAssignments(module) {
+    if (module.assignments.length === 0) {
+        return '<div class="empty-state">No assignments in this module</div>';
+    }
+
+    return module.assignments.map(assignment => `
+        <div class="assignment-item" data-id="${assignment.id}">
+            <span class="drag-handle">≡</span>
+            <div class="assignment-info">
+                <div class="assignment-name">${escapeHtml(assignment.name)}</div>
+                <div class="assignment-meta">
+                    <span class="assignment-type">${escapeHtml(assignment.type)}</span>
+                    <span class="assignment-cllos">${formatCllos(assignment.clloIds)}</span>
+                </div>
+            </div>
+            <div class="assignment-due">${formatDate(assignment.dueDate)}</div>
+            <div class="assignment-actions">
+                <button class="btn btn-icon" onclick="editAssignment('${module.id}', '${assignment.id}')" title="Edit">✎</button>
+                <button class="btn btn-icon danger" onclick="deleteAssignment('${module.id}', '${assignment.id}')" title="Delete">×</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function formatDateRange(start, end) {
+    if (!start && !end) return 'No dates set';
+    if (start && end) return `${formatDate(start)} - ${formatDate(end)}`;
+    if (start) return `Starts ${formatDate(start)}`;
+    return `Ends ${formatDate(end)}`;
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr + 'T00:00:00');
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatCllos(clloIds) {
+    if (!clloIds || clloIds.length === 0) return 'No CLLOs';
+    return 'CLLO ' + clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+}
+
+// Module Modal
+let editingModuleId = null;
+
+function openModuleModal(moduleId = null) {
+    editingModuleId = moduleId;
+    const modal = document.getElementById('moduleModal');
+    const title = document.getElementById('moduleModalTitle');
+
+    const startDateInput = document.getElementById('moduleStartDate');
+    const endDateInput = document.getElementById('moduleEndDate');
+
+    // Set min/max based on course dates
+    if (state.courseStartDate) {
+        startDateInput.min = state.courseStartDate;
+        endDateInput.min = state.courseStartDate;
+    }
+    if (state.courseEndDate) {
+        startDateInput.max = state.courseEndDate;
+        endDateInput.max = state.courseEndDate;
+    }
+
+    if (moduleId) {
+        title.textContent = 'Edit Module';
+        const module = state.modules.find(m => m.id === moduleId);
+        document.getElementById('moduleName').value = module.name || '';
+        startDateInput.value = module.startDate || '';
+        endDateInput.value = module.endDate || '';
+        document.getElementById('moduleTopic').value = module.topic || '';
+    } else {
+        title.textContent = 'Add Module';
+        document.getElementById('moduleName').value = '';
+        document.getElementById('moduleTopic').value = '';
+
+        // Smart date suggestion: use day after last module ends, or course start date
+        let suggestedStart = state.courseStartDate || '';
+        if (state.modules.length > 0) {
+            const lastModule = state.modules[state.modules.length - 1];
+            if (lastModule.endDate) {
+                // Add one day to last module's end date
+                const nextDay = new Date(lastModule.endDate + 'T00:00:00');
+                nextDay.setDate(nextDay.getDate() + 1);
+                suggestedStart = nextDay.toISOString().split('T')[0];
+            }
+        }
+        startDateInput.value = suggestedStart;
+
+        // Default end date to one week after start date
+        if (suggestedStart) {
+            const endDate = new Date(suggestedStart + 'T00:00:00');
+            endDate.setDate(endDate.getDate() + 6); // 6 days later = 1 week span
+            // Don't exceed course end date
+            if (state.courseEndDate && endDate > new Date(state.courseEndDate + 'T00:00:00')) {
+                endDateInput.value = state.courseEndDate;
+            } else {
+                endDateInput.value = endDate.toISOString().split('T')[0];
+            }
+        } else {
+            endDateInput.value = '';
+        }
+    }
+
+    modal.classList.remove('hidden');
+    document.getElementById('moduleName').focus();
+}
+
+function closeModuleModal() {
+    document.getElementById('moduleModal').classList.add('hidden');
+    editingModuleId = null;
+}
+
+function saveModule() {
+    const name = document.getElementById('moduleName').value.trim();
+    const startDate = document.getElementById('moduleStartDate').value;
+    const endDate = document.getElementById('moduleEndDate').value;
+    const topic = document.getElementById('moduleTopic').value.trim();
+
+    if (editingModuleId) {
+        const module = state.modules.find(m => m.id === editingModuleId);
+        module.name = name;
+        module.startDate = startDate;
+        module.endDate = endDate;
+        module.topic = topic;
+    } else {
+        state.modules.push({
+            id: generateId(),
+            name,
+            startDate,
+            endDate,
+            topic,
+            assignments: []
+        });
+    }
+
+    saveToLocalStorage();
+    renderModules();
+    renderPreview();
+    closeModuleModal();
+}
+
+function editModule(id) {
+    openModuleModal(id);
+}
+
+function toggleModuleCollapse(id) {
+    const module = state.modules.find(m => m.id === id);
+    if (module) {
+        module.collapsed = !module.collapsed;
+        saveToLocalStorage();
+
+        // Update just this module's class without full re-render
+        const moduleEl = document.querySelector(`.module-item[data-id="${id}"]`);
+        if (moduleEl) {
+            moduleEl.classList.toggle('collapsed', module.collapsed);
+        }
+    }
+}
+
+function expandAllModules() {
+    state.modules.forEach(module => module.collapsed = false);
+    saveToLocalStorage();
+    document.querySelectorAll('.module-item').forEach(el => el.classList.remove('collapsed'));
+}
+
+function collapseAllModules() {
+    state.modules.forEach(module => module.collapsed = true);
+    saveToLocalStorage();
+    document.querySelectorAll('.module-item').forEach(el => el.classList.add('collapsed'));
+}
+
+function deleteModule(id) {
+    const module = state.modules.find(m => m.id === id);
+    const assignmentCount = module.assignments.length;
+    const message = assignmentCount > 0
+        ? `Are you sure you want to delete this module and its ${assignmentCount} assignment(s)?`
+        : 'Are you sure you want to delete this module?';
+
+    if (confirm(message)) {
+        state.modules = state.modules.filter(m => m.id !== id);
+        saveToLocalStorage();
+        renderModules();
+        renderPreview();
+    }
+}
+
+// ============================================
+// ASSIGNMENT MANAGEMENT
+// ============================================
+
+let currentModuleId = null;
+let editingAssignmentId = null;
+
+function openAssignmentModal(moduleId, assignmentId = null) {
+    currentModuleId = moduleId;
+    editingAssignmentId = assignmentId;
+
+    const modal = document.getElementById('assignmentModal');
+    const title = document.getElementById('modalTitle');
+    const module = state.modules.find(m => m.id === moduleId);
+    const dueInput = document.getElementById('assignmentDue');
+
+    // Set min/max based on module dates (or course dates as fallback)
+    dueInput.min = module.startDate || state.courseStartDate || '';
+    dueInput.max = module.endDate || state.courseEndDate || '';
+
+    // Populate type dropdown
+    const typeSelect = document.getElementById('assignmentType');
+    typeSelect.innerHTML = state.assignmentTypes.map(type =>
+        `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`
+    ).join('');
+
+    // Populate CLLO checkboxes
+    const clloContainer = document.getElementById('clloCheckboxes');
+    if (state.cllos.length === 0) {
+        clloContainer.innerHTML = '<div class="empty-state">No CLLOs defined. Add CLLOs in Course Setup first.</div>';
+    } else {
+        clloContainer.innerHTML = state.cllos.map((cllo, index) => `
+            <div class="checkbox-item">
+                <input type="checkbox" id="cllo-${cllo.id}" value="${cllo.id}">
+                <label for="cllo-${cllo.id}">CLLO ${index + 1}: ${escapeHtml(cllo.description) || '(No description)'}</label>
+            </div>
+        `).join('');
+    }
+
+    if (assignmentId) {
+        title.textContent = 'Edit Assignment';
+        const assignment = module.assignments.find(a => a.id === assignmentId);
+
+        document.getElementById('assignmentName').value = assignment.name || '';
+        document.getElementById('assignmentType').value = assignment.type || state.assignmentTypes[0];
+        dueInput.value = assignment.dueDate || '';
+
+        // Check the appropriate CLLOs
+        assignment.clloIds.forEach(clloId => {
+            const checkbox = document.getElementById(`cllo-${clloId}`);
+            if (checkbox) checkbox.checked = true;
+        });
+    } else {
+        title.textContent = 'Add Assignment';
+        document.getElementById('assignmentName').value = '';
+        document.getElementById('assignmentType').value = state.assignmentTypes[0];
+
+        // Default to module end date for due date (common pattern)
+        dueInput.value = module.endDate || '';
+
+        // Uncheck all CLLOs
+        state.cllos.forEach(cllo => {
+            const checkbox = document.getElementById(`cllo-${cllo.id}`);
+            if (checkbox) checkbox.checked = false;
+        });
+    }
+
+    modal.classList.remove('hidden');
+    document.getElementById('assignmentName').focus();
+}
+
+function closeAssignmentModal() {
+    document.getElementById('assignmentModal').classList.add('hidden');
+    currentModuleId = null;
+    editingAssignmentId = null;
+}
+
+function saveAssignment() {
+    const name = document.getElementById('assignmentName').value.trim();
+    const type = document.getElementById('assignmentType').value;
+    const dueDate = document.getElementById('assignmentDue').value;
+
+    // Get selected CLLOs
+    const clloIds = [];
+    state.cllos.forEach(cllo => {
+        const checkbox = document.getElementById(`cllo-${cllo.id}`);
+        if (checkbox && checkbox.checked) {
+            clloIds.push(cllo.id);
+        }
+    });
+
+    if (!name) {
+        alert('Please enter an assignment name.');
+        return;
+    }
+
+    const module = state.modules.find(m => m.id === currentModuleId);
+
+    if (editingAssignmentId) {
+        const assignment = module.assignments.find(a => a.id === editingAssignmentId);
+        assignment.name = name;
+        assignment.type = type;
+        assignment.dueDate = dueDate;
+        assignment.clloIds = clloIds;
+    } else {
+        module.assignments.push({
+            id: generateId(),
+            name,
+            type,
+            dueDate,
+            clloIds
+        });
+    }
+
+    saveToLocalStorage();
+    renderModules();
+    renderPreview();
+    closeAssignmentModal();
+}
+
+function editAssignment(moduleId, assignmentId) {
+    openAssignmentModal(moduleId, assignmentId);
+}
+
+function deleteAssignment(moduleId, assignmentId) {
+    if (confirm('Are you sure you want to delete this assignment?')) {
+        const module = state.modules.find(m => m.id === moduleId);
+        module.assignments = module.assignments.filter(a => a.id !== assignmentId);
+        saveToLocalStorage();
+        renderModules();
+        renderPreview();
+    }
+}
+
+// ============================================
+// DRAG AND DROP (SORTABLEJS)
+// ============================================
+
+function initializeSortables() {
+    // Module sorting
+    const moduleList = document.getElementById('moduleList');
+    if (moduleList && state.modules.length > 0) {
+        new Sortable(moduleList, {
+            animation: 150,
+            handle: '.module-header',
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: function(evt) {
+                const movedModule = state.modules.splice(evt.oldIndex, 1)[0];
+                state.modules.splice(evt.newIndex, 0, movedModule);
+                saveToLocalStorage();
+                renderModules();
+                renderPreview();
+            }
+        });
+    }
+
+    // Assignment sorting within modules
+    document.querySelectorAll('.assignment-list').forEach(list => {
+        new Sortable(list, {
+            group: 'assignments',
+            animation: 150,
+            handle: '.drag-handle',
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: function(evt) {
+                const fromModuleId = evt.from.dataset.moduleId;
+                const toModuleId = evt.to.dataset.moduleId;
+
+                const fromModule = state.modules.find(m => m.id === fromModuleId);
+                const toModule = state.modules.find(m => m.id === toModuleId);
+
+                // Remove from source
+                const movedAssignment = fromModule.assignments.splice(evt.oldIndex, 1)[0];
+
+                // Add to destination
+                toModule.assignments.splice(evt.newIndex, 0, movedAssignment);
+
+                saveToLocalStorage();
+                renderModules();
+                renderPreview();
+            }
+        });
+    });
+}
+
+// ============================================
+// PREVIEW & EXPORT
+// ============================================
+
+function renderPreview() {
+    const container = document.getElementById('tablePreview');
+
+    if (state.modules.length === 0) {
+        container.innerHTML = '<div class="empty-state">Add modules and assignments to see the preview.</div>';
+        return;
+    }
+
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Module</th>
+                    <th>Dates</th>
+                    <th>Topic</th>
+                    <th>Assignments (CLLO#)</th>
+                    <th>Due Date</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    state.modules.forEach((module, moduleIndex) => {
+        if (module.assignments.length === 0) {
+            html += `
+                <tr>
+                    <td>${moduleIndex + 1}</td>
+                    <td>${formatDateRange(module.startDate, module.endDate)}</td>
+                    <td>${escapeHtml(module.topic) || ''}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            `;
+        } else {
+            module.assignments.forEach((assignment, aIndex) => {
+                const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+                const clloStr = clloNums ? ` (CLLO ${clloNums})` : '';
+
+                html += `
+                    <tr>
+                        <td>${aIndex === 0 ? moduleIndex + 1 : ''}</td>
+                        <td>${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''}</td>
+                        <td>${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</td>
+                        <td>${escapeHtml(assignment.name)}${clloStr}</td>
+                        <td>${formatDate(assignment.dueDate)}</td>
+                    </tr>
+                `;
+            });
+        }
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function copyTableToClipboard() {
+    if (state.modules.length === 0) {
+        showToast('No table to copy. Add modules first.');
+        return;
+    }
+
+    // Generate Word-optimized HTML table with explicit widths
+    const html = generateWordTable();
+
+    // Use Clipboard API to copy HTML
+    const blob = new Blob([html], { type: 'text/html' });
+    const clipboardItem = new ClipboardItem({ 'text/html': blob });
+
+    navigator.clipboard.write([clipboardItem]).then(() => {
+        showToast('Table copied! Paste into Word.', 'success');
+    }).catch(() => {
+        // Fallback: try selecting the visible table
+        const table = document.querySelector('#tablePreview table');
+        if (table) {
+            const range = document.createRange();
+            range.selectNode(table);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            try {
+                document.execCommand('copy');
+                showToast('Table copied! Paste into Word.', 'success');
+            } catch (err) {
+                showToast('Failed to copy. Try selecting manually.');
+            }
+            window.getSelection().removeAllRanges();
+        }
+    });
+}
+
+function generateWordTable() {
+    // Column widths optimized for Word (total ~6.5 inches for letter paper with 1" margins)
+    // Module: 8%, Dates: 15%, Topic: 22%, Assignments: 40%, Due: 15%
+    let html = `
+<table style="width:100%; border-collapse:collapse; font-family:Calibri,Arial,sans-serif; font-size:11pt;">
+    <thead>
+        <tr style="background-color:#f2f2f2;">
+            <th style="width:8%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Module</th>
+            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Dates</th>
+            <th style="width:22%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Topic</th>
+            <th style="width:40%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignments (CLLO#)</th>
+            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Due Date</th>
+        </tr>
+    </thead>
+    <tbody>`;
+
+    state.modules.forEach((module, moduleIndex) => {
+        if (module.assignments.length === 0) {
+            html += `
+        <tr>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${moduleIndex + 1}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(formatDateRange(module.startDate, module.endDate))}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(module.topic) || ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
+        </tr>`;
+        } else {
+            module.assignments.forEach((assignment, aIndex) => {
+                const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+                const clloStr = clloNums ? ` (CLLO ${clloNums})` : '';
+
+                html += `
+        <tr>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? moduleIndex + 1 : ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(formatDateRange(module.startDate, module.endDate)) : ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(assignment.name)}${clloStr}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${formatDate(assignment.dueDate)}</td>
+        </tr>`;
+            });
+        }
+    });
+
+    html += `
+    </tbody>
+</table>`;
+
+    return html;
+}
+
+function copyAsMarkdown() {
+    const markdown = generateMarkdown();
+    navigator.clipboard.writeText(markdown).then(() => {
+        showToast('Markdown copied!', 'success');
+    }).catch(() => {
+        showToast('Failed to copy markdown.');
+    });
+}
+
+function generateMarkdown() {
+    let md = '| **Module** | **Dates** | **Topic** | **Assignments (CLLO#)** | **Due Date** |\n';
+    md += '| ---------- | --------- | --------- | ----------------------- | ------------ |\n';
+
+    state.modules.forEach((module, moduleIndex) => {
+        if (module.assignments.length === 0) {
+            md += `| ${moduleIndex + 1} | ${formatDateRange(module.startDate, module.endDate)} | ${module.topic || ''} | | |\n`;
+        } else {
+            module.assignments.forEach((assignment, aIndex) => {
+                const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+                const clloStr = clloNums ? ` (CLLO ${clloNums})` : '';
+
+                md += `| ${aIndex === 0 ? moduleIndex + 1 : ''} | ${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''} | ${aIndex === 0 ? module.topic || '' : ''} | ${assignment.name}${clloStr} | ${formatDate(assignment.dueDate)} |\n`;
+            });
+        }
+    });
+
+    return md;
+}
+
+function downloadCsv() {
+    let csv = 'Module,Dates,Topic,Assignment,CLLO,Due Date\n';
+
+    state.modules.forEach((module, moduleIndex) => {
+        if (module.assignments.length === 0) {
+            csv += `"${moduleIndex + 1}","${formatDateRange(module.startDate, module.endDate)}","${module.topic || ''}","","",""\n`;
+        } else {
+            module.assignments.forEach((assignment, aIndex) => {
+                const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+
+                csv += `"${aIndex === 0 ? moduleIndex + 1 : ''}","${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''}","${aIndex === 0 ? module.topic || '' : ''}","${assignment.name}","${clloNums}","${formatDate(assignment.dueDate)}"\n`;
+            });
+        }
+    });
+
+    downloadFile('course-schedule.csv', csv, 'text/csv');
+}
+
+// ============================================
+// JSON SAVE/LOAD
+// ============================================
+
+function saveToJson() {
+    const data = JSON.stringify(state, null, 2);
+    const filename = state.courseName
+        ? `${state.courseName.replace(/[^a-z0-9]/gi, '-')}-schedule.json`
+        : 'course-schedule.json';
+    downloadFile(filename, data, 'application/json');
+    showToast('Schedule saved!', 'success');
+}
+
+function loadFromJson(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            state = data;
+
+            // Ensure assignmentTypes exists
+            if (!state.assignmentTypes) {
+                state.assignmentTypes = [...defaultAssignmentTypes];
+            }
+
+            saveToLocalStorage();
+            renderAll();
+            showToast('Schedule loaded!', 'success');
+        } catch (err) {
+            showToast('Failed to load file. Invalid format.');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function downloadFile(filename, content, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function showToast(message, type = '') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+function renderAll() {
+    document.getElementById('courseName').value = state.courseName || '';
+    document.getElementById('courseStartDate').value = state.courseStartDate || '';
+    document.getElementById('courseEndDate').value = state.courseEndDate || '';
+    renderCllos();
+    renderAssignmentTypes();
+    renderModules();
+    renderPreview();
+}
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Load saved data
+    loadFromLocalStorage();
+    renderAll();
+
+    // Course name and dates
+    document.getElementById('courseName').addEventListener('change', function() {
+        state.courseName = this.value;
+        saveToLocalStorage();
+    });
+
+    document.getElementById('courseStartDate').addEventListener('change', function() {
+        state.courseStartDate = this.value;
+        // Update end date min
+        document.getElementById('courseEndDate').min = this.value;
+        saveToLocalStorage();
+    });
+
+    document.getElementById('courseEndDate').addEventListener('change', function() {
+        state.courseEndDate = this.value;
+        // Update start date max
+        document.getElementById('courseStartDate').max = this.value;
+        saveToLocalStorage();
+    });
+
+    // CLLO buttons
+    document.getElementById('addClloBtn').addEventListener('click', addCllo);
+
+    // Assignment type buttons
+    document.getElementById('addTypeBtn').addEventListener('click', addAssignmentType);
+    document.getElementById('newAssignmentType').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addAssignmentType();
+    });
+
+    // Module buttons
+    document.getElementById('addModuleBtn').addEventListener('click', () => openModuleModal());
+    document.getElementById('cancelModuleBtn').addEventListener('click', closeModuleModal);
+    document.getElementById('saveModuleBtn').addEventListener('click', saveModule);
+    document.getElementById('expandAllBtn').addEventListener('click', expandAllModules);
+    document.getElementById('collapseAllBtn').addEventListener('click', collapseAllModules);
+
+    // Assignment modal buttons
+    document.getElementById('cancelAssignmentBtn').addEventListener('click', closeAssignmentModal);
+    document.getElementById('saveAssignmentBtn').addEventListener('click', saveAssignment);
+
+    // Export buttons
+    document.getElementById('copyBtn').addEventListener('click', copyTableToClipboard);
+    document.getElementById('copyMarkdownBtn').addEventListener('click', copyAsMarkdown);
+    document.getElementById('downloadCsvBtn').addEventListener('click', downloadCsv);
+
+    // Save/Load buttons
+    document.getElementById('saveBtn').addEventListener('click', saveToJson);
+    document.getElementById('loadBtn').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            loadFromJson(e.target.files[0]);
+            e.target.value = ''; // Reset so same file can be loaded again
+        }
+    });
+
+    // Close modals on outside click
+    document.getElementById('assignmentModal').addEventListener('click', function(e) {
+        if (e.target === this) closeAssignmentModal();
+    });
+    document.getElementById('moduleModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModuleModal();
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAssignmentModal();
+            closeModuleModal();
+        }
+    });
+});

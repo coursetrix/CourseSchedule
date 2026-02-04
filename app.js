@@ -379,8 +379,8 @@ function generateSummaryWordTable() {
 <table style="width:100%; border-collapse:collapse;">
     <thead>
         <tr style="background-color:#f2f2f2;">
-            <th style="width:60%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignment Type</th>
-            <th style="width:40%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Total Points</th>
+            <th style="width:60%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p style="margin:0in; mso-para-margin:0in;">Assignment Type</p></th>
+            <th style="width:40%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p style="margin:0in; mso-para-margin:0in;">Total Points</p></th>
         </tr>
     </thead>
     <tbody>`;
@@ -1006,11 +1006,11 @@ function generateWordTable() {
 <table style="width:100%; border-collapse:collapse;">
     <thead>
         <tr style="background-color:#f2f2f2;">
-            <th style="width:8%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Module</th>
-            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Dates</th>
-            <th style="width:20%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Topic</th>
-            <th style="width:42%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignment</th>
-            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Due Date</th>
+            <th style="width:8%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p style="margin:0in; mso-para-margin:0in;">Module</p></th>
+            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p style="margin:0in; mso-para-margin:0in;">Dates</p></th>
+            <th style="width:20%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p style="margin:0in; mso-para-margin:0in;">Topic</p></th>
+            <th style="width:42%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p style="margin:0in; mso-para-margin:0in;">Assignment</p></th>
+            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p style="margin:0in; mso-para-margin:0in;">Due Date</p></th>
         </tr>
     </thead>
     <tbody>`;
@@ -1049,8 +1049,8 @@ function generateWordTable() {
 
     html += `
         <tr style="font-weight:bold; background-color:#f2f2f2;">
-            <td colspan="3" style="border:1px solid #000; padding:6px; text-align:right;">Total Points</td>
-            <td style="border:1px solid #000; padding:6px;">${totalPoints}</td>
+            <td colspan="3" style="border:1px solid #000; padding:6px; text-align:right;"><p style="margin:0in; mso-para-margin:0in; text-align:right;">Total Points</p></td>
+            <td style="border:1px solid #000; padding:6px;"><p style="margin:0in; mso-para-margin:0in;">${totalPoints}</p></td>
             <td style="border:1px solid #000; padding:6px;"></td>
         </tr>`;
 

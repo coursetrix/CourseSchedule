@@ -52,7 +52,7 @@ const demoCourse = {
     modules: [
         {
             id: 'demo-mod-1',
-            name: 'Module 1',
+            name: 'Week 1',
             startDate: '2025-01-13',
             endDate: '2025-01-24',
             topic: 'Introduction to College Writing',
@@ -63,7 +63,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-2',
-            name: 'Module 2',
+            name: 'Week 2',
             startDate: '2025-01-27',
             endDate: '2025-02-07',
             topic: 'The Writing Process',
@@ -74,7 +74,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-3',
-            name: 'Module 3',
+            name: 'Week 3',
             startDate: '2025-02-10',
             endDate: '2025-02-21',
             topic: 'Argument and Evidence',
@@ -85,7 +85,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-4',
-            name: 'Module 4',
+            name: 'Week 4',
             startDate: '2025-02-24',
             endDate: '2025-03-07',
             topic: 'Research Fundamentals',
@@ -96,7 +96,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-5',
-            name: 'Module 5',
+            name: 'Week 5',
             startDate: '2025-03-10',
             endDate: '2025-03-21',
             topic: 'Source Integration',
@@ -107,7 +107,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-6',
-            name: 'Module 6',
+            name: 'Week 6',
             startDate: '2025-03-24',
             endDate: '2025-04-04',
             topic: 'Revision Strategies',
@@ -118,7 +118,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-7',
-            name: 'Module 7',
+            name: 'Week 7',
             startDate: '2025-04-07',
             endDate: '2025-04-18',
             topic: 'Style and Voice',
@@ -129,7 +129,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-8',
-            name: 'Module 8',
+            name: 'Week 8',
             startDate: '2025-04-21',
             endDate: '2025-05-02',
             topic: 'Final Portfolio',
@@ -890,7 +890,6 @@ function renderPreview() {
                     <th>Dates</th>
                     <th>Topic</th>
                     <th>Assignment</th>
-                    <th>CLLO</th>
                     <th>Due Date</th>
                 </tr>
             </thead>
@@ -906,7 +905,6 @@ function renderPreview() {
                     <td>${escapeHtml(module.topic) || ''}</td>
                     <td></td>
                     <td></td>
-                    <td></td>
                 </tr>
             `;
         } else {
@@ -919,8 +917,10 @@ function renderPreview() {
                         <td>${aIndex === 0 ? escapeHtml(module.name) : ''}</td>
                         <td>${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''}</td>
                         <td>${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</td>
-                        <td>${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}</td>
-                        <td>${clloNums}</td>
+                        <td>
+                            ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
+                            ${clloNums ? `<br><span style="font-size: 0.9em; color: #666;">CLLO: ${clloNums}</span>` : ''}
+                        </td>
                         <td>${formatDate(assignment.dueDate)}</td>
                     </tr>
                 `;
@@ -932,7 +932,7 @@ function renderPreview() {
         <tr style="font-weight: bold; background-color: var(--background);">
             <td colspan="3" style="text-align: right;">Total Points</td>
             <td>${totalPoints}</td>
-            <td colspan="2"></td>
+            <td></td>
         </tr>
     `;
 
@@ -985,8 +985,7 @@ function generateWordTable() {
             <th style="width:8%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Module</th>
             <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Dates</th>
             <th style="width:20%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Topic</th>
-            <th style="width:30%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignment</th>
-            <th style="width:12%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">CLLO</th>
+            <th style="width:42%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignment</th>
             <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Due Date</th>
         </tr>
     </thead>
@@ -1001,7 +1000,6 @@ function generateWordTable() {
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(module.topic) || ''}</td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
         </tr>`;
         } else {
             module.assignments.forEach((assignment, aIndex) => {
@@ -1013,8 +1011,10 @@ function generateWordTable() {
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(module.name) : ''}</td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(formatDateRange(module.startDate, module.endDate)) : ''}</td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${clloNums}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">
+                ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
+                ${clloNums ? `<br>CLLO: ${clloNums}` : ''}
+            </td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">${formatDate(assignment.dueDate)}</td>
         </tr>`;
             });
@@ -1025,7 +1025,7 @@ function generateWordTable() {
         <tr style="font-weight:bold; background-color:#f2f2f2;">
             <td colspan="3" style="border:1px solid #000; padding:6px; text-align:right;">Total Points</td>
             <td style="border:1px solid #000; padding:6px;">${totalPoints}</td>
-            <td colspan="2" style="border:1px solid #000; padding:6px;"></td>
+            <td style="border:1px solid #000; padding:6px;"></td>
         </tr>`;
 
     html += `
@@ -1045,17 +1045,17 @@ function copyAsMarkdown() {
 }
 
 function generateMarkdown() {
-    let md = '| **Module** | **Dates** | **Topic** | **Assignment** | **CLLO** | **Due Date** |\n';
-    md += '| ---------- | --------- | --------- | -------------- | -------- | ------------ |\n';
+    let md = '| **Module** | **Dates** | **Topic** | **Assignment** | **Due Date** |\n';
+    md += '| ---------- | --------- | --------- | ------------------- | ------------ |\n';
 
     state.modules.forEach((module, moduleIndex) => {
         if (module.assignments.length === 0) {
-            md += `| ${module.name || ''} | ${formatDateRange(module.startDate, module.endDate)} | ${module.topic || ''} | | | |\n`;
+            md += `| ${module.name || ''} | ${formatDateRange(module.startDate, module.endDate)} | ${module.topic || ''} | | |\n`;
         } else {
             module.assignments.forEach((assignment, aIndex) => {
                 const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
 
-                md += `| ${aIndex === 0 ? module.name || '' : ''} | ${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''} | ${aIndex === 0 ? module.topic || '' : ''} | ${assignment.name} ${assignment.points ? `(${assignment.points} pts)` : ''} | ${clloNums} | ${formatDate(assignment.dueDate)} |\n`;
+                md += `| ${aIndex === 0 ? module.name || '' : ''} | ${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''} | ${aIndex === 0 ? module.topic || '' : ''} | ${assignment.name} ${assignment.points ? `(${assignment.points} pts)` : ''} ${clloNums ? `<br>CLLO: ${clloNums}` : ''} | ${formatDate(assignment.dueDate)} |\n`;
             });
         }
     });

@@ -372,15 +372,15 @@ function generateSummaryWordTable() {
     body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
     table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #000; padding: 6px; vertical-align: top; }
-    p, div { margin: 0; padding: 0; mso-para-margin: 0in; }
+    .cs-text { margin: 0 !important; padding: 0 !important; mso-para-margin: 0in !important; mso-margin-top-alt: 0in !important; mso-margin-bottom-alt: 0in !important; }
 </style>
 </head>
 <body>
 <table style="width:100%; border-collapse:collapse;">
     <thead>
         <tr style="background-color:#f2f2f2;">
-            <th style="width:60%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignment Type</th>
-            <th style="width:40%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Total Points</th>
+            <th style="width:60%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p class="cs-text" style="font-weight:bold;">Assignment Type</p></th>
+            <th style="width:40%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p class="cs-text" style="font-weight:bold;">Total Points</p></th>
         </tr>
     </thead>
     <tbody>`;
@@ -388,8 +388,8 @@ function generateSummaryWordTable() {
     state.assignmentTypes.forEach(type => {
         html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${escapeHtml(type)}</p></td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${totals[type]}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${escapeHtml(type)}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${totals[type]}</p></td>
         </tr>`;
     });
 
@@ -999,18 +999,18 @@ function generateWordTable() {
     body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
     table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #000; padding: 6px; vertical-align: top; }
-    p, div { margin: 0; padding: 0; mso-para-margin: 0in; }
+    .cs-text { margin: 0 !important; padding: 0 !important; mso-para-margin: 0in !important; mso-margin-top-alt: 0in !important; mso-margin-bottom-alt: 0in !important; }
 </style>
 </head>
 <body>
 <table style="width:100%; border-collapse:collapse;">
     <thead>
         <tr style="background-color:#f2f2f2;">
-            <th style="width:8%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Module</th>
-            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Dates</th>
-            <th style="width:20%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Topic</th>
-            <th style="width:42%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignment</th>
-            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Due Date</th>
+            <th style="width:8%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p class="cs-text" style="font-weight:bold;">Module</p></th>
+            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p class="cs-text" style="font-weight:bold;">Dates</p></th>
+            <th style="width:20%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p class="cs-text" style="font-weight:bold;">Topic</p></th>
+            <th style="width:42%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p class="cs-text" style="font-weight:bold;">Assignment</p></th>
+            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p class="cs-text" style="font-weight:bold;">Due Date</p></th>
         </tr>
     </thead>
     <tbody>`;
@@ -1019,9 +1019,9 @@ function generateWordTable() {
         if (module.assignments.length === 0) {
             html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${escapeHtml(module.name)}</p></td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${escapeHtml(formatDateRange(module.startDate, module.endDate))}</p></td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${escapeHtml(module.topic) || ''}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${escapeHtml(module.name)}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${escapeHtml(formatDateRange(module.startDate, module.endDate))}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${escapeHtml(module.topic) || ''}</p></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
         </tr>`;
@@ -1032,16 +1032,16 @@ function generateWordTable() {
 
                 html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${aIndex === 0 ? escapeHtml(module.name) : ''}</p></td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${aIndex === 0 ? escapeHtml(formatDateRange(module.startDate, module.endDate)) : ''}</p></td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${aIndex === 0 ? escapeHtml(module.name) : ''}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${aIndex === 0 ? escapeHtml(formatDateRange(module.startDate, module.endDate)) : ''}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</p></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">
-                <p style="margin:0in; mso-para-margin:0in;">
+                <p class="cs-text">
                     ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
                     ${clloNums ? `<br>CLLO: ${clloNums}` : ''}
                 </p>
             </td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${formatDate(assignment.dueDate)}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${formatDate(assignment.dueDate)}</p></td>
         </tr>`;
             });
         }
@@ -1049,8 +1049,8 @@ function generateWordTable() {
 
     html += `
         <tr style="font-weight:bold; background-color:#f2f2f2;">
-            <td colspan="3" style="border:1px solid #000; padding:6px; text-align:right;"><p style="margin:0in; mso-para-margin:0in; text-align:right;">Total Points</p></td>
-            <td style="border:1px solid #000; padding:6px;"><p style="margin:0in; mso-para-margin:0in;">${totalPoints}</p></td>
+            <td colspan="3" style="border:1px solid #000; padding:6px; text-align:right;"><p class="cs-text" style="text-align:right; font-weight:bold;">Total Points</p></td>
+            <td style="border:1px solid #000; padding:6px;"><p class="cs-text" style="font-weight:bold;">${totalPoints}</p></td>
             <td style="border:1px solid #000; padding:6px;"></td>
         </tr>`;
 

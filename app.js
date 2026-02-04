@@ -365,11 +365,22 @@ function getSummaryData() {
 function generateSummaryWordTable() {
     const totals = getSummaryData();
     let html = `
-<table style="width:100%; border-collapse:collapse; font-family:Calibri,Arial,sans-serif; font-size:11pt;">
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<style>
+    body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #000; padding: 6px; vertical-align: top; }
+    p, div { margin: 0; padding: 0; mso-para-margin: 0in; }
+</style>
+</head>
+<body>
+<table style="width:100%; border-collapse:collapse;">
     <thead>
         <tr style="background-color:#f2f2f2;">
-            <th style="width:60%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">Assignment Type</th>
-            <th style="width:40%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">Total Points</th>
+            <th style="width:60%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignment Type</th>
+            <th style="width:40%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Total Points</th>
         </tr>
     </thead>
     <tbody>`;
@@ -377,14 +388,16 @@ function generateSummaryWordTable() {
     state.assignmentTypes.forEach(type => {
         html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">${escapeHtml(type)}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">${totals[type]}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(type)}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${totals[type]}</td>
         </tr>`;
     });
 
     html += `
     </tbody>
-</table>`;
+</table>
+</body>
+</html>`;
     return html;
 }
 
@@ -979,14 +992,25 @@ function generateWordTable() {
     // Module: 8%, Dates: 15%, Topic: 20%, Assignments: 30%, CLLO: 12%, Due: 15%
     let totalPoints = 0;
     let html = `
-<table style="width:100%; border-collapse:collapse; font-family:Calibri,Arial,sans-serif; font-size:11pt;">
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<style>
+    body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #000; padding: 6px; vertical-align: top; }
+    p, div { margin: 0; padding: 0; mso-para-margin: 0in; }
+</style>
+</head>
+<body>
+<table style="width:100%; border-collapse:collapse;">
     <thead>
         <tr style="background-color:#f2f2f2;">
-            <th style="width:8%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">Module</th>
-            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">Dates</th>
-            <th style="width:20%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">Topic</th>
-            <th style="width:42%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">Assignment</th>
-            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">Due Date</th>
+            <th style="width:8%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Module</th>
+            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Dates</th>
+            <th style="width:20%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Topic</th>
+            <th style="width:42%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Assignment</th>
+            <th style="width:15%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;">Due Date</th>
         </tr>
     </thead>
     <tbody>`;
@@ -995,11 +1019,11 @@ function generateWordTable() {
         if (module.assignments.length === 0) {
             html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">${escapeHtml(module.name)}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">${escapeHtml(formatDateRange(module.startDate, module.endDate))}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">${escapeHtml(module.topic) || ''}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;"></td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;"></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(module.name)}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(formatDateRange(module.startDate, module.endDate))}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(module.topic) || ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
         </tr>`;
         } else {
             module.assignments.forEach((assignment, aIndex) => {
@@ -1008,14 +1032,14 @@ function generateWordTable() {
 
                 html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">${aIndex === 0 ? escapeHtml(module.name) : ''}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">${aIndex === 0 ? escapeHtml(formatDateRange(module.startDate, module.endDate)) : ''}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(module.name) : ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(formatDateRange(module.startDate, module.endDate)) : ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">
                 ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
                 ${clloNums ? `<br>CLLO: ${clloNums}` : ''}
             </td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">${formatDate(assignment.dueDate)}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${formatDate(assignment.dueDate)}</td>
         </tr>`;
             });
         }
@@ -1023,14 +1047,16 @@ function generateWordTable() {
 
     html += `
         <tr style="font-weight:bold; background-color:#f2f2f2;">
-            <td colspan="3" style="border:1px solid #000; padding:6px; text-align:right; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">Total Points</td>
-            <td style="border:1px solid #000; padding:6px; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;">${totalPoints}</td>
-            <td style="border:1px solid #000; padding:6px; mso-para-margin-top:0in; mso-para-margin-bottom:0in; margin-top:0in; margin-bottom:0in;"></td>
+            <td colspan="3" style="border:1px solid #000; padding:6px; text-align:right;">Total Points</td>
+            <td style="border:1px solid #000; padding:6px;">${totalPoints}</td>
+            <td style="border:1px solid #000; padding:6px;"></td>
         </tr>`;
 
     html += `
     </tbody>
-</table>`;
+</table>
+</body>
+</html>`;
 
     return html;
 }

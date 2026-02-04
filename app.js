@@ -388,8 +388,8 @@ function generateSummaryWordTable() {
     state.assignmentTypes.forEach(type => {
         html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(type)}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${totals[type]}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${escapeHtml(type)}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${totals[type]}</p></td>
         </tr>`;
     });
 
@@ -1019,9 +1019,9 @@ function generateWordTable() {
         if (module.assignments.length === 0) {
             html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(module.name)}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(formatDateRange(module.startDate, module.endDate))}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${escapeHtml(module.topic) || ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${escapeHtml(module.name)}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${escapeHtml(formatDateRange(module.startDate, module.endDate))}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${escapeHtml(module.topic) || ''}</p></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
         </tr>`;
@@ -1032,14 +1032,16 @@ function generateWordTable() {
 
                 html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(module.name) : ''}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(formatDateRange(module.startDate, module.endDate)) : ''}</td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${aIndex === 0 ? escapeHtml(module.name) : ''}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${aIndex === 0 ? escapeHtml(formatDateRange(module.startDate, module.endDate)) : ''}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</p></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">
-                ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
-                ${clloNums ? `<br>CLLO: ${clloNums}` : ''}
+                <p style="margin:0in; mso-para-margin:0in;">
+                    ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
+                    ${clloNums ? `<br>CLLO: ${clloNums}` : ''}
+                </p>
             </td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;">${formatDate(assignment.dueDate)}</td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p style="margin:0in; mso-para-margin:0in;">${formatDate(assignment.dueDate)}</p></td>
         </tr>`;
             });
         }

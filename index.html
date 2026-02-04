@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coursetrix - Course Schedule Builder</title>
-    <link rel="stylesheet" href="styles.css?v=1.10">
+    <link rel="stylesheet" href="styles.css?v=1.11">
     <!-- SortableJS for drag-and-drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
@@ -129,6 +129,7 @@
             <div class="form-group">
                 <label for="assignmentDue">Due Date</label>
                 <input type="date" id="assignmentDue">
+                <p class="date-hint" id="assignmentDateHint"></p>
             </div>
             <div class="modal-actions">
                 <button id="cancelAssignmentBtn" class="btn btn-secondary">Cancel</button>
@@ -155,6 +156,7 @@
                     <input type="date" id="moduleEndDate">
                 </div>
             </div>
+            <p class="date-hint" id="moduleDateHint"></p>
             <div class="form-group">
                 <label for="moduleTopic">Topic(s)</label>
                 <input type="text" id="moduleTopic" placeholder="e.g., Research ethics, Literature review">
@@ -174,13 +176,13 @@
             <p style="margin-top: 12px;">This is an open source project available on <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">GitHub</a>.</p>
             <p style="margin-top: 16px;"><strong>Created by Martin Versluis</strong></p>
             <p><a href="https://www.linkedin.com/in/martinversluis" target="_blank">Connect on LinkedIn</a></p>
-            <p style="margin-top: 12px; font-size: 0.85rem; color: #666;">Version 1.10</p>
+            <p style="margin-top: 12px; font-size: 0.85rem; color: #666;">Version 1.11</p>
             <div class="modal-actions">
                 <button id="closeAboutBtn" class="btn btn-primary">Close</button>
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=1.10"></script>
+    <script src="app.js?v=1.11"></script>
 </body>
 </html>

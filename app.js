@@ -564,6 +564,18 @@ function openModuleModal(moduleId = null) {
         endDateInput.max = state.courseEndDate;
     }
 
+    // Show date range hint
+    const moduleDateHint = document.getElementById('moduleDateHint');
+    if (state.courseStartDate && state.courseEndDate) {
+        moduleDateHint.textContent = `Dates must fall within course dates (${formatDate(state.courseStartDate)} \u2013 ${formatDate(state.courseEndDate)})`;
+    } else if (state.courseStartDate) {
+        moduleDateHint.textContent = `Dates must be on or after ${formatDate(state.courseStartDate)}`;
+    } else if (state.courseEndDate) {
+        moduleDateHint.textContent = `Dates must be on or before ${formatDate(state.courseEndDate)}`;
+    } else {
+        moduleDateHint.textContent = '';
+    }
+
     if (moduleId) {
         title.textContent = 'Edit Module';
         const module = state.modules.find(m => m.id === moduleId);
@@ -618,6 +630,12 @@ function saveModule() {
     const startDate = document.getElementById('moduleStartDate').value;
     const endDate = document.getElementById('moduleEndDate').value;
     const topic = document.getElementById('moduleTopic').value.trim();
+
+    // Validate dates against course date range
+    const startInput = document.getElementById('moduleStartDate');
+    const endInput = document.getElementById('moduleEndDate');
+    if (validateDateRange(startInput, state.courseStartDate, state.courseEndDate, 'course')) return;
+    if (validateDateRange(endInput, state.courseStartDate, state.courseEndDate, 'course')) return;
 
     if (editingModuleId) {
         const module = state.modules.find(m => m.id === editingModuleId);
@@ -708,6 +726,21 @@ function openAssignmentModal(moduleId, assignmentId = null) {
     dueInput.min = module.startDate || state.courseStartDate || '';
     dueInput.max = module.endDate || state.courseEndDate || '';
 
+    // Show date range hint
+    const assignmentDateHint = document.getElementById('assignmentDateHint');
+    const hintMin = module.startDate || state.courseStartDate || '';
+    const hintMax = module.endDate || state.courseEndDate || '';
+    const rangeLabel = (module.startDate || module.endDate) ? 'module' : 'course';
+    if (hintMin && hintMax) {
+        assignmentDateHint.textContent = `Must fall within ${rangeLabel} dates (${formatDate(hintMin)} \u2013 ${formatDate(hintMax)})`;
+    } else if (hintMin) {
+        assignmentDateHint.textContent = `Must be on or after ${formatDate(hintMin)}`;
+    } else if (hintMax) {
+        assignmentDateHint.textContent = `Must be on or before ${formatDate(hintMax)}`;
+    } else {
+        assignmentDateHint.textContent = '';
+    }
+
     // Populate type dropdown
     const typeSelect = document.getElementById('assignmentType');
     typeSelect.innerHTML = state.assignmentTypes.map(type =>
@@ -781,6 +814,14 @@ function saveAssignment() {
             clloIds.push(cllo.id);
         }
     });
+
+    // Validate due date against module/course date range
+    const currentModule = state.modules.find(m => m.id === currentModuleId);
+    const dueInput = document.getElementById('assignmentDue');
+    const minDate = currentModule.startDate || state.courseStartDate || '';
+    const maxDate = currentModule.endDate || state.courseEndDate || '';
+    const rangeLabel = (currentModule.startDate || currentModule.endDate) ? 'module' : 'course';
+    if (validateDateRange(dueInput, minDate, maxDate, rangeLabel)) return;
 
     if (!name) {
         alert('Please enter an assignment name.');
@@ -1210,6 +1251,30 @@ function downloadFile(filename, content, mimeType) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+
+function validateDateRange(input, minDate, maxDate, rangeLabel) {
+    const value = input.value;
+    if (!value) return false;
+
+    let outOfRange = false;
+    if (minDate && value < minDate) outOfRange = true;
+    if (maxDate && value > maxDate) outOfRange = true;
+
+    if (outOfRange) {
+        let message = '';
+        if (minDate && maxDate) {
+            message = `Date must fall within ${rangeLabel} dates (${formatDate(minDate)} \u2013 ${formatDate(maxDate)})`;
+        } else if (minDate) {
+            message = `Date must be on or after ${formatDate(minDate)}`;
+        } else {
+            message = `Date must be on or before ${formatDate(maxDate)}`;
+        }
+        showToast(message);
+        input.value = '';
+        return true;
+    }
+    return false;
 }
 
 function showToast(message, type = '') {

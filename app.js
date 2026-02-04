@@ -1,4 +1,4 @@
-// Course Schedule Builder - Main Application
+// Course Design Matrix - Main Application
 
 // ============================================
 // STATE MANAGEMENT

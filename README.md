@@ -1,6 +1,6 @@
 # Coursetrix
 
-A simple, free tool for faculty to create course schedules with learning outcome alignment. Build your syllabus schedule in minutes, then copy directly into Word.
+A course design matrix for faculty to blueprint course structure with modules, assignments, and learning outcome alignment. Plan your course design in minutes, then build it in your LMS or export to Word.
 
 **[Live Demo](https://coursetrix.com)**
 

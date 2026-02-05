@@ -67,6 +67,7 @@ header h1 {
     color: var(--text-secondary);
     margin: 0;
     font-weight: 500;
+    font-style: italic;
 }
 
 .header-actions {

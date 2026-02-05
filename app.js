@@ -52,7 +52,7 @@ const demoCourse = {
     modules: [
         {
             id: 'demo-mod-1',
-            name: 'Week 1',
+            name: 'Unit 1',
             startDate: '2025-01-13',
             endDate: '2025-01-24',
             topic: 'Introduction to College Writing',
@@ -63,7 +63,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-2',
-            name: 'Week 2',
+            name: 'Unit 2',
             startDate: '2025-01-27',
             endDate: '2025-02-07',
             topic: 'The Writing Process',
@@ -74,7 +74,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-3',
-            name: 'Week 3',
+            name: 'Unit 3',
             startDate: '2025-02-10',
             endDate: '2025-02-21',
             topic: 'Argument and Evidence',
@@ -85,7 +85,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-4',
-            name: 'Week 4',
+            name: 'Unit 4',
             startDate: '2025-02-24',
             endDate: '2025-03-07',
             topic: 'Research Fundamentals',
@@ -96,7 +96,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-5',
-            name: 'Week 5',
+            name: 'Unit 5',
             startDate: '2025-03-10',
             endDate: '2025-03-21',
             topic: 'Source Integration',
@@ -107,7 +107,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-6',
-            name: 'Week 6',
+            name: 'Unit 6',
             startDate: '2025-03-24',
             endDate: '2025-04-04',
             topic: 'Revision Strategies',
@@ -118,7 +118,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-7',
-            name: 'Week 7',
+            name: 'Unit 7',
             startDate: '2025-04-07',
             endDate: '2025-04-18',
             topic: 'Style and Voice',
@@ -129,7 +129,7 @@ const demoCourse = {
         },
         {
             id: 'demo-mod-8',
-            name: 'Week 8',
+            name: 'Unit 8',
             startDate: '2025-04-21',
             endDate: '2025-05-02',
             topic: 'Final Portfolio',

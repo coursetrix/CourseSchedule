@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coursetrix - Course Planning Made Simple</title>
-    <link rel="stylesheet" href="styles.css?v=1.11">
+    <link rel="stylesheet" href="styles.css?v=1.12">
     <!-- SortableJS for drag-and-drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -92,7 +95,8 @@
             <section class="panel" id="previewExport">
                 <h2>Preview & Export</h2>
                 <div class="export-actions">
-                    <button id="copyBtn" class="btn btn-primary">Copy Table to Clipboard</button>
+                    <button id="generatePdfBtn" class="btn btn-primary">Generate PDF Report</button>
+                    <button id="copyBtn" class="btn btn-secondary">Copy Table to Clipboard</button>
                     <button id="copyMarkdownBtn" class="btn btn-secondary">Copy as Markdown</button>
                     <button id="downloadCsvBtn" class="btn btn-secondary">Download CSV</button>
                 </div>
@@ -179,13 +183,13 @@
             <p style="margin-top: 12px;">This is an open source project available on <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">GitHub</a>.</p>
             <p style="margin-top: 16px;"><strong>Created by Martin Versluis</strong></p>
             <p><a href="https://www.linkedin.com/in/martinversluis" target="_blank">Connect on LinkedIn</a></p>
-            <p style="margin-top: 12px; font-size: 0.85rem; color: #666;">Version 1.11</p>
+            <p style="margin-top: 12px; font-size: 0.85rem; color: #666;">Version 1.12</p>
             <div class="modal-actions">
                 <button id="closeAboutBtn" class="btn btn-primary">Close</button>
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=1.11"></script>
+    <script src="app.js?v=1.12"></script>
 </body>
 </html>

@@ -1150,6 +1150,213 @@ function downloadCsv() {
     downloadFile('course-schedule.csv', csv, 'text/csv');
 }
 
+function generateCoursePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'letter');
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    let yPos = margin;
+
+    // Helper function to add footer to current page
+    const addFooter = (pageNum) => {
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text(`Report created by Coursetrix`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        doc.setFontSize(7);
+        doc.text(`Page ${pageNum}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+    };
+
+    // TITLE PAGE
+    // Course Name
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(31, 78, 120); // Dark blue
+    const courseName = state.courseName || 'Untitled Course';
+    doc.text(courseName, margin, yPos);
+    yPos += 15;
+
+    // Course Dates
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0);
+    if (state.courseStartDate && state.courseEndDate) {
+        const startDate = new Date(state.courseStartDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        const endDate = new Date(state.courseEndDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        doc.text(`${startDate} - ${endDate}`, margin, yPos);
+        yPos += 15;
+    } else {
+        yPos += 10;
+    }
+
+    // CLLOs Section
+    if (state.cllos && state.cllos.length > 0) {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(31, 78, 120); // Dark blue
+        doc.text('Course-Level Learning Outcomes', margin, yPos);
+        yPos += 8;
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0);
+
+        state.cllos.forEach((cllo, index) => {
+            const clloNum = index + 1;
+            const clloText = `${clloNum}. ${cllo.description}`;
+
+            // Wrap text if needed
+            const splitText = doc.splitTextToSize(clloText, pageWidth - 2 * margin);
+
+            // Check if we need a new page
+            if (yPos + (splitText.length * 5) > pageHeight - 30) {
+                addFooter(1);
+                doc.addPage();
+                yPos = margin;
+            }
+
+            doc.text(splitText, margin, yPos);
+            yPos += splitText.length * 5 + 3;
+        });
+
+        yPos += 5;
+    }
+
+    // Assignment Types Summary
+    if (state.assignmentTypes && state.assignmentTypes.length > 0) {
+        if (yPos > pageHeight - 80) {
+            addFooter(1);
+            doc.addPage();
+            yPos = margin;
+        }
+
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(31, 78, 120); // Dark blue
+        doc.text('Assignment Types Summary', margin, yPos);
+        yPos += 8;
+
+        const totals = getSummaryData();
+        const summaryData = state.assignmentTypes.map(type => [type, totals[type].toString()]);
+
+        // Calculate grand total
+        const grandTotal = Object.values(totals).reduce((sum, val) => sum + val, 0);
+        summaryData.push(['Total Course Points', grandTotal.toString()]);
+
+        doc.autoTable({
+            startY: yPos,
+            head: [['Assignment Type', 'Total Points']],
+            body: summaryData,
+            theme: 'striped',
+            headStyles: { fillColor: [31, 78, 120], textColor: 255 }, // Dark blue header
+            margin: { left: margin, right: margin },
+            styles: { fontSize: 10 },
+            didDrawPage: function(data) {
+                // Don't add footer yet for first page
+            }
+        });
+
+        yPos = doc.lastAutoTable.finalY + 15;
+    }
+
+    addFooter(1);
+
+    // SCHEDULE TABLE
+    doc.addPage();
+    let pageNum = 2;
+    yPos = margin;
+
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(31, 78, 120); // Dark blue
+    doc.text('Course Schedule', margin, yPos);
+    yPos += 10;
+
+    // Build schedule data
+    const scheduleData = [];
+    let totalPoints = 0;
+
+    state.modules.forEach((module) => {
+        if (module.assignments.length === 0) {
+            scheduleData.push([
+                module.name || '',
+                formatDateRange(module.startDate, module.endDate),
+                module.topic || '',
+                '',
+                ''
+            ]);
+        } else {
+            module.assignments.forEach((assignment, aIndex) => {
+                if (assignment.points) totalPoints += assignment.points;
+                const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+                const assignmentText = `${assignment.name}${assignment.points ? ` (${assignment.points} pts)` : ''}${clloNums ? `\nCLLO: ${clloNums}` : ''}`;
+
+                scheduleData.push([
+                    aIndex === 0 ? module.name || '' : '',
+                    aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : '',
+                    aIndex === 0 ? module.topic || '' : '',
+                    assignmentText,
+                    formatDate(assignment.dueDate)
+                ]);
+            });
+        }
+    });
+
+    // Add total row
+    scheduleData.push(['', '', 'Total Points', totalPoints.toString(), '']);
+
+    doc.autoTable({
+        startY: yPos,
+        head: [['Module', 'Dates', 'Topic', 'Assignment', 'Due Date']],
+        body: scheduleData,
+        theme: 'plain',
+        headStyles: { fillColor: [31, 78, 120], textColor: 255 }, // Dark blue header
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 9, cellPadding: 3 },
+        columnStyles: {
+            0: { cellWidth: 25 },
+            1: { cellWidth: 35 },
+            2: { cellWidth: 40 },
+            3: { cellWidth: 60 },
+            4: { cellWidth: 25 }
+        },
+        didDrawPage: function(data) {
+            addFooter(pageNum);
+            if (data.pageNumber > 1) {
+                pageNum++;
+            }
+        },
+        didParseCell: function(data) {
+            if (data.section === 'body') {
+                // Make total row bold with light gray background
+                if (data.row.index === scheduleData.length - 1) {
+                    data.cell.styles.fontStyle = 'bold';
+                    data.cell.styles.fillColor = [242, 242, 242];
+                }
+                // Module rows (where first column has content) get gray background
+                else if (data.column.index === 0 && data.cell.raw && data.cell.raw !== '') {
+                    // This is a module row - apply gray to all cells in this row
+                    data.cell.styles.fillColor = [220, 220, 220]; // Light gray
+                }
+                else if (data.row.raw[0] && data.row.raw[0] !== '') {
+                    // This cell is part of a module row
+                    data.cell.styles.fillColor = [220, 220, 220]; // Light gray
+                }
+                // Assignment rows (where first column is empty) stay white (default)
+            }
+        }
+    });
+
+    // Generate filename from course name
+    const sanitizedCourseName = courseName.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_');
+    const filename = `${sanitizedCourseName}_Blueprint.pdf`;
+
+    // Save the PDF
+    doc.save(filename);
+    showToast('PDF generated successfully!', 'success');
+}
+
 // ============================================
 // JSON SAVE/LOAD
 // ============================================
@@ -1367,6 +1574,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('saveAssignmentBtn').addEventListener('click', saveAssignment);
 
     // Export buttons
+    document.getElementById('generatePdfBtn').addEventListener('click', generateCoursePDF);
     document.getElementById('copyBtn').addEventListener('click', copyTableToClipboard);
     document.getElementById('copyMarkdownBtn').addEventListener('click', copyAsMarkdown);
     document.getElementById('downloadCsvBtn').addEventListener('click', downloadCsv);

@@ -51,9 +51,22 @@ header h1 {
     color: #1e3a8a;
 }
 
+.header-branding {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 .header-logo {
     height: 60px;
     width: auto;
+}
+
+.header-tagline {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+    font-weight: 500;
 }
 
 .header-actions {

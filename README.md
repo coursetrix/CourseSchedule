@@ -37,6 +37,7 @@ Coursetrix provides a drag-and-drop interface that makes schedule creation fast 
 - **Collapsible modules** - Keep the interface clean while working
 - **Word-optimized export** - Copy table that pastes cleanly into Word documents
 - **Multiple export formats** - HTML table, Markdown, and CSV for both schedule and summary
+- **Generate PDF of Course** - Generate a beautiful formatted PDF of the entire course to share with stakeholders
 - **New Course / Import / Save** - Start fresh, import previous work, or save for later
 - **Auto-save** - Browser remembers your work between sessions
 - **No account required** - Works entirely in your browser
@@ -87,7 +88,7 @@ Ideas for future enhancements:
 - Import from CSV/Excel
 - Multiple export templates
 - CLLO coverage visualization
-- Print-friendly view
+- Alignment with PLLOs
 
 ## Author
 

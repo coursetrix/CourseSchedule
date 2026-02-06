@@ -29,6 +29,7 @@ Coursetrix provides a drag-and-drop interface that makes schedule creation fast 
 - **CLLO Management** - Define course-level learning outcomes with descriptions
 - **Module-based structure** - Organize by modules with date ranges (like an LMS)
 - **Smart date defaults** - New modules auto-calculate dates based on previous module
+- **Date redistribution** - Redistribute modules evenly across the course range, aligned to Monday–Sunday week boundaries, with assignment due dates set to each module's end date
 - **Assignment types** - Pre-defined types (Discussion, Quiz, Assignment, etc.) with custom options
 - **Suggested types dropdown** - Quick access to common assignment types (Case Study, Portfolio, Peer Review, etc.)
 - **Points tracking** - Add point values to assignments, see totals in preview

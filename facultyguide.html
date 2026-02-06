@@ -12,6 +12,33 @@
             font-family: 'Inter', sans-serif; 
             font-size: 20px; /* Increased base font size */
         }
+        .checkbox-container input[type="checkbox"] {
+            -webkit-appearance: none;
+            appearance: none;
+            min-width: 1.5rem;
+            min-height: 1.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid #4b5563;
+            border-radius: 0.25rem;
+            background-color: #1e293b;
+            cursor: pointer;
+            position: relative;
+        }
+        .checkbox-container input[type="checkbox"]:checked {
+            background-color: #22c55e;
+            border-color: #22c55e;
+        }
+        .checkbox-container input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+        }
         .checkbox-container input:checked + span {
             text-decoration: line-through;
             color: #6b7280;
@@ -44,8 +71,7 @@
                         1. Administrative Workflow & Compliance
                     </h2>
                     <ul class="space-y-6 text-xl text-gray-700">
-                        <li><strong class="text-gray-900">Chair/Dean Review:</strong> A copy of your completed syllabus must be provided to your Department Chair or Dean for review before the start of the semester.</li>
-                        <li><strong class="text-gray-900">Syllabus Repository:</strong> Once approved, faculty are required to upload their final syllabus to the institutional SharePoint repository: <span class="text-blue-600 italic font-medium">[Link to SharePoint Site Placeholder]</span></li>
+                        <li><strong class="text-gray-900">Syllabus Repository:</strong> Faculty are required to upload their final syllabus to the institutional SharePoint repository: <span class="text-blue-600 italic font-medium">[Link to SharePoint Site Placeholder]</span></li>
                         <li><strong class="text-gray-900">Moodle Activation:</strong> All courses must have a current PDF syllabus uploaded to an active Moodle course site by the Friday before the course start date.</li>
                         <li><strong class="text-gray-900">Final Format:</strong> Always export your final document as a screen-reader-friendly PDF. This prevents unauthorized altering of content and ensures ADA compliance.</li>
                     </ul>
@@ -186,10 +212,6 @@
                             <label class="flex gap-4 checkbox-container cursor-pointer">
                                 <input type="checkbox" class="mt-1.5 h-6 w-6 rounded border-gray-600 bg-slate-800">
                                 <span><strong class="text-white">Placeholders:</strong> All [Bracketed Text] and highlights removed.</span>
-                            </label>
-                            <label class="flex gap-4 checkbox-container cursor-pointer">
-                                <input type="checkbox" class="mt-1.5 h-6 w-6 rounded border-gray-600 bg-slate-800">
-                                <span><strong class="text-white">Review:</strong> Syllabus sent to Chair/Dean for approval.</span>
                             </label>
                             <label class="flex gap-4 checkbox-container cursor-pointer">
                                 <input type="checkbox" class="mt-1.5 h-6 w-6 rounded border-gray-600 bg-slate-800">

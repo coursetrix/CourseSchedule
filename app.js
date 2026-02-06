@@ -1484,6 +1484,22 @@ function validateDateRange(input, minDate, maxDate, rangeLabel) {
     return false;
 }
 
+function snapToNearestMonday(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00');
+    const day = date.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    const offsets = [1, 0, -1, -2, -3, 3, 2]; // indexed by getDay()
+    date.setDate(date.getDate() + offsets[day]);
+    return date.toISOString().split('T')[0];
+}
+
+function snapToNearestSunday(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00');
+    const day = date.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    const offsets = [0, -1, -2, -3, 3, 2, 1]; // indexed by getDay()
+    date.setDate(date.getDate() + offsets[day]);
+    return date.toISOString().split('T')[0];
+}
+
 function showToast(message, type = '') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -1495,60 +1511,120 @@ function showToast(message, type = '') {
     }, 3000);
 }
 
+function redistributeModuleDates() {
+    if (!state.courseStartDate || !state.courseEndDate) return;
+    if (state.modules.length === 0) return;
+
+    const courseStart = new Date(state.courseStartDate + 'T00:00:00');
+    const courseEnd = new Date(state.courseEndDate + 'T00:00:00');
+    const totalDays = Math.floor((courseEnd - courseStart) / (1000 * 60 * 60 * 24));
+    const moduleCount = state.modules.length;
+
+    if (moduleCount === 1) {
+        let startStr = snapToNearestMonday(state.courseStartDate);
+        let endStr = snapToNearestSunday(state.courseEndDate);
+        // Clamp: start should not be before course start
+        if (startStr < state.courseStartDate) {
+            const d = new Date(state.courseStartDate + 'T00:00:00');
+            const day = d.getDay();
+            const daysUntilMonday = day === 0 ? 1 : (day === 1 ? 0 : 8 - day);
+            d.setDate(d.getDate() + daysUntilMonday);
+            startStr = d.toISOString().split('T')[0];
+        }
+        // Clamp: end should not be after course end
+        if (endStr > state.courseEndDate) {
+            const d = new Date(state.courseEndDate + 'T00:00:00');
+            const day = d.getDay();
+            d.setDate(d.getDate() - day);
+            endStr = d.toISOString().split('T')[0];
+        }
+        state.modules[0].startDate = startStr;
+        state.modules[0].endDate = endStr;
+    } else {
+        const daysPerModule = totalDays / moduleCount;
+
+        for (let i = 0; i < moduleCount; i++) {
+            const rawStartDay = Math.round(daysPerModule * i);
+            const rawEndDay = Math.round(daysPerModule * (i + 1)) - 1;
+
+            const rawStart = new Date(courseStart);
+            rawStart.setDate(rawStart.getDate() + rawStartDay);
+            const rawEnd = new Date(courseStart);
+            rawEnd.setDate(rawEnd.getDate() + rawEndDay);
+
+            let startStr = rawStart.toISOString().split('T')[0];
+            let endStr = rawEnd.toISOString().split('T')[0];
+
+            startStr = snapToNearestMonday(startStr);
+            endStr = snapToNearestSunday(endStr);
+
+            // First module should not start before course start
+            if (i === 0 && startStr < state.courseStartDate) {
+                const d = new Date(state.courseStartDate + 'T00:00:00');
+                const day = d.getDay();
+                const daysUntilMonday = day === 0 ? 1 : (day === 1 ? 0 : 8 - day);
+                d.setDate(d.getDate() + daysUntilMonday);
+                startStr = d.toISOString().split('T')[0];
+            }
+
+            // Last module should not end after course end
+            if (i === moduleCount - 1 && endStr > state.courseEndDate) {
+                const d = new Date(state.courseEndDate + 'T00:00:00');
+                const day = d.getDay();
+                d.setDate(d.getDate() - day);
+                endStr = d.toISOString().split('T')[0];
+            }
+
+            state.modules[i].startDate = startStr;
+            state.modules[i].endDate = endStr;
+        }
+
+        // Fix overlaps: ensure each module starts after the previous one ends
+        for (let i = 1; i < moduleCount; i++) {
+            if (state.modules[i].startDate <= state.modules[i - 1].endDate) {
+                const prevEnd = new Date(state.modules[i - 1].endDate + 'T00:00:00');
+                prevEnd.setDate(prevEnd.getDate() + 1);
+                state.modules[i].startDate = prevEnd.toISOString().split('T')[0];
+                state.modules[i].startDate = snapToNearestMonday(state.modules[i].startDate);
+            }
+        }
+    }
+
+    // Redistribute each module's assignments within that module's date range
+    state.modules.forEach(module => {
+        if (module.assignments.length === 0) return;
+
+        module.assignments.forEach(assignment => {
+            assignment.dueDate = module.endDate;
+        });
+    });
+}
+
 function redistributeAssignmentDates() {
-    // Validate course dates are set
     if (!state.courseStartDate || !state.courseEndDate) {
         showToast('Please set course start and end dates first.');
         return;
     }
 
-    // Collect all assignments from all modules
-    const allAssignments = [];
-    state.modules.forEach(module => {
-        module.assignments.forEach(assignment => {
-            allAssignments.push(assignment);
-        });
-    });
-
-    if (allAssignments.length === 0) {
-        showToast('No assignments to redistribute.');
+    if (state.modules.length === 0) {
+        showToast('No modules to redistribute.');
         return;
     }
 
-    // Confirm with user
-    const confirmMsg = `This will redistribute ${allAssignments.length} assignment(s) evenly across the course date range (${formatDate(state.courseStartDate)} - ${formatDate(state.courseEndDate)}).\n\nThis action cannot be undone. Continue?`;
+    const totalAssignments = state.modules.reduce((sum, m) => sum + m.assignments.length, 0);
+    const confirmMsg = `This will redistribute ${state.modules.length} module(s) and ${totalAssignments} assignment(s) evenly across the course date range (${formatDate(state.courseStartDate)} - ${formatDate(state.courseEndDate)}).\n\nModule dates will be aligned to week boundaries (Monday\u2013Sunday).\n\nThis action cannot be undone. Continue?`;
 
     if (!confirm(confirmMsg)) {
         return;
     }
 
-    // Calculate even spacing
-    const startDate = new Date(state.courseStartDate + 'T00:00:00');
-    const endDate = new Date(state.courseEndDate + 'T00:00:00');
-    const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+    redistributeModuleDates();
 
-    // Calculate interval: divide total days by (number of assignments - 1)
-    // or use 0 if only one assignment
-    const interval = allAssignments.length > 1
-        ? totalDays / (allAssignments.length - 1)
-        : 0;
-
-    // Distribute dates evenly
-    allAssignments.forEach((assignment, index) => {
-        const daysToAdd = Math.round(interval * index);
-        const newDate = new Date(startDate);
-        newDate.setDate(newDate.getDate() + daysToAdd);
-
-        // Convert back to YYYY-MM-DD format
-        assignment.dueDate = newDate.toISOString().split('T')[0];
-    });
-
-    // Persist and render
     saveToLocalStorage();
     renderModules();
     renderPreview();
 
-    showToast(`${allAssignments.length} assignment dates redistributed successfully!`, 'success');
+    showToast(`${state.modules.length} module(s) and ${totalAssignments} assignment date(s) redistributed!`, 'success');
 }
 
 function renderAll() {
@@ -1579,14 +1655,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('courseStartDate').addEventListener('change', function() {
         state.courseStartDate = this.value;
-        // Update end date min
         document.getElementById('courseEndDate').min = this.value;
         saveToLocalStorage();
     });
 
     document.getElementById('courseEndDate').addEventListener('change', function() {
         state.courseEndDate = this.value;
-        // Update start date max
         document.getElementById('courseStartDate').max = this.value;
         saveToLocalStorage();
     });

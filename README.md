@@ -77,9 +77,11 @@ This keeps it simple to deploy, modify, and maintain.
 
 ## Privacy
 
-All data stays in your browser. Nothing is sent to any server. Your course information is stored in:
+All course data stays in your browser. Your course information is stored in:
 - **localStorage** - For auto-save between sessions (browser only)
 - **JSON files** - When you explicitly save (your computer only)
+
+We use [Umami](https://umami.is) for anonymous usage analytics. Umami is privacy-focused: no cookies, no personal data collected, and fully GDPR compliant. This helps us understand how the tool is used so we can improve it.
 
 ## Contributing
 

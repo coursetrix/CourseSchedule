@@ -1495,6 +1495,62 @@ function showToast(message, type = '') {
     }, 3000);
 }
 
+function redistributeAssignmentDates() {
+    // Validate course dates are set
+    if (!state.courseStartDate || !state.courseEndDate) {
+        showToast('Please set course start and end dates first.');
+        return;
+    }
+
+    // Collect all assignments from all modules
+    const allAssignments = [];
+    state.modules.forEach(module => {
+        module.assignments.forEach(assignment => {
+            allAssignments.push(assignment);
+        });
+    });
+
+    if (allAssignments.length === 0) {
+        showToast('No assignments to redistribute.');
+        return;
+    }
+
+    // Confirm with user
+    const confirmMsg = `This will redistribute ${allAssignments.length} assignment(s) evenly across the course date range (${formatDate(state.courseStartDate)} - ${formatDate(state.courseEndDate)}).\n\nThis action cannot be undone. Continue?`;
+
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+
+    // Calculate even spacing
+    const startDate = new Date(state.courseStartDate + 'T00:00:00');
+    const endDate = new Date(state.courseEndDate + 'T00:00:00');
+    const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+
+    // Calculate interval: divide total days by (number of assignments - 1)
+    // or use 0 if only one assignment
+    const interval = allAssignments.length > 1
+        ? totalDays / (allAssignments.length - 1)
+        : 0;
+
+    // Distribute dates evenly
+    allAssignments.forEach((assignment, index) => {
+        const daysToAdd = Math.round(interval * index);
+        const newDate = new Date(startDate);
+        newDate.setDate(newDate.getDate() + daysToAdd);
+
+        // Convert back to YYYY-MM-DD format
+        assignment.dueDate = newDate.toISOString().split('T')[0];
+    });
+
+    // Persist and render
+    saveToLocalStorage();
+    renderModules();
+    renderPreview();
+
+    showToast(`${allAssignments.length} assignment dates redistributed successfully!`, 'success');
+}
+
 function renderAll() {
     document.getElementById('courseName').value = state.courseName || '';
     document.getElementById('courseStartDate').value = state.courseStartDate || '';
@@ -1534,6 +1590,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('courseStartDate').max = this.value;
         saveToLocalStorage();
     });
+
+    // Redistribute dates button
+    document.getElementById('redistributeDatesBtn').addEventListener('click', redistributeAssignmentDates);
 
     // CLLO buttons
     document.getElementById('addClloBtn').addEventListener('click', addCllo);

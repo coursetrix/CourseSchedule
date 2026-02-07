@@ -232,5 +232,16 @@
         </div>
     </div>
 
+    <script>
+        // Auto-resize parent iframe when embedded
+        if (window !== window.parent) {
+            function sendHeight() {
+                var height = document.documentElement.scrollHeight;
+                window.parent.postMessage({ type: 'resize-iframe', height: height }, '*');
+            }
+            window.addEventListener('load', sendHeight);
+            new ResizeObserver(sendHeight).observe(document.body);
+        }
+    </script>
 </body>
 </html>

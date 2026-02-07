@@ -22,6 +22,7 @@ const suggestedAssignmentTypes = [
     'Case Study',
     'Critique',
     'Debate',
+    'Discussion',
     'Field Work',
     'Final Exam',
     'Group Project',
@@ -30,9 +31,13 @@ const suggestedAssignmentTypes = [
     'Journal/Blog',
     'Literature Review',
     'Midterm',
+    'Paper/Essay',
+    'Peer Review',
     'Podcast/Video',
     'Portfolio',
     'Poster',
+    'Quiz',
+    'Reflection',
     'Research Proposal',
     'Simulation'
 ];

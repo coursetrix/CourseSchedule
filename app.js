@@ -956,35 +956,33 @@ function renderPreview() {
     `;
 
     state.modules.forEach((module, moduleIndex) => {
-        if (module.assignments.length === 0) {
+        html += `
+            <tr style="background-color: var(--background);">
+                <td>${escapeHtml(module.name)}</td>
+                <td>${formatDateRange(module.startDate, module.endDate)}</td>
+                <td>${escapeHtml(module.topic) || ''}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        `;
+
+        module.assignments.forEach((assignment) => {
+            if (assignment.points) totalPoints += assignment.points;
+            const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+
             html += `
                 <tr>
-                    <td>${escapeHtml(module.name)}</td>
-                    <td>${formatDateRange(module.startDate, module.endDate)}</td>
-                    <td>${escapeHtml(module.topic) || ''}</td>
                     <td></td>
                     <td></td>
+                    <td></td>
+                    <td>
+                        ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
+                        ${clloNums ? `<br><span style="font-size: 0.9em; color: #666;">CLLO: ${clloNums}</span>` : ''}
+                    </td>
+                    <td>${formatDate(assignment.dueDate)}</td>
                 </tr>
             `;
-        } else {
-            module.assignments.forEach((assignment, aIndex) => {
-                if (assignment.points) totalPoints += assignment.points;
-                const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
-
-                html += `
-                    <tr>
-                        <td>${aIndex === 0 ? escapeHtml(module.name) : ''}</td>
-                        <td>${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''}</td>
-                        <td>${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</td>
-                        <td>
-                            ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
-                            ${clloNums ? `<br><span style="font-size: 0.9em; color: #666;">CLLO: ${clloNums}</span>` : ''}
-                        </td>
-                        <td>${formatDate(assignment.dueDate)}</td>
-                    </tr>
-                `;
-            });
-        }
+        });
     });
 
     html += `
@@ -1061,26 +1059,25 @@ function generateWordTable() {
     </thead>
     <tbody>`;
 
-    state.modules.forEach((module, moduleIndex) => {
-        if (module.assignments.length === 0) {
-            html += `
-        <tr>
+    state.modules.forEach((module) => {
+        html += `
+        <tr style="background-color:#f2f2f2;">
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${escapeHtml(module.name)}</p></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${escapeHtml(formatDateRange(module.startDate, module.endDate))}</p></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${escapeHtml(module.topic) || ''}</p></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
         </tr>`;
-        } else {
-            module.assignments.forEach((assignment, aIndex) => {
-                if (assignment.points) totalPoints += assignment.points;
-                const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
 
-                html += `
+        module.assignments.forEach((assignment) => {
+            if (assignment.points) totalPoints += assignment.points;
+            const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+
+            html += `
         <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${aIndex === 0 ? escapeHtml(module.name) : ''}</p></td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${aIndex === 0 ? escapeHtml(formatDateRange(module.startDate, module.endDate)) : ''}</p></td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${aIndex === 0 ? escapeHtml(module.topic) || '' : ''}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">
                 <p class="cs-text">
                     ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
@@ -1089,8 +1086,7 @@ function generateWordTable() {
             </td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${formatDate(assignment.dueDate)}</p></td>
         </tr>`;
-            });
-        }
+        });
     });
 
     html += `
@@ -1122,16 +1118,13 @@ function generateMarkdown() {
     let md = '| **Module** | **Dates** | **Topic** | **Assignment** | **Due Date** |\n';
     md += '| ---------- | --------- | --------- | ------------------- | ------------ |\n';
 
-    state.modules.forEach((module, moduleIndex) => {
-        if (module.assignments.length === 0) {
-            md += `| ${module.name || ''} | ${formatDateRange(module.startDate, module.endDate)} | ${module.topic || ''} | | |\n`;
-        } else {
-            module.assignments.forEach((assignment, aIndex) => {
-                const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+    state.modules.forEach((module) => {
+        md += `| ${module.name || ''} | ${formatDateRange(module.startDate, module.endDate)} | ${module.topic || ''} | | |\n`;
 
-                md += `| ${aIndex === 0 ? module.name || '' : ''} | ${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''} | ${aIndex === 0 ? module.topic || '' : ''} | ${assignment.name} ${assignment.points ? `(${assignment.points} pts)` : ''} ${clloNums ? `<br>CLLO: ${clloNums}` : ''} | ${formatDate(assignment.dueDate)} |\n`;
-            });
-        }
+        module.assignments.forEach((assignment) => {
+            const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+            md += `| | | | ${assignment.name} ${assignment.points ? `(${assignment.points} pts)` : ''} ${clloNums ? `<br>CLLO: ${clloNums}` : ''} | ${formatDate(assignment.dueDate)} |\n`;
+        });
     });
 
     return md;
@@ -1140,16 +1133,13 @@ function generateMarkdown() {
 function downloadCsv() {
     let csv = 'Module,Dates,Topic,Assignment,CLLO,Due Date\n';
 
-    state.modules.forEach((module, moduleIndex) => {
-        if (module.assignments.length === 0) {
-            csv += `"${module.name || ''}","${formatDateRange(module.startDate, module.endDate)}","${module.topic || ''}","","",""\n`;
-        } else {
-            module.assignments.forEach((assignment, aIndex) => {
-                const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+    state.modules.forEach((module) => {
+        csv += `"${module.name || ''}","${formatDateRange(module.startDate, module.endDate)}","${module.topic || ''}","","",""\n`;
 
-                csv += `"${aIndex === 0 ? module.name || '' : ''}","${aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : ''}","${aIndex === 0 ? module.topic || '' : ''}","${assignment.name} ${assignment.points ? `(${assignment.points} pts)` : ''}","${clloNums}","${formatDate(assignment.dueDate)}"\n`;
-            });
-        }
+        module.assignments.forEach((assignment) => {
+            const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+            csv += `"","","","${assignment.name} ${assignment.points ? `(${assignment.points} pts)` : ''}","${clloNums}","${formatDate(assignment.dueDate)}"\n`;
+        });
     });
 
     downloadFile('course-schedule.csv', csv, 'text/csv');
@@ -1280,32 +1270,32 @@ function generateCoursePDF() {
 
     // Build schedule data
     const scheduleData = [];
+    const moduleRowIndices = new Set();
     let totalPoints = 0;
 
     state.modules.forEach((module) => {
-        if (module.assignments.length === 0) {
-            scheduleData.push([
-                module.name || '',
-                formatDateRange(module.startDate, module.endDate),
-                module.topic || '',
-                '',
-                ''
-            ]);
-        } else {
-            module.assignments.forEach((assignment, aIndex) => {
-                if (assignment.points) totalPoints += assignment.points;
-                const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
-                const assignmentText = `${assignment.name}${assignment.points ? ` (${assignment.points} pts)` : ''}${clloNums ? `\nCLLO: ${clloNums}` : ''}`;
+        moduleRowIndices.add(scheduleData.length);
+        scheduleData.push([
+            module.name || '',
+            formatDateRange(module.startDate, module.endDate),
+            module.topic || '',
+            '',
+            ''
+        ]);
 
-                scheduleData.push([
-                    aIndex === 0 ? module.name || '' : '',
-                    aIndex === 0 ? formatDateRange(module.startDate, module.endDate) : '',
-                    aIndex === 0 ? module.topic || '' : '',
-                    assignmentText,
-                    formatDate(assignment.dueDate)
-                ]);
-            });
-        }
+        module.assignments.forEach((assignment) => {
+            if (assignment.points) totalPoints += assignment.points;
+            const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+            const assignmentText = `${assignment.name}${assignment.points ? ` (${assignment.points} pts)` : ''}${clloNums ? `\nCLLO: ${clloNums}` : ''}`;
+
+            scheduleData.push([
+                '',
+                '',
+                '',
+                assignmentText,
+                formatDate(assignment.dueDate)
+            ]);
+        });
     });
 
     // Add total row
@@ -1339,16 +1329,11 @@ function generateCoursePDF() {
                     data.cell.styles.fontStyle = 'bold';
                     data.cell.styles.fillColor = [242, 242, 242];
                 }
-                // Module rows (where first column has content) get gray background
-                else if (data.column.index === 0 && data.cell.raw && data.cell.raw !== '') {
-                    // This is a module row - apply gray to all cells in this row
+                // Module header rows get gray background
+                else if (moduleRowIndices.has(data.row.index)) {
                     data.cell.styles.fillColor = [220, 220, 220]; // Light gray
                 }
-                else if (data.row.raw[0] && data.row.raw[0] !== '') {
-                    // This cell is part of a module row
-                    data.cell.styles.fillColor = [220, 220, 220]; // Light gray
-                }
-                // Assignment rows (where first column is empty) stay white (default)
+                // Assignment rows stay white (default)
             }
         }
     });

@@ -16,7 +16,7 @@
       font-size: 16px;
       line-height: 1.5;
       color: #1a1a1a;
-      background: #f4f5f7;
+      background: #dce6f0;
       padding: 2rem 1rem;
     }
 
@@ -24,26 +24,28 @@
       max-width: 680px;
       margin: 0 auto;
       background: #ffffff;
-      border: 1px solid #d0d5dd;
+      border: 1px solid #b8cce0;
       border-radius: 8px;
       overflow: hidden;
+      box-shadow: 0 4px 16px rgba(15, 45, 82, 0.12);
     }
 
     .form-header {
-      padding: 2rem 2rem 1.5rem;
-      border-bottom: 1px solid #d0d5dd;
+      padding: 2rem 2rem 1.75rem;
+      background: #0f2d52;
+      border-bottom: none;
     }
 
     .form-header h1 {
       font-size: 1.5rem;
       font-weight: 700;
-      color: #1a1a1a;
+      color: #ffffff;
       margin-bottom: 0.4rem;
     }
 
     .form-header p {
       font-size: 0.9375rem;
-      color: #4b5563;
+      color: #a8c4e0;
     }
 
     .form-body {
@@ -57,13 +59,13 @@
 
     .form-section-title {
       font-size: 0.8125rem;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #6b7280;
+      color: #0f2d52;
       margin-bottom: 1rem;
       padding-bottom: 0.4rem;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 2px solid #0f2d52;
     }
 
     /* Row layout for side-by-side fields */
@@ -127,8 +129,8 @@
     textarea:focus,
     select:focus {
       outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      border-color: #0f2d52;
+      box-shadow: 0 0 0 3px rgba(15, 45, 82, 0.15);
     }
 
     textarea {
@@ -162,7 +164,7 @@
     .radio-option input[type="radio"] {
       width: 1rem;
       height: 1rem;
-      accent-color: #2563eb;
+      accent-color: #0f2d52;
       cursor: pointer;
     }
 
@@ -187,8 +189,8 @@
 
     input[type="file"]:focus {
       outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      border-color: #0f2d52;
+      box-shadow: 0 0 0 3px rgba(15, 45, 82, 0.15);
     }
 
     .field-hint {
@@ -200,8 +202,8 @@
     /* Submit button */
     .form-footer {
       padding: 1.5rem 2rem;
-      border-top: 1px solid #e5e7eb;
-      background: #f9fafb;
+      border-top: 1px solid #b8cce0;
+      background: #eef4fb;
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -217,7 +219,7 @@
       font-weight: 600;
       font-family: inherit;
       color: #ffffff;
-      background: #1d4ed8;
+      background: #0f2d52;
       border: none;
       border-radius: 6px;
       cursor: pointer;
@@ -225,17 +227,17 @@
     }
 
     .btn-submit:hover:not(:disabled) {
-      background: #1e40af;
-      box-shadow: 0 2px 6px rgba(29, 78, 216, 0.35);
+      background: #1a3f6f;
+      box-shadow: 0 2px 6px rgba(15, 45, 82, 0.4);
     }
 
     .btn-submit:focus {
       outline: none;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 0 0 3px rgba(15, 45, 82, 0.3);
     }
 
     .btn-submit:disabled {
-      background: #93c5fd;
+      background: #7a9dbf;
       cursor: not-allowed;
     }
 
@@ -322,22 +324,22 @@
       margin: 0 auto 1.5rem;
     }
 
-    .btn-new {
+    .btn-close {
       display: inline-block;
       padding: 0.5rem 1.25rem;
       font-size: 0.9375rem;
       font-weight: 500;
       font-family: inherit;
-      color: #1d4ed8;
+      color: #0f2d52;
       background: transparent;
-      border: 1px solid #1d4ed8;
+      border: 1px solid #0f2d52;
       border-radius: 6px;
       cursor: pointer;
       transition: background 0.15s;
     }
 
-    .btn-new:hover {
-      background: #eff6ff;
+    .btn-close:hover {
+      background: #dce6f0;
     }
   </style>
 </head>
@@ -359,7 +361,7 @@
     </div>
     <h2>Request Submitted Successfully</h2>
     <p>Thank you! Your PLA Credit Request has been received. A confirmation has been sent to the email address you provided. A staff member will follow up with you soon.</p>
-    <button class="btn-new" id="newSubmissionBtn">Submit Another Request</button>
+    <button class="btn-close" id="closeWindowBtn">Close Window</button>
   </div>
 
   <form id="plaCreditForm" novalidate>
@@ -631,14 +633,9 @@
     });
   });
 
-  // "Submit another request" resets everything
-  document.getElementById("newSubmissionBtn").addEventListener("click", function () {
-    var form = document.getElementById("plaCreditForm");
-    form.reset();
-    form.style.display = "block";
-    document.getElementById("successScreen").style.display = "none";
-    document.getElementById("sizeBanner").style.display    = "none";
-    hideError();
+  // Close the window after successful submission
+  document.getElementById("closeWindowBtn").addEventListener("click", function () {
+    window.close();
   });
 </script>
 

@@ -395,18 +395,18 @@
 
         <div class="field-row">
           <div class="field">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" autocomplete="email" placeholder="jane.smith@email.com" />
+            <label for="email">Email Address <span class="required">*</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" placeholder="jane.smith@email.com" required />
           </div>
           <div class="field">
-            <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="(520) 000-0000" />
+            <label for="phone">Phone Number <span class="required">*</span></label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="(520) 000-0000" required />
           </div>
         </div>
 
         <div class="field">
-          <label for="program">Academic Division</label>
-          <select id="program" name="program">
+          <label for="program">Academic Division <span class="required">*</span></label>
+          <select id="program" name="program" required>
             <option value="" disabled selected>Select your division</option>
             <option value="Allied Health &amp; Nursing">Allied Health &amp; Nursing</option>
             <option value="Business &amp; Professional Studies">Business &amp; Professional Studies</option>
@@ -416,12 +416,12 @@
         </div>
 
         <div class="field">
-          <label for="major">Current Program or Major</label>
-          <input type="text" id="major" name="major" placeholder="e.g. Business Administration" />
+          <label for="major">Current Program or Major <span class="required">*</span></label>
+          <input type="text" id="major" name="major" placeholder="e.g. Business Administration" required />
         </div>
 
         <div class="field">
-          <label>Current and Active Student Status</label>
+          <label>Current and Active Student Status <span class="required">*</span></label>
           <div class="radio-group">
             <label class="radio-option">
               <input type="radio" name="activeStudent" value="yes" /> Yes
@@ -439,24 +439,24 @@
         <div class="form-section-title">PLA Credit Details</div>
 
         <div class="field">
-          <label for="courses">Course(s) for Which PLA Credit Is Requested</label>
-          <textarea id="courses" name="courses" placeholder="List each course number and title, e.g.&#10;BUS 101 – Introduction to Business&#10;MAN 110 – Principles of Management"></textarea>
+          <label for="courses">Course(s) for Which PLA Credit Is Requested <span class="required">*</span></label>
+          <textarea id="courses" name="courses" placeholder="List each course number and title, e.g.&#10;BUS 101 – Introduction to Business&#10;MAN 110 – Principles of Management" required></textarea>
           <p class="field-hint">List each course on a separate line.</p>
         </div>
 
         <div class="field">
-          <label for="certTitle">Certificate or Licensure Title</label>
-          <input type="text" id="certTitle" name="certTitle" placeholder="e.g. Certified Nursing Assistant (CNA)" />
+          <label for="certTitle">Certificate or Licensure Title <span class="required">*</span></label>
+          <input type="text" id="certTitle" name="certTitle" placeholder="e.g. Certified Nursing Assistant (CNA)" required />
         </div>
 
         <div class="field">
-          <label for="issuingOrg">Issuing Organization</label>
-          <input type="text" id="issuingOrg" name="issuingOrg" placeholder="e.g. Arizona State Board of Nursing" />
+          <label for="issuingOrg">Issuing Organization <span class="required">*</span></label>
+          <input type="text" id="issuingOrg" name="issuingOrg" placeholder="e.g. Arizona State Board of Nursing" required />
         </div>
 
         <div class="field">
-          <label for="dateAwarded">Date Awarded</label>
-          <input type="date" id="dateAwarded" name="dateAwarded" />
+          <label for="dateAwarded">Date Awarded <span class="required">*</span></label>
+          <input type="date" id="dateAwarded" name="dateAwarded" required />
         </div>
 
       </div>
@@ -565,9 +565,14 @@
     var radioGroup = Array.from(form.querySelectorAll('input[name="activeStudent"]'));
     var radioChecked = radioGroup.some(function (r) { return r.checked; });
 
-    // Native validation (only firstName, lastName, studentId are required)
+    // Native validation
     if (!form.checkValidity()) {
       form.reportValidity();
+      return;
+    }
+
+    if (!radioChecked) {
+      showError("Please select your current and active student status.");
       return;
     }
 

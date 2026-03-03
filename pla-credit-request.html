@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PLA Credit Request | Cochise College</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: #f4f5f7;
+      padding: 2rem 1rem;
+    }
+
+    .form-card {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .form-header {
+      padding: 2rem 2rem 1.5rem;
+      border-bottom: 1px solid #d0d5dd;
+    }
+
+    .form-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-header p {
+      font-size: 0.9375rem;
+      color: #4b5563;
+    }
+
+    .form-body {
+      padding: 2rem;
+    }
+
+    /* Section grouping */
+    .form-section {
+      margin-bottom: 2rem;
+    }
+
+    .form-section-title {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6b7280;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Row layout for side-by-side fields */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 520px) {
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Individual field */
+    .field {
+      margin-bottom: 1.25rem;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+      color: #374151;
+    }
+
+    label .required {
+      color: #dc2626;
+      margin-left: 2px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.5625rem 0.75rem;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      color: #1a1a1a;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 6px;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    input[type="date"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.6rem center;
+      padding-right: 2.25rem;
+    }
+
+    /* Radio buttons */
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+      padding-top: 0.25rem;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      font-size: 0.9375rem;
+      color: #374151;
+    }
+
+    .radio-option input[type="radio"] {
+      width: 1rem;
+      height: 1rem;
+      accent-color: #2563eb;
+      cursor: pointer;
+    }
+
+    /* File upload */
+    input[type="file"] {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      font-family: inherit;
+      color: #4b5563;
+      border: 1px dashed #9ca3af;
+      border-radius: 6px;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    input[type="file"]:hover {
+      border-color: #6b7280;
+      background: #f3f4f6;
+    }
+
+    input[type="file"]:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .field-hint {
+      font-size: 0.8125rem;
+      color: #6b7280;
+      margin-top: 0.3rem;
+    }
+
+    /* Submit button */
+    .form-footer {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid #e5e7eb;
+      background: #f9fafb;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    .btn-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.75rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: #ffffff;
+      background: #1d4ed8;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: #1e40af;
+      box-shadow: 0 2px 6px rgba(29, 78, 216, 0.35);
+    }
+
+    .btn-submit:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-submit:disabled {
+      background: #93c5fd;
+      cursor: not-allowed;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: none;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .btn-submit.loading .spinner {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .required-note {
+      font-size: 0.8125rem;
+      color: #6b7280;
+    }
+
+    /* Inline error/alert banner */
+    .alert {
+      display: none;
+      padding: 0.875rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9375rem;
+      margin: 0 2rem 1.5rem;
+    }
+
+    .alert.alert-error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+
+    .alert.alert-warning {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+    }
+
+    /* Success screen */
+    .success-screen {
+      display: none;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: #dcfce7;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+
+    .success-icon svg {
+      width: 28px;
+      height: 28px;
+      stroke: #16a34a;
+    }
+
+    .success-screen h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 0.5rem;
+    }
+
+    .success-screen p {
+      font-size: 0.9375rem;
+      color: #4b5563;
+      max-width: 420px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .btn-new {
+      display: inline-block;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      font-family: inherit;
+      color: #1d4ed8;
+      background: transparent;
+      border: 1px solid #1d4ed8;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-new:hover {
+      background: #eff6ff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-card">
+
+  <div class="form-header">
+    <h1>Prior Learning Assessment (PLA) Credit Request</h1>
+    <p>Complete all required fields and upload supporting documentation to submit your request for PLA credit.</p>
+  </div>
+
+  <!-- Success screen (hidden until submission succeeds) -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+      </svg>
+    </div>
+    <h2>Request Submitted Successfully</h2>
+    <p>Thank you! Your PLA Credit Request has been received. A confirmation has been sent to the email address you provided. A staff member will follow up with you soon.</p>
+    <button class="btn-new" id="newSubmissionBtn">Submit Another Request</button>
+  </div>
+
+  <form id="plaCreditForm" novalidate>
+
+    <!-- Error banner -->
+    <div class="alert alert-error" id="errorBanner" role="alert"></div>
+    <!-- File size warning banner -->
+    <div class="alert alert-warning" id="sizeBanner" role="alert"></div>
+
+    <div class="form-body">
+
+      <!-- Student Information -->
+      <div class="form-section">
+        <div class="form-section-title">Student Information</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First Name <span class="required">*</span></label>
+            <input type="text" id="firstName" name="firstName" autocomplete="given-name" required placeholder="Jane" />
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name <span class="required">*</span></label>
+            <input type="text" id="lastName" name="lastName" autocomplete="family-name" required placeholder="Smith" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="studentId">Student ID Number <span class="required">*</span></label>
+          <input type="text" id="studentId" name="studentId" required placeholder="e.g. 1234567" inputmode="numeric" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" autocomplete="email" placeholder="jane.smith@email.com" />
+          </div>
+          <div class="field">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="(520) 000-0000" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="program">Current Program or Major</label>
+          <input type="text" id="program" name="program" placeholder="e.g. Business Administration" />
+        </div>
+
+        <div class="field">
+          <label>Current and Active Student Status</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="activeStudent" value="yes" /> Yes
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="activeStudent" value="no" /> No
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PLA Credit Details -->
+      <div class="form-section">
+        <div class="form-section-title">PLA Credit Details</div>
+
+        <div class="field">
+          <label for="courses">Course(s) for Which PLA Credit Is Requested</label>
+          <textarea id="courses" name="courses" placeholder="List each course number and title, e.g.&#10;BUS 101 – Introduction to Business&#10;MAN 110 – Principles of Management"></textarea>
+          <p class="field-hint">List each course on a separate line.</p>
+        </div>
+
+        <div class="field">
+          <label for="certTitle">Certificate or Licensure Title</label>
+          <input type="text" id="certTitle" name="certTitle" placeholder="e.g. Certified Nursing Assistant (CNA)" />
+        </div>
+
+        <div class="field">
+          <label for="issuingOrg">Issuing Organization</label>
+          <input type="text" id="issuingOrg" name="issuingOrg" placeholder="e.g. Arizona State Board of Nursing" />
+        </div>
+
+        <div class="field">
+          <label for="dateAwarded">Date Awarded</label>
+          <input type="date" id="dateAwarded" name="dateAwarded" />
+        </div>
+
+      </div>
+
+      <!-- Supporting Documents -->
+      <div class="form-section">
+        <div class="form-section-title">Supporting Documents</div>
+
+        <div class="field">
+          <label for="documents">Upload Supporting Documentation <span class="required">*</span></label>
+          <input
+            type="file"
+            id="documents"
+            name="documents"
+            multiple
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+            required
+          />
+          <p class="field-hint">Accepted formats: PDF, Word (.doc/.docx), JPEG, PNG. You may select multiple files. Total size limit: 20 MB.</p>
+        </div>
+
+      </div>
+
+    </div><!-- /.form-body -->
+
+    <div class="form-footer">
+      <span class="required-note"><span style="color:#dc2626">*</span> Required fields</span>
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span class="spinner"></span>
+        <span class="btn-label">Submit Request</span>
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  // ─────────────────────────────────────────────────────────────────
+  // CONFIGURATION — paste the Power Automate HTTP trigger URL below
+  // ─────────────────────────────────────────────────────────────────
+  const POWER_AUTOMATE_URL = "https://defaultdbe632d83b084473aef113755ff5ad.f8.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/45e5e220d5044848b4398e841248fd1c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oPdrGxYXqEdbRzHeHupqS0iTVVkYx5VPImiNCnn1MVs";
+  const MAX_TOTAL_BYTES    = 20 * 1024 * 1024; // 20 MB
+
+  // ─────────────────────────────────────────────────────────────────
+  // Helpers
+  // ─────────────────────────────────────────────────────────────────
+  function fileToBase64(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload  = function () {
+        // Strip the "data:<type>;base64," prefix — Power Automate only needs the raw base64
+        resolve({
+          name:    file.name,
+          type:    file.type,
+          sizeKB:  Math.round(file.size / 1024),
+          content: reader.result.split(",")[1]
+        });
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function showError(msg) {
+    var banner = document.getElementById("errorBanner");
+    banner.textContent = msg;
+    banner.style.display = "block";
+    banner.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function hideError() {
+    document.getElementById("errorBanner").style.display = "none";
+  }
+
+  function setLoading(on) {
+    var btn = document.getElementById("submitBtn");
+    btn.disabled = on;
+    btn.classList.toggle("loading", on);
+    btn.querySelector(".btn-label").textContent = on ? "Submitting…" : "Submit Request";
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // File size warning on selection
+  // ─────────────────────────────────────────────────────────────────
+  document.getElementById("documents").addEventListener("change", function () {
+    var files      = Array.from(this.files);
+    var totalBytes = files.reduce(function (sum, f) { return sum + f.size; }, 0);
+    var banner     = document.getElementById("sizeBanner");
+
+    if (totalBytes > MAX_TOTAL_BYTES) {
+      banner.textContent = "Selected files exceed the 20 MB total limit. Please reduce the number or size of files before submitting.";
+      banner.style.display = "block";
+    } else {
+      banner.style.display = "none";
+    }
+  });
+
+  // ─────────────────────────────────────────────────────────────────
+  // Form submission
+  // ─────────────────────────────────────────────────────────────────
+  document.getElementById("plaCreditForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    hideError();
+
+    var form       = e.target;
+    var radioGroup = Array.from(form.querySelectorAll('input[name="activeStudent"]'));
+    var radioChecked = radioGroup.some(function (r) { return r.checked; });
+
+    // Native validation (only firstName, lastName, studentId are required)
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    // File size guard
+    var fileInput  = document.getElementById("documents");
+    var files      = Array.from(fileInput.files);
+    var totalBytes = files.reduce(function (sum, f) { return sum + f.size; }, 0);
+
+    if (files.length === 0) {
+      showError("Please upload at least one supporting document.");
+      return;
+    }
+
+    if (totalBytes > MAX_TOTAL_BYTES) {
+      showError("Total file size exceeds 20 MB. Please reduce the number or size of files.");
+      return;
+    }
+
+    // Placeholder guard — remove this block once the URL is configured
+    if (POWER_AUTOMATE_URL === "PASTE_POWER_AUTOMATE_URL_HERE") {
+      showError("Form is not yet connected to a submission endpoint. Please contact your administrator.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Read all files as base64
+      var encodedFiles = await Promise.all(files.map(fileToBase64));
+
+      var payload = {
+        firstName:     form.firstName.value.trim(),
+        lastName:      form.lastName.value.trim(),
+        studentId:     form.studentId.value.trim(),
+        email:         form.email.value.trim(),
+        phone:         form.phone.value.trim(),
+        program:       form.program.value.trim(),
+        activeStudent: form.activeStudent.value,
+        courses:       form.courses.value.trim(),
+        certTitle:     form.certTitle.value.trim(),
+        issuingOrg:    form.issuingOrg.value.trim(),
+        dateAwarded:   form.dateAwarded.value,
+        submittedAt:   new Date().toISOString(),
+        files:         encodedFiles
+      };
+
+      var response = await fetch(POWER_AUTOMATE_URL, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("Server returned " + response.status);
+      }
+
+      // Show success screen
+      form.style.display = "none";
+      document.getElementById("successScreen").style.display = "block";
+
+    } catch (err) {
+      setLoading(false);
+      showError(
+        "Something went wrong while submitting your request. Please try again, or contact the Registrar's office directly if the problem continues."
+      );
+      console.error("PLA form submission error:", err);
+    }
+  });
+
+  // Clear radio custom validity on change
+  document.querySelectorAll('input[name="activeStudent"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      document.querySelector('input[name="activeStudent"]').setCustomValidity("");
+    });
+  });
+
+  // "Submit another request" resets everything
+  document.getElementById("newSubmissionBtn").addEventListener("click", function () {
+    var form = document.getElementById("plaCreditForm");
+    form.reset();
+    form.style.display = "block";
+    document.getElementById("successScreen").style.display = "none";
+    document.getElementById("sizeBanner").style.display    = "none";
+    hideError();
+  });
+</script>
+
+</body>
+</html>

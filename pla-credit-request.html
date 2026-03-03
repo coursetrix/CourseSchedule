@@ -416,6 +416,11 @@
         </div>
 
         <div class="field">
+          <label for="major">Current Program or Major</label>
+          <input type="text" id="major" name="major" placeholder="e.g. Business Administration" />
+        </div>
+
+        <div class="field">
           <label>Current and Active Student Status</label>
           <div class="radio-group">
             <label class="radio-option">
@@ -600,6 +605,7 @@
         email:         form.email.value.trim(),
         phone:         form.phone.value.trim(),
         program:       form.program.value.trim(),
+        major:         form.major.value.trim(),
         activeStudent: form.activeStudent.value,
         courses:       form.courses.value.trim(),
         certTitle:     form.certTitle.value.trim(),

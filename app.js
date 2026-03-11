@@ -1352,43 +1352,107 @@ function generateCoursePDF() {
 // ============================================
 
 function newCourse() {
-    if (confirm('Are you sure you want to start a new course? All current data will be cleared.\n\nMake sure to click "Save Course" if you want to keep your work for later.')) {
-        // Reset state to its initial default
-        state = {
-            courseName: '',
-            courseStartDate: '',
-            courseEndDate: '',
-            cllos: [],
-            assignmentTypes: [],
-            modules: []
-        };
-        saveToLocalStorage(); // Persist the cleared state
-        renderAll(); // Re-render the entire UI
-        showToast('New course started.', 'success');
-    }
+    document.getElementById('newCourseModal').classList.remove('hidden');
+}
+
+function confirmNewCourse() {
+    document.getElementById('newCourseModal').classList.add('hidden');
+    state = {
+        courseName: '',
+        courseStartDate: '',
+        courseEndDate: '',
+        cllos: [],
+        assignmentTypes: [],
+        modules: []
+    };
+    saveToLocalStorage();
+    renderAll();
+    showToast('New course started.', 'success');
 }
 
 function saveToJson() {
-    const data = JSON.stringify(state, null, 2);
     const defaultFilename = state.courseName
-        ? `${state.courseName.replace(/[^a-z0-9]/gi, '-')}-schedule`
+        ? state.courseName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-schedule'
         : 'course-schedule';
 
-    const filename = prompt('Enter a filename for your course:', defaultFilename);
+    document.getElementById('saveFilename').value = defaultFilename;
+    document.getElementById('saveModal').classList.remove('hidden');
+    setTimeout(() => {
+        const input = document.getElementById('saveFilename');
+        input.focus();
+        input.select();
+    }, 50);
+}
 
-    if (filename) {
-        const finalFilename = filename.toLowerCase().endsWith('.json') ? filename : filename + '.json';
-        downloadFile(finalFilename, data, 'application/json');
-        showToast('Schedule saved!', 'success');
+async function confirmSave() {
+    const input = document.getElementById('saveFilename').value.trim();
+    if (!input) return;
+
+    const filename = input.toLowerCase().endsWith('.json') ? input : input + '.json';
+    const data = JSON.stringify(state, null, 2);
+
+    document.getElementById('saveModal').classList.add('hidden');
+
+    let saved = false;
+    if (window.showSaveFilePicker) {
+        try {
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: filename,
+                types: [{ description: 'JSON File', accept: { 'application/json': ['.json'] } }]
+            });
+            const writable = await fileHandle.createWritable();
+            await writable.write(data);
+            await writable.close();
+            saved = true;
+            showToast('Course saved!', 'success');
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                downloadFile(filename, data, 'application/json');
+                saved = true;
+                showToast('Course saved!', 'success');
+            }
+        }
+    } else {
+        downloadFile(filename, data, 'application/json');
+        saved = true;
+        showToast('Course saved!', 'success');
+    }
+
+    if (saved && pendingActionAfterSave) {
+        const action = pendingActionAfterSave;
+        pendingActionAfterSave = null;
+        action();
     }
 }
 
+function saveFirst(action) {
+    pendingActionAfterSave = action;
+    const defaultFilename = state.courseName
+        ? state.courseName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-schedule'
+        : 'course-schedule';
+    document.getElementById('saveFilename').value = defaultFilename;
+    document.getElementById('saveModal').classList.remove('hidden');
+    setTimeout(() => {
+        const input = document.getElementById('saveFilename');
+        input.focus();
+        input.select();
+    }, 50);
+}
+
+let pendingImportFile = null;
+let pendingActionAfterSave = null;
+
 function loadFromJson(file) {
-    if (!confirm('Importing a course file will overwrite your current work. Are you sure you want to continue?')) {
-        // Clear the file input so the same file can be selected again if the user changes their mind
-        document.getElementById('fileInput').value = '';
-        return;
-    }
+    pendingImportFile = file;
+    document.getElementById('importModal').classList.remove('hidden');
+}
+
+function confirmImport() {
+    document.getElementById('importModal').classList.add('hidden');
+    if (!pendingImportFile) return;
+
+    const file = pendingImportFile;
+    pendingImportFile = null;
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -1403,7 +1467,7 @@ function loadFromJson(file) {
 
             saveToLocalStorage();
             renderAll();
-            showToast('Schedule loaded!', 'success');
+            showToast('Course imported!', 'success');
         } catch (err) {
             showToast('Failed to load file. Invalid format.');
         }
@@ -1412,10 +1476,11 @@ function loadFromJson(file) {
 }
 
 function loadDemoCourse() {
-    if (!confirm('Loading the demo course will replace your current work.\n\nMake sure to click "Save Course" if you want to keep your work for later.')) {
-        return;
-    }
+    document.getElementById('loadDemoModal').classList.remove('hidden');
+}
 
+function confirmLoadDemo() {
+    document.getElementById('loadDemoModal').classList.add('hidden');
     // Deep copy the demo course to avoid modifying the original
     state = JSON.parse(JSON.stringify(demoCourse));
     saveToLocalStorage();
@@ -1425,6 +1490,15 @@ function loadDemoCourse() {
 
 function closeAboutModal() {
     document.getElementById('aboutModal').classList.add('hidden');
+}
+
+function showHelpModal() {
+    document.getElementById('helpModal').classList.remove('hidden');
+}
+
+function closeHelpModal() {
+    document.getElementById('helpModal').classList.add('hidden');
+    localStorage.setItem('coursetrixHelpSeen', 'true');
 }
 
 // ============================================
@@ -1602,18 +1676,18 @@ function redistributeAssignmentDates() {
     }
 
     const totalAssignments = state.modules.reduce((sum, m) => sum + m.assignments.length, 0);
-    const confirmMsg = `This will redistribute ${state.modules.length} module(s) and ${totalAssignments} assignment(s) evenly across the course date range (${formatDate(state.courseStartDate)} - ${formatDate(state.courseEndDate)}).\n\nModule dates will be aligned to week boundaries (Monday\u2013Sunday).\n\nThis action cannot be undone. Continue?`;
+    document.getElementById('redistributeModalDesc').textContent =
+        `This will evenly space ${state.modules.length} module(s) and ${totalAssignments} assignment(s) across the course date range (${formatDate(state.courseStartDate)} – ${formatDate(state.courseEndDate)}).`;
+    document.getElementById('redistributeModal').classList.remove('hidden');
+}
 
-    if (!confirm(confirmMsg)) {
-        return;
-    }
-
+function confirmRedistribute() {
+    document.getElementById('redistributeModal').classList.add('hidden');
+    const totalAssignments = state.modules.reduce((sum, m) => sum + m.assignments.length, 0);
     redistributeModuleDates();
-
     saveToLocalStorage();
     renderModules();
     renderPreview();
-
     showToast(`${state.modules.length} module(s) and ${totalAssignments} assignment date(s) redistributed!`, 'success');
 }
 
@@ -1657,6 +1731,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Redistribute dates button
     document.getElementById('redistributeDatesBtn').addEventListener('click', redistributeAssignmentDates);
+    document.getElementById('cancelRedistributeBtn').addEventListener('click', () => {
+        document.getElementById('redistributeModal').classList.add('hidden');
+    });
+    document.getElementById('confirmRedistributeBtn').addEventListener('click', confirmRedistribute);
+    document.getElementById('redistributeModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.add('hidden');
+    });
 
     // CLLO buttons
     document.getElementById('addClloBtn').addEventListener('click', addCllo);
@@ -1721,6 +1802,61 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Save modal
+    document.getElementById('cancelSaveBtn').addEventListener('click', () => {
+        document.getElementById('saveModal').classList.add('hidden');
+    });
+    document.getElementById('confirmSaveBtn').addEventListener('click', confirmSave);
+    document.getElementById('saveFilename').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') confirmSave();
+    });
+    document.getElementById('saveModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.add('hidden');
+    });
+
+    // New Course modal
+    document.getElementById('cancelNewCourseBtn').addEventListener('click', () => {
+        document.getElementById('newCourseModal').classList.add('hidden');
+    });
+    document.getElementById('saveFirstNewCourseBtn').addEventListener('click', () => {
+        document.getElementById('newCourseModal').classList.add('hidden');
+        saveFirst(confirmNewCourse);
+    });
+    document.getElementById('confirmNewCourseBtn').addEventListener('click', confirmNewCourse);
+    document.getElementById('newCourseModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.add('hidden');
+    });
+
+    // Import modal
+    document.getElementById('cancelImportBtn').addEventListener('click', () => {
+        pendingImportFile = null;
+        document.getElementById('importModal').classList.add('hidden');
+    });
+    document.getElementById('saveFirstImportBtn').addEventListener('click', () => {
+        document.getElementById('importModal').classList.add('hidden');
+        saveFirst(confirmImport);
+    });
+    document.getElementById('confirmImportBtn').addEventListener('click', confirmImport);
+    document.getElementById('importModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            pendingImportFile = null;
+            this.classList.add('hidden');
+        }
+    });
+
+    // Load Demo modal
+    document.getElementById('cancelLoadDemoBtn').addEventListener('click', () => {
+        document.getElementById('loadDemoModal').classList.add('hidden');
+    });
+    document.getElementById('saveFirstLoadDemoBtn').addEventListener('click', () => {
+        document.getElementById('loadDemoModal').classList.add('hidden');
+        saveFirst(confirmLoadDemo);
+    });
+    document.getElementById('confirmLoadDemoBtn').addEventListener('click', confirmLoadDemo);
+    document.getElementById('loadDemoModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.add('hidden');
+    });
+
     // Close modals on outside click
     document.getElementById('assignmentModal').addEventListener('click', function(e) {
         if (e.target === this) closeAssignmentModal();
@@ -1739,12 +1875,30 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.getElementById('closeAboutBtn').addEventListener('click', closeAboutModal);
 
+    // Help modal
+    document.getElementById('helpBtn').addEventListener('click', showHelpModal);
+    document.getElementById('closeHelpBtn').addEventListener('click', closeHelpModal);
+    document.getElementById('helpModal').addEventListener('click', function(e) {
+        if (e.target === this) closeHelpModal();
+    });
+
+    // Show help modal on first visit
+    if (!localStorage.getItem('coursetrixHelpSeen')) {
+        showHelpModal();
+    }
+
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeAssignmentModal();
             closeModuleModal();
             closeAboutModal();
+            closeHelpModal();
+            document.getElementById('saveModal').classList.add('hidden');
+            document.getElementById('newCourseModal').classList.add('hidden');
+            document.getElementById('importModal').classList.add('hidden');
+            document.getElementById('loadDemoModal').classList.add('hidden');
+            document.getElementById('redistributeModal').classList.add('hidden');
         }
     });
 });

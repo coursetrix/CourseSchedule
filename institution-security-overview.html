@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coursetrix – Application Overview & Security Assessment</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #1a1a1a;
+            background: #f5f5f5;
+        }
+
+        .page {
+            max-width: 860px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 64px 72px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+        }
+
+        /* Cover */
+        .cover {
+            text-align: center;
+            padding: 48px 0 56px;
+            border-bottom: 2px solid #1a3a5c;
+            margin-bottom: 48px;
+        }
+        .cover .app-name {
+            font-size: 2.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #1a3a5c;
+            font-family: Arial, sans-serif;
+        }
+        .cover .doc-title {
+            font-size: 1.15rem;
+            color: #555;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        .cover .meta {
+            margin-top: 32px;
+            font-size: 0.9rem;
+            color: #777;
+            font-family: Arial, sans-serif;
+        }
+        .cover .meta span { display: block; margin-top: 4px; }
+
+        /* Sections */
+        h1 {
+            font-family: Arial, sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a3a5c;
+            border-bottom: 2px solid #1a3a5c;
+            padding-bottom: 6px;
+            margin: 40px 0 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        h2 {
+            font-family: Arial, sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2c5282;
+            margin: 28px 0 10px;
+        }
+
+        p { margin-bottom: 12px; }
+
+        ul, ol {
+            padding-left: 24px;
+            margin-bottom: 12px;
+        }
+        li { margin-bottom: 6px; }
+
+        /* Callout boxes */
+        .callout {
+            border-left: 4px solid #2c5282;
+            background: #f0f5ff;
+            padding: 14px 18px;
+            border-radius: 0 6px 6px 0;
+            margin: 16px 0 20px;
+            font-size: 0.95rem;
+        }
+        .callout.green  { border-color: #276749; background: #f0fff4; }
+        .callout.yellow { border-color: #b7791f; background: #fffff0; }
+        .callout.red    { border-color: #9b2c2c; background: #fff5f5; }
+        .callout strong { display: block; margin-bottom: 4px; }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-family: Arial, sans-serif;
+            font-size: 0.875rem;
+        }
+        th {
+            background: #1a3a5c;
+            color: #fff;
+            padding: 9px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+        tr:nth-child(even) td { background: #f7fafc; }
+
+        /* Risk badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-family: Arial, sans-serif;
+            letter-spacing: 0.3px;
+        }
+        .badge-low    { background: #c6f6d5; color: #22543d; }
+        .badge-med    { background: #fefcbf; color: #744210; }
+        .badge-high   { background: #fed7d7; color: #742a2a; }
+        .badge-none   { background: #e2e8f0; color: #2d3748; }
+
+        /* Verdict summary */
+        .verdict {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #f0fff4;
+            border: 2px solid #276749;
+            border-radius: 8px;
+            padding: 18px 22px;
+            margin: 20px 0;
+        }
+        .verdict-score {
+            font-family: Arial, sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #276749;
+            white-space: nowrap;
+        }
+        .verdict-text { font-size: 0.95rem; }
+        .verdict-text strong { display: block; margin-bottom: 4px; color: #276749; }
+
+        /* TOC */
+        .toc { margin: 0 0 16px; }
+        .toc ol { counter-reset: toc-counter; list-style: none; padding-left: 0; }
+        .toc ol li {
+            counter-increment: toc-counter;
+            padding: 4px 0;
+            border-bottom: 1px dotted #ccc;
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
+        }
+        .toc ol li::before {
+            content: counter(toc-counter) ". ";
+            font-weight: 700;
+            color: #1a3a5c;
+            margin-right: 6px;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            background: #edf2f7;
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+
+        .page-break { page-break-before: always; }
+
+        @media print {
+            body { background: white; }
+            .page { box-shadow: none; margin: 0; padding: 48px 56px; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <!-- Cover -->
+    <div class="cover">
+        <div class="app-name">Coursetrix</div>
+        <div class="doc-title">Application Overview &amp; Security Assessment</div>
+        <div class="meta">
+            <span>Prepared for: Institution Leadership &amp; IT Security</span>
+            <span>Application Version: v2.x</span>
+            <span>Document Date: March 2026</span>
+            <span>Repository: github.com/coursetrix/CourseSchedule (MIT License)</span>
+        </div>
+    </div>
+
+    <!-- TOC -->
+    <h1>Table of Contents</h1>
+    <div class="toc">
+        <ol>
+            <li>Executive Summary</li>
+            <li>What Coursetrix Does</li>
+            <li>Application Architecture</li>
+            <li>Data Handling &amp; Privacy</li>
+            <li>Third-Party Dependencies</li>
+            <li>Security Controls</li>
+            <li>Risk Assessment</li>
+            <li>Hosting Options</li>
+            <li>Recommendations</li>
+        </ol>
+    </div>
+
+    <!-- 1. Executive Summary -->
+    <h1>1. Executive Summary</h1>
+
+    <p>Coursetrix is a browser-based course planning tool for faculty. It runs entirely inside the user's web browser — there is no application server, no database, and no institutional backend. All course data is stored locally on the faculty member's own device and is never transmitted to any external server.</p>
+
+    <div class="verdict">
+        <div class="verdict-score">LOW RISK</div>
+        <div class="verdict-text">
+            <strong>Overall Security Risk: Low</strong>
+            The application's client-only architecture eliminates the most common institutional IT risks. Course data does not leave the faculty member's device. No student records, credentials, or personally identifiable information are collected or stored.
+        </div>
+    </div>
+
+    <p>This document provides the technical and security details needed for IT review, procurement evaluation, or institutional deployment decisions.</p>
+
+    <!-- 2. What It Does -->
+    <h1>2. What Coursetrix Does</h1>
+
+    <p>Coursetrix is a course design planning tool that helps faculty structure their courses before building them in a Learning Management System (LMS). It is not a student-facing tool and does not connect to any LMS.</p>
+
+    <p>Faculty use it to:</p>
+    <ul>
+        <li>Define course-level learning outcomes (CLLOs)</li>
+        <li>Build a weekly/modular schedule with start and end dates</li>
+        <li>Add assignments to modules and link them to learning outcomes</li>
+        <li>Visualize point distribution across assignment types</li>
+        <li>Export the completed plan as a PDF report, CSV spreadsheet, or JSON file</li>
+    </ul>
+
+    <p>The tool operates entirely offline after the initial page load. Faculty can save their work as a JSON file on their own computer and reopen it later.</p>
+
+    <!-- 3. Architecture -->
+    <h1>3. Application Architecture</h1>
+
+    <h2>Client-Only, No Backend</h2>
+    <p>Coursetrix is a static web application built with plain HTML, CSS, and JavaScript. It requires no web server beyond file hosting. There is no:</p>
+    <ul>
+        <li>Application server or API</li>
+        <li>Database (relational or otherwise)</li>
+        <li>User authentication or account system</li>
+        <li>Session management</li>
+        <li>Server-side code execution</li>
+    </ul>
+
+    <div class="callout green">
+        <strong>Security implication</strong>
+        The absence of a backend eliminates entire categories of institutional IT risk: SQL injection, server-side remote code execution, credential theft, unauthorized data access via API, and backend infrastructure compromise are all not applicable.
+    </div>
+
+    <h2>Technology Stack</h2>
+    <table>
+        <tr><th>Component</th><th>Technology</th><th>Notes</th></tr>
+        <tr><td>UI / Logic</td><td>Vanilla HTML5, CSS3, JavaScript (ES6+)</td><td>No frontend framework (React, Vue, etc.)</td></tr>
+        <tr><td>Data persistence</td><td>Browser <code>localStorage</code></td><td>Device-local only; cleared with browser data</td></tr>
+        <tr><td>File save</td><td>File System Access API / Blob download</td><td>User initiates; browser controls file access</td></tr>
+        <tr><td>File import</td><td>Browser <code>FileReader</code> API</td><td>User selects file; no upload to server</td></tr>
+        <tr><td>PDF export</td><td>jsPDF library (CDN)</td><td>Generated in-browser; downloaded locally</td></tr>
+        <tr><td>Drag and drop</td><td>SortableJS library (CDN)</td><td>UI interaction only; no network use</td></tr>
+        <tr><td>Hosting</td><td>Any static file host (GitHub Pages, web server)</td><td>No special server configuration needed</td></tr>
+    </table>
+
+    <h2>Data Flow Diagram</h2>
+    <p>All data flows are local to the faculty member's device:</p>
+    <div class="callout">
+        <strong>On page load</strong>
+        Browser loads HTML/CSS/JS files from host → CDN libraries load → previously saved course data loads from <code>localStorage</code>
+    </div>
+    <div class="callout">
+        <strong>During use</strong>
+        Faculty enters course data → state held in browser memory → auto-saved to <code>localStorage</code> after each change
+    </div>
+    <div class="callout">
+        <strong>On save/export</strong>
+        Faculty clicks Save → browser prompts for file location → JSON written to faculty's local drive. No server involved.
+    </div>
+    <div class="callout">
+        <strong>On import</strong>
+        Faculty selects a previously saved JSON file → browser reads it locally → state updated in browser memory. No upload occurs.
+    </div>
+
+    <!-- 4. Data Handling -->
+    <h1>4. Data Handling &amp; Privacy</h1>
+
+    <h2>What Data Is Stored</h2>
+    <p>The only data the application stores is the course plan entered by the faculty member. This consists of:</p>
+    <table>
+        <tr><th>Data Field</th><th>Example</th><th>Classification</th></tr>
+        <tr><td>Course name/number</td><td>ENG 101 – Composition</td><td>Non-sensitive</td></tr>
+        <tr><td>Course start/end dates</td><td>2025-01-13</td><td>Non-sensitive</td></tr>
+        <tr><td>Learning outcome descriptions</td><td>"Apply revision strategies…"</td><td>Non-sensitive</td></tr>
+        <tr><td>Module names and dates</td><td>Unit 1: Introduction</td><td>Non-sensitive</td></tr>
+        <tr><td>Assignment names, types, points</td><td>Discussion 1, 25 pts</td><td>Non-sensitive</td></tr>
+        <tr><td>Assignment due dates</td><td>2025-01-17</td><td>Non-sensitive</td></tr>
+    </table>
+
+    <div class="callout green">
+        <strong>No student data</strong>
+        Coursetrix does not collect, store, or process any student records, student identifiers, grades, enrollment data, or any information covered by FERPA. It is a planning tool for faculty, not a student-facing system.
+    </div>
+
+    <div class="callout green">
+        <strong>No personally identifiable information (PII)</strong>
+        The application does not ask for or store any faculty names, email addresses, employee IDs, or other personal information. No user accounts exist.
+    </div>
+
+    <h2>Where Data Is Stored</h2>
+    <table>
+        <tr><th>Storage Location</th><th>Mechanism</th><th>Who Controls It</th><th>Cleared When</th></tr>
+        <tr><td>Browser memory</td><td>JavaScript variable (<code>state</code>)</td><td>Browser / OS</td><td>Page is closed</td></tr>
+        <tr><td>Browser local storage</td><td><code>localStorage</code> key: <code>courseScheduleData</code></td><td>Faculty member's browser</td><td>Browser data is cleared</td></tr>
+        <tr><td>Faculty's computer</td><td>JSON file (explicit save)</td><td>Faculty member</td><td>Faculty deletes the file</td></tr>
+    </table>
+
+    <p>Data in <code>localStorage</code> is isolated per browser origin (domain). It cannot be accessed by other websites or applications. It is stored as plain-text JSON — the same format as the exported files.</p>
+
+    <h2>Analytics</h2>
+    <p>The application uses <strong>Umami Analytics</strong> to collect anonymous usage statistics (page views, feature usage). Umami was selected specifically for its privacy posture:</p>
+    <ul>
+        <li>No cookies are set</li>
+        <li>No personally identifiable information is collected</li>
+        <li>No cross-site tracking</li>
+        <li>GDPR and CCPA compliant</li>
+        <li>Data collected: page views, button clicks, browser type (aggregated)</li>
+        <li>Course content is never transmitted</li>
+    </ul>
+    <p>Analytics can be removed entirely by an institution that hosts its own copy of the application by deleting a single <code>&lt;script&gt;</code> line in <code>index.html</code>.</p>
+
+    <!-- 5. Dependencies -->
+    <h1>5. Third-Party Dependencies</h1>
+
+    <p>The main application loads four external scripts. All are loaded from reputable content delivery networks (CDNs) at fixed versions (except Umami):</p>
+
+    <table>
+        <tr><th>Library</th><th>Version</th><th>Source CDN</th><th>Purpose</th><th>Transmits Data?</th></tr>
+        <tr>
+            <td><strong>SortableJS</strong></td>
+            <td>1.15.0</td>
+            <td>jsDelivr</td>
+            <td>Drag-and-drop reordering of modules and assignments</td>
+            <td><span class="badge badge-none">No</span></td>
+        </tr>
+        <tr>
+            <td><strong>jsPDF</strong></td>
+            <td>2.5.1</td>
+            <td>cdnjs (Cloudflare)</td>
+            <td>Generates PDF reports in the browser</td>
+            <td><span class="badge badge-none">No</span></td>
+        </tr>
+        <tr>
+            <td><strong>jsPDF AutoTable</strong></td>
+            <td>3.8.2</td>
+            <td>cdnjs (Cloudflare)</td>
+            <td>Table formatting plugin for jsPDF</td>
+            <td><span class="badge badge-none">No</span></td>
+        </tr>
+        <tr>
+            <td><strong>Umami Analytics</strong></td>
+            <td>Latest</td>
+            <td>cloud.umami.is</td>
+            <td>Anonymous usage analytics (no PII, no cookies)</td>
+            <td><span class="badge badge-low">Anon only</span></td>
+        </tr>
+    </table>
+
+    <div class="callout yellow">
+        <strong>CDN dependency note</strong>
+        Because scripts are loaded from CDNs, a network connection is required on first load. For air-gapped or strictly controlled environments, the institution can download and self-host all dependency files alongside the application — no functionality is affected.
+    </div>
+
+    <p>No npm packages, build tools, or server-side dependencies are required.</p>
+
+    <!-- 6. Security Controls -->
+    <h1>6. Security Controls</h1>
+
+    <h2>Cross-Site Scripting (XSS) Prevention</h2>
+    <p>All user-entered text is sanitized before being rendered into the page using a standard HTML-escaping function:</p>
+    <div class="callout">
+        <strong>Escaping method</strong>
+        Text is set via the browser's <code>textContent</code> property (which never interprets HTML) and then retrieved as <code>innerHTML</code>. This causes the browser itself to encode all special characters (<code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, quotes) before they reach the DOM. This approach is used consistently across all user-generated content in the application.
+    </div>
+    <p>This escaping is applied to: course names, learning outcome descriptions, module names, module topics, assignment names, assignment types, and all exported outputs (PDF, clipboard, CSV).</p>
+
+    <h2>No Dynamic Code Execution</h2>
+    <p>The application contains no use of <code>eval()</code>, <code>Function()</code>, or any other mechanism that executes strings as code. All application logic is statically defined.</p>
+
+    <h2>File Import Validation</h2>
+    <p>When a faculty member imports a saved JSON file, the application:</p>
+    <ul>
+        <li>Reads the file as plain text (no execution)</li>
+        <li>Parses it with <code>JSON.parse()</code> in a try/catch block</li>
+        <li>Rejects the file and shows an error if it is not valid JSON</li>
+        <li>Escapes all imported text values before rendering them</li>
+    </ul>
+
+    <h2>File System Access</h2>
+    <p>When saving a file, the application uses the browser's <strong>File System Access API</strong> (in supported browsers — Chrome, Edge) which presents the operating system's native "Save As" dialog. The browser enforces that the application can only write to locations the user explicitly approves. In older browsers, the application falls back to a standard browser download.</p>
+
+    <h2>No Authentication Attack Surface</h2>
+    <p>Because there are no user accounts, there is no login form, password storage, session token, or authentication mechanism to attack.</p>
+
+    <!-- 7. Risk Assessment -->
+    <h1>7. Risk Assessment</h1>
+
+    <table>
+        <tr><th>Risk Category</th><th>Risk Level</th><th>Rationale</th></tr>
+        <tr>
+            <td>Data breach (course/institutional data)</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td>All data is stored locally on faculty device. No server to breach.</td>
+        </tr>
+        <tr>
+            <td>Student data exposure (FERPA)</td>
+            <td><span class="badge badge-none">N/A</span></td>
+            <td>Application does not accept, store, or process student data.</td>
+        </tr>
+        <tr>
+            <td>Unauthorized access</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td>No accounts or authentication. Access is limited to the faculty member's own browser.</td>
+        </tr>
+        <tr>
+            <td>SQL injection</td>
+            <td><span class="badge badge-none">N/A</span></td>
+            <td>No database.</td>
+        </tr>
+        <tr>
+            <td>Server-side attack (RCE, SSRF)</td>
+            <td><span class="badge badge-none">N/A</span></td>
+            <td>No application server.</td>
+        </tr>
+        <tr>
+            <td>Cross-site scripting (XSS)</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td>All user content is HTML-escaped before DOM insertion. No eval() or dynamic code execution.</td>
+        </tr>
+        <tr>
+            <td>Cross-site request forgery (CSRF)</td>
+            <td><span class="badge badge-none">N/A</span></td>
+            <td>No server-side state to modify.</td>
+        </tr>
+        <tr>
+            <td>Third-party supply chain</td>
+            <td><span class="badge badge-med">Medium</span></td>
+            <td>CDN-hosted libraries (SortableJS, jsPDF) are loaded at specific pinned versions. A CDN compromise could affect the app. Mitigated by self-hosting (see Recommendations).</td>
+        </tr>
+        <tr>
+            <td>Data loss (faculty work)</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td>Auto-save to localStorage on every change. Explicit JSON export provides durable backup. Risk is browser data being cleared.</td>
+        </tr>
+        <tr>
+            <td>Privacy / analytics</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td>Umami Analytics collects no PII, sets no cookies, and is GDPR compliant. Can be removed entirely.</td>
+        </tr>
+        <tr>
+            <td>Hosting security</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td>Static files only. Standard web server hardening applies (HTTPS, security headers). No special configuration required.</td>
+        </tr>
+    </table>
+
+    <!-- 8. Hosting -->
+    <h1>8. Hosting Options</h1>
+
+    <p>Because Coursetrix is a static application, it can be hosted in several ways depending on institutional preference:</p>
+
+    <h2>Option A — Use the Public Hosted Version</h2>
+    <p>Faculty access the application at <strong>coursetrix.com</strong> (hosted on GitHub Pages). No institutional infrastructure is required. Umami analytics apply.</p>
+    <ul>
+        <li>Zero IT effort to deploy</li>
+        <li>Updates are applied automatically</li>
+        <li>Faculty use their own browsers; no institutional server is involved</li>
+    </ul>
+
+    <h2>Option B — Self-Host on Institutional Infrastructure</h2>
+    <p>The institution downloads or forks the repository and serves the static files from any web server (Apache, Nginx, IIS, SharePoint, or any file host supporting HTTPS).</p>
+    <ul>
+        <li>Full control over the application and its dependencies</li>
+        <li>Analytics script can be removed</li>
+        <li>CDN dependencies can be replaced with locally-hosted copies</li>
+        <li>Updates are applied manually by IT</li>
+        <li>Requires only standard static file hosting — no database, no application runtime</li>
+    </ul>
+
+    <h2>Option C — Local File (No Hosting)</h2>
+    <p>Faculty download the repository as a ZIP file and open <code>index.html</code> directly in their browser. This requires no server at all. CDN dependencies require a network connection on first use.</p>
+
+    <div class="callout green">
+        <strong>Recommended for sensitive environments</strong>
+        Option B (self-hosted) with CDN dependencies replaced by local copies provides the highest level of institutional control while maintaining full functionality.
+    </div>
+
+    <!-- 9. Recommendations -->
+    <h1>9. Recommendations</h1>
+
+    <h2>For Standard Institutional Deployment</h2>
+    <ol>
+        <li><strong>Serve over HTTPS.</strong> Even for static files, HTTPS prevents man-in-the-middle modification of the application in transit.</li>
+        <li><strong>Add standard HTTP security headers.</strong> Configure the web server to send <code>Content-Security-Policy</code>, <code>X-Frame-Options: DENY</code>, and <code>X-Content-Type-Options: nosniff</code>. These are standard hardening measures for any web page.</li>
+        <li><strong>Remove analytics if preferred.</strong> Delete one <code>&lt;script&gt;</code> tag in <code>index.html</code> to remove Umami entirely.</li>
+    </ol>
+
+    <h2>For High-Security or Air-Gapped Environments</h2>
+    <ol>
+        <li><strong>Self-host all dependencies.</strong> Download SortableJS, jsPDF, and jsPDF AutoTable library files and serve them from the institutional server. Update the three <code>&lt;script src="..."&gt;</code> tags in <code>index.html</code> to point to the local copies. This eliminates the CDN supply-chain risk.</li>
+        <li><strong>Remove analytics.</strong> Delete the Umami script tag.</li>
+        <li><strong>Periodic dependency review.</strong> Monitor SortableJS and jsPDF for security advisories and update the pinned versions as needed.</li>
+    </ol>
+
+    <h2>Out of Scope for This Application</h2>
+    <p>The following controls are not applicable and do not need to be assessed:</p>
+    <ul>
+        <li>Database security</li>
+        <li>API authentication and authorization</li>
+        <li>Server-side input validation</li>
+        <li>Session management</li>
+        <li>Password policy</li>
+        <li>FERPA compliance review (no student data)</li>
+        <li>Penetration testing of backend services</li>
+    </ul>
+
+    <!-- Footer -->
+    <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #ccc; font-family: Arial, sans-serif; font-size: 0.8rem; color: #888; text-align: center;">
+        Coursetrix v2.x &nbsp;|&nbsp; Application Overview &amp; Security Assessment &nbsp;|&nbsp; March 2026<br>
+        Open source under the MIT License &nbsp;|&nbsp; github.com/coursetrix/CourseSchedule
+    </div>
+
+</div>
+</body>
+</html>

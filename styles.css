@@ -235,6 +235,85 @@ select:focus {
     border-color: #d1d5db;
 }
 
+.btn-help {
+    background: white;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.btn-help:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Help modal steps */
+.help-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.help-step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.help-step-number {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+}
+
+.help-step-body strong {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--text-primary);
+}
+
+.help-step-body p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.help-tip {
+    margin-top: 20px;
+    background: #eff6ff;
+    border-left: 3px solid var(--primary-color);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+}
+
+.help-tip strong {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--primary-color);
+}
+
+.help-tip p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
 .btn-add {
     background: transparent;
     color: var(--primary-color);

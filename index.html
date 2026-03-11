@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coursetrix - Course Planning Made Simple</title>
-    <link rel="stylesheet" href="styles.css?v=1.14">
+    <link rel="stylesheet" href="styles.css?v=2.0.1">
     <!-- SortableJS for drag-and-drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <!-- jsPDF for PDF generation -->
@@ -21,6 +21,7 @@
                 <p class="header-tagline">Course Planning Made Simple</p>
             </div>
             <div class="header-actions">
+                <button id="helpBtn" class="btn btn-help" title="How it works">?</button>
                 <button id="newCourseBtn" class="btn btn-primary">New Course</button>
                 <button id="loadDemoBtn" class="btn btn-secondary">Load Demo</button>
                 <button id="loadBtn" class="btn btn-secondary">Import Course</button>
@@ -50,7 +51,7 @@
                 </div>
 
                 <div class="form-group" style="margin-top: 16px;">
-                    <button id="redistributeDatesBtn" class="btn btn-secondary">Redistribute Dates</button>
+                    <button id="redistributeDatesBtn" class="btn btn-primary">Redistribute Dates</button>
                     <p class="help-text" style="margin-top: 8px;">Evenly space modules across the course date range (aligned to Mon–Sun weeks), then distribute each module's assignments within its date range.</p>
                 </div>
 
@@ -181,6 +182,137 @@
         </div>
     </div>
 
+    <!-- Help / Welcome Modal -->
+    <div id="helpModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Welcome to Coursetrix</h3>
+            <p style="margin-bottom: 20px; color: #4b5563;">Coursetrix helps you design your course structure before building it in your LMS. Here's how it works:</p>
+
+            <div class="help-steps">
+                <div class="help-step">
+                    <div class="help-step-number">1</div>
+                    <div class="help-step-body">
+                        <strong>Set Up Your Course</strong>
+                        <p>Enter your course name and date range. This gives Coursetrix the boundaries it needs to build your schedule.</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-number">2</div>
+                    <div class="help-step-body">
+                        <strong>Define Learning Outcomes</strong>
+                        <p>Add your Course-Level Learning Outcomes (CLLOs). You'll link individual assignments to these later to show alignment.</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-number">3</div>
+                    <div class="help-step-body">
+                        <strong>Set Assignment Types</strong>
+                        <p>Customize the categories used for your assignments — such as Discussion, Quiz, or Project. A point summary by type is generated automatically as you build your schedule.</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-number">4</div>
+                    <div class="help-step-body">
+                        <strong>Build Your Schedule</strong>
+                        <p>Create modules and fill them with assignments. Set due dates, point values, and CLLO links. Drag and drop to reorder anything.</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-number">5</div>
+                    <div class="help-step-body">
+                        <strong>Export Your Plan</strong>
+                        <p>Generate a PDF report, download a CSV, or copy the table directly into Word or your LMS.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-tip">
+                <strong>Planning a new semester?</strong>
+                <p>Import a saved course, update your start and end dates, then hit <strong>Redistribute Dates</strong> to automatically re-space all your modules and assignments across the new date range.</p>
+            </div>
+
+            <p style="margin-top: 16px; font-size: 0.875rem; color: #6b7280;">Your work saves automatically to your browser. Use <strong>Save Course</strong> to download a backup file you can reopen later. You can revisit this guide any time with the <strong>?</strong> button.</p>
+
+            <div class="modal-actions">
+                <button id="closeHelpBtn" class="btn btn-primary">Get Started</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Course Modal -->
+    <div id="saveModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Save Course</h3>
+            <p>This will download your course as a JSON file to your computer. Use this file to pick up where you left off — just open it again with the <strong>Import Course</strong> button.</p>
+            <div class="form-group" style="margin-top: 16px;">
+                <label for="saveFilename">File name</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="text" id="saveFilename" placeholder="course-schedule" style="flex: 1;">
+                    <span style="color: #666; font-size: 0.9rem; white-space: nowrap;">.json</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="cancelSaveBtn" class="btn btn-secondary">Cancel</button>
+                <button id="confirmSaveBtn" class="btn btn-primary">Save JSON File</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Course Modal -->
+    <div id="newCourseModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>New Course</h3>
+            <p>This will clear all current course data and start fresh.</p>
+            <p style="margin-top: 12px;">Make sure to click <strong>Save Course</strong> if you want to keep your current work.</p>
+            <div class="modal-actions">
+                <button id="cancelNewCourseBtn" class="btn btn-secondary">Cancel</button>
+                <button id="saveFirstNewCourseBtn" class="btn btn-secondary">Save First</button>
+                <button id="confirmNewCourseBtn" class="btn btn-primary">Start New Course</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Course Modal -->
+    <div id="importModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Import Course</h3>
+            <p>This will replace your current course with the data from the imported file.</p>
+            <p style="margin-top: 12px;">Make sure to click <strong>Save Course</strong> if you want to keep your current work.</p>
+            <div class="modal-actions">
+                <button id="cancelImportBtn" class="btn btn-secondary">Cancel</button>
+                <button id="saveFirstImportBtn" class="btn btn-secondary">Save First</button>
+                <button id="confirmImportBtn" class="btn btn-primary">Import Course</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Demo Modal -->
+    <div id="loadDemoModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Load Demo Course</h3>
+            <p>This will replace your current course with a sample ENG 101 course.</p>
+            <p style="margin-top: 12px;">Make sure to click <strong>Save Course</strong> if you want to keep your current work.</p>
+            <div class="modal-actions">
+                <button id="cancelLoadDemoBtn" class="btn btn-secondary">Cancel</button>
+                <button id="saveFirstLoadDemoBtn" class="btn btn-secondary">Save First</button>
+                <button id="confirmLoadDemoBtn" class="btn btn-primary">Load Demo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Redistribute Dates Modal -->
+    <div id="redistributeModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Redistribute Dates</h3>
+            <p id="redistributeModalDesc"></p>
+            <p style="margin-top: 12px;">Module dates will be aligned to week boundaries (Monday–Sunday). This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="cancelRedistributeBtn" class="btn btn-secondary">Cancel</button>
+                <button id="confirmRedistributeBtn" class="btn btn-primary">Redistribute Dates</button>
+            </div>
+        </div>
+    </div>
+
     <!-- About Modal -->
     <div id="aboutModal" class="modal hidden">
         <div class="modal-content">
@@ -189,13 +321,13 @@
             <p style="margin-top: 12px;">This is an open source project available on <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">GitHub</a>.</p>
             <p style="margin-top: 16px;"><strong>Created by Martin Versluis</strong></p>
             <p><a href="https://www.linkedin.com/in/martinversluis" target="_blank">Connect on LinkedIn</a></p>
-            <p style="margin-top: 12px; font-size: 0.85rem; color: #666;">Version 1.15</p>
+            <p style="margin-top: 12px; font-size: 0.85rem; color: #666;">Version 2.0.1</p>
             <div class="modal-actions">
                 <button id="closeAboutBtn" class="btn btn-primary">Close</button>
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=1.14"></script>
+    <script src="app.js?v=2.0.1"></script>
 </body>
 </html>

@@ -1146,6 +1146,25 @@ function downloadCsv() {
 }
 
 function generateCoursePDF() {
+    if (state.modules.length === 0) {
+        showToast('No schedule to export. Add modules first.');
+        return;
+    }
+
+    const courseName = state.courseName || 'Untitled Course';
+    const sanitizedCourseName = courseName.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_');
+    const defaultFilename = `${sanitizedCourseName}_Blueprint.pdf`;
+
+    document.getElementById('pdfFilename').value = defaultFilename;
+    document.getElementById('pdfModal').classList.remove('hidden');
+    document.getElementById('pdfFilename').focus();
+}
+
+async function doGeneratePDF() {
+    const filenameInput = document.getElementById('pdfFilename').value.trim();
+    const filename = filenameInput || 'course-schedule.pdf';
+    document.getElementById('pdfModal').classList.add('hidden');
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'letter');
 
@@ -1338,13 +1357,30 @@ function generateCoursePDF() {
         }
     });
 
-    // Generate filename from course name
-    const sanitizedCourseName = courseName.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_');
-    const filename = `${sanitizedCourseName}_Blueprint.pdf`;
-
-    // Save the PDF
-    doc.save(filename);
-    showToast('PDF generated successfully!', 'success');
+    // Save the PDF — use File System Access API if available (Chrome/Edge)
+    // so the user gets a native "Save As" dialog to choose the location.
+    if ('showSaveFilePicker' in window) {
+        try {
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: filename,
+                types: [{ description: 'PDF Document', accept: { 'application/pdf': ['.pdf'] } }]
+            });
+            const writable = await fileHandle.createWritable();
+            await writable.write(doc.output('blob'));
+            await writable.close();
+            showToast('PDF saved successfully!', 'success');
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                // Unexpected error — fall back to normal download
+                doc.save(filename);
+                showToast('PDF generated successfully!', 'success');
+            }
+        }
+    } else {
+        // Fallback for Firefox/Safari: downloads to the default download folder
+        doc.save(filename);
+        showToast('PDF generated successfully!', 'success');
+    }
 }
 
 // ============================================
@@ -1776,6 +1812,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Assignment modal buttons
     document.getElementById('cancelAssignmentBtn').addEventListener('click', closeAssignmentModal);
     document.getElementById('saveAssignmentBtn').addEventListener('click', saveAssignment);
+
+    // PDF modal
+    document.getElementById('cancelPdfBtn').addEventListener('click', () => {
+        document.getElementById('pdfModal').classList.add('hidden');
+    });
+    document.getElementById('confirmPdfBtn').addEventListener('click', doGeneratePDF);
+    document.getElementById('pdfModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.add('hidden');
+    });
+    document.getElementById('pdfFilename').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') doGeneratePDF();
+        if (e.key === 'Escape') document.getElementById('pdfModal').classList.add('hidden');
+    });
 
     // Export buttons
     document.getElementById('generatePdfBtn').addEventListener('click', generateCoursePDF);

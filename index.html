@@ -313,6 +313,22 @@
         </div>
     </div>
 
+    <!-- PDF Export Modal -->
+    <div id="pdfModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Generate PDF Report</h3>
+            <p>Your browser will prompt you to choose where to save the file.</p>
+            <div class="form-group" style="margin-top: 16px;">
+                <label for="pdfFilename">File Name</label>
+                <input type="text" id="pdfFilename" placeholder="course-schedule.pdf">
+            </div>
+            <div class="modal-actions">
+                <button id="cancelPdfBtn" class="btn btn-secondary">Cancel</button>
+                <button id="confirmPdfBtn" class="btn btn-primary">Generate PDF</button>
+            </div>
+        </div>
+    </div>
+
     <!-- About Modal -->
     <div id="aboutModal" class="modal hidden">
         <div class="modal-content">

@@ -1357,30 +1357,8 @@ async function doGeneratePDF() {
         }
     });
 
-    // Save the PDF — use File System Access API if available (Chrome/Edge)
-    // so the user gets a native "Save As" dialog to choose the location.
-    if ('showSaveFilePicker' in window) {
-        try {
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: filename,
-                types: [{ description: 'PDF Document', accept: { 'application/pdf': ['.pdf'] } }]
-            });
-            const writable = await fileHandle.createWritable();
-            await writable.write(doc.output('blob'));
-            await writable.close();
-            showToast('PDF saved successfully!', 'success');
-        } catch (err) {
-            if (err.name !== 'AbortError') {
-                // Unexpected error — fall back to normal download
-                doc.save(filename);
-                showToast('PDF generated successfully!', 'success');
-            }
-        }
-    } else {
-        // Fallback for Firefox/Safari: downloads to the default download folder
-        doc.save(filename);
-        showToast('PDF generated successfully!', 'success');
-    }
+    doc.save(filename);
+    showToast('PDF generated successfully!', 'success');
 }
 
 // ============================================

@@ -1398,7 +1398,7 @@ function saveToJson() {
     }, 50);
 }
 
-async function confirmSave() {
+function confirmSave() {
     const input = document.getElementById('saveFilename').value.trim();
     if (!input) return;
 
@@ -1407,32 +1407,10 @@ async function confirmSave() {
 
     document.getElementById('saveModal').classList.add('hidden');
 
-    let saved = false;
-    if (window.showSaveFilePicker) {
-        try {
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: filename,
-                types: [{ description: 'JSON File', accept: { 'application/json': ['.json'] } }]
-            });
-            const writable = await fileHandle.createWritable();
-            await writable.write(data);
-            await writable.close();
-            saved = true;
-            showToast('Course saved!', 'success');
-        } catch (err) {
-            if (err.name !== 'AbortError') {
-                downloadFile(filename, data, 'application/json');
-                saved = true;
-                showToast('Course saved!', 'success');
-            }
-        }
-    } else {
-        downloadFile(filename, data, 'application/json');
-        saved = true;
-        showToast('Course saved!', 'success');
-    }
+    downloadFile(filename, data, 'application/json');
+    showToast('Course saved!', 'success');
 
-    if (saved && pendingActionAfterSave) {
+    if (pendingActionAfterSave) {
         const action = pendingActionAfterSave;
         pendingActionAfterSave = null;
         action();

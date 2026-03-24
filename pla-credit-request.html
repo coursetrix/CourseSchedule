@@ -408,16 +408,20 @@
           <label for="program">Academic Division <span class="required">*</span></label>
           <select id="program" name="program" required>
             <option value="" disabled selected>Select your division</option>
-            <option value="Allied Health &amp; Nursing">Allied Health &amp; Nursing</option>
-            <option value="Business &amp; Professional Studies">Business &amp; Professional Studies</option>
-            <option value="Liberal Arts &amp; Sciences">Liberal Arts &amp; Sciences</option>
-            <option value="Technical &amp; Workforce Education">Technical &amp; Workforce Education</option>
+            <option value="Business and Technology">Business and Technology</option>
+            <option value="First Responders">First Responders</option>
+            <option value="Liberal Arts">Liberal Arts</option>
+            <option value="Math &amp; Sciences">Math &amp; Sciences</option>
+            <option value="Military Programs">Military Programs</option>
+            <option value="Nursing &amp; Allied Health">Nursing &amp; Allied Health</option>
           </select>
         </div>
 
-        <div class="field">
-          <label for="major">Current Program or Major <span class="required">*</span></label>
-          <input type="text" id="major" name="major" placeholder="e.g. Business Administration" required />
+        <div class="field" id="majorField" style="display:none;">
+          <label for="major">Program <span class="required">*</span></label>
+          <select id="major" name="major">
+            <option value="" disabled selected>Select your program</option>
+          </select>
         </div>
 
         <div class="field">
@@ -648,6 +652,78 @@
     radio.addEventListener("change", function () {
       document.querySelector('input[name="activeStudent"]').setCustomValidity("");
     });
+  });
+
+  // Cascading division → program dropdown
+  var divisionPrograms = {
+    'Business and Technology': [
+      'Aviation',
+      'Computer Science/Cybersecurity'
+    ],
+    'Liberal Arts': [
+      'American Sign Language',
+      'Art',
+      'Communications',
+      'Counseling & Personal Development',
+      'Digital Media Arts',
+      'Early Childhood Education',
+      'Education',
+      'English & Literature',
+      'Humanities',
+      'Journalism',
+      'Music',
+      'Philosophy',
+      'Spanish',
+      'Theater Arts'
+    ],
+    'Math & Sciences': [
+      'Anthropology',
+      'Astronomy',
+      'Biological Sciences',
+      'Chemistry',
+      'Geology',
+      'History',
+      'Human Geography',
+      'Mathematics',
+      'Physical Geography',
+      'Physics',
+      'Political Science',
+      'Psychology',
+      'Sociology'
+    ],
+    'Nursing & Allied Health': [
+      'Basic Behavioral Health Science',
+      'Certified Nursing Assistant',
+      'Dental Assistant',
+      'EKG Technician',
+      'Home Health Aide',
+      'Medical Assistant',
+      'Nursing/Practical Nursing',
+      'Phlebotomy Technician'
+    ]
+  };
+
+  document.getElementById('program').addEventListener('change', function () {
+    var division = this.value;
+    var majorField = document.getElementById('majorField');
+    var majorSelect = document.getElementById('major');
+
+    majorSelect.innerHTML = '<option value="" disabled selected>Select your program</option>';
+
+    if (divisionPrograms[division]) {
+      divisionPrograms[division].forEach(function (prog) {
+        var opt = document.createElement('option');
+        opt.value = prog;
+        opt.textContent = prog;
+        majorSelect.appendChild(opt);
+      });
+      majorField.style.display = '';
+      majorSelect.required = true;
+    } else {
+      majorField.style.display = 'none';
+      majorSelect.required = false;
+      majorSelect.value = '';
+    }
   });
 
   // Close the window after successful submission

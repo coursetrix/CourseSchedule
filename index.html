@@ -33,7 +33,12 @@
         <main>
             <!-- Course Setup Section -->
             <section class="panel" id="courseSetup">
-                <h2>Course Setup</h2>
+                <div class="section-header">
+                    <h2>Course Setup</h2>
+                    <div class="section-actions">
+                        <button id="managePllosBtn" class="btn btn-small btn-secondary">Manage PLLOs</button>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="courseName">Course Name/Number</label>
                     <input type="text" id="courseName" placeholder="e.g., ENG 101 - Composition">
@@ -99,16 +104,38 @@
                 <button id="addModuleBtn" class="btn btn-add">+ Add Module</button>
             </section>
 
-            <!-- Preview & Export Section -->
-            <section class="panel" id="previewExport">
-                <h2>Preview & Export</h2>
-                <div class="export-actions">
-                    <button id="generatePdfBtn" class="btn btn-primary">Generate PDF Report</button>
-                    <button id="copyBtn" class="btn btn-secondary">Copy Table to Clipboard</button>
-                    <button id="copyMarkdownBtn" class="btn btn-secondary">Copy as Markdown</button>
-                    <button id="downloadCsvBtn" class="btn btn-secondary">Download CSV</button>
+            <!-- Course Schedule Report Section -->
+            <section class="panel collapsed" id="previewExport">
+                <div class="panel-heading" onclick="togglePanel('previewExport')">
+                    <h2>Course Schedule Report</h2>
+                    <button class="panel-toggle" title="Expand/Collapse">▼</button>
                 </div>
-                <div id="tablePreview" class="table-preview"></div>
+                <div class="panel-body">
+                    <div class="export-actions">
+                        <button id="generatePdfBtn" class="btn btn-primary">Generate PDF Report</button>
+                        <button id="copyBtn" class="btn btn-secondary">Copy Table to Clipboard</button>
+                        <button id="copyMarkdownBtn" class="btn btn-secondary">Copy as Markdown</button>
+                        <button id="downloadCsvBtn" class="btn btn-secondary">Download CSV</button>
+                    </div>
+                    <div id="tablePreview" class="table-preview"></div>
+                </div>
+            </section>
+
+            <!-- PLLO Coverage Report Section -->
+            <section class="panel collapsed" id="alignmentMapSection">
+                <div class="panel-heading" onclick="togglePanel('alignmentMapSection')">
+                    <h2>PLLO Coverage Report</h2>
+                    <button class="panel-toggle" title="Expand/Collapse">▼</button>
+                </div>
+                <div class="panel-body">
+                    <p class="help-text">Shows which program-level outcomes are addressed in this course and the assignments that support each one.</p>
+                    <div class="export-actions" id="alignmentExportActions">
+                        <button id="copyAlignmentBtn" class="btn btn-secondary">Copy Table to Clipboard</button>
+                        <button id="copyAlignmentMarkdownBtn" class="btn btn-secondary">Copy as Markdown</button>
+                        <button id="downloadAlignmentCsvBtn" class="btn btn-secondary">Download CSV</button>
+                    </div>
+                    <div id="alignmentMapPreview" class="table-preview"></div>
+                </div>
             </section>
         </main>
     </div>
@@ -117,6 +144,19 @@
             <p><strong>Coursetrix</strong> by Martin Versluis | <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">View on GitHub</a> | <a href="https://github.com/coursetrix/CourseSchedule/issues" target="_blank">Feedback</a> | <a href="#" id="aboutLink">About</a></p>
             <p class="footer-note">Blueprint your course design with modules, assignments, and learning outcome alignment.</p>
         </footer>
+
+    <!-- Modal for managing PLLOs -->
+    <div id="plloModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Program-Level Learning Outcomes (PLLOs)</h3>
+            <p class="help-text" style="margin-bottom: 16px;">Define program-level outcomes for your program. CLLOs can then be aligned to these in the Course Setup section.</p>
+            <div id="plloList" class="item-list"></div>
+            <button id="addPlloBtn" class="btn btn-add" style="margin-top: 12px;">+ Add PLLO</button>
+            <div class="modal-actions">
+                <button id="closePlloBtn" class="btn btn-primary">Done</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal for adding/editing assignments -->
     <div id="assignmentModal" class="modal hidden">
@@ -337,7 +377,7 @@
             <p style="margin-top: 12px;">This is an open source project available on <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">GitHub</a>.</p>
             <p style="margin-top: 16px;"><strong>Created by Martin Versluis</strong></p>
             <p><a href="https://www.linkedin.com/in/martinversluis" target="_blank">Connect on LinkedIn</a></p>
-            <p style="margin-top: 12px; font-size: 0.85rem; color: #666;">Version 2.0.1</p>
+            <p style="margin-top: 12px; font-size: 0.85rem; color: #666;">Version 3.0.1</p>
             <div class="modal-actions">
                 <button id="closeAboutBtn" class="btn btn-primary">Close</button>
             </div>

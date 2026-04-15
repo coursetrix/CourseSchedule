@@ -90,10 +90,54 @@ main {
     border: 1px solid var(--border-color);
 }
 
+.panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 16px;
+}
+
+.panel.collapsed .panel-heading {
+    margin-bottom: 0;
+}
+
+.panel-heading:hover h2 {
+    color: var(--primary-color);
+}
+
+.panel-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    padding: 4px;
+    transition: transform 0.2s;
+    line-height: 1;
+}
+
+.panel.collapsed .panel-toggle {
+    transform: rotate(-90deg);
+}
+
+.panel-body {
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.2s ease;
+    max-height: 2000px;
+    opacity: 1;
+}
+
+.panel.collapsed .panel-body {
+    max-height: 0;
+    opacity: 0;
+}
+
 .panel h2 {
     font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 16px;
+    margin-bottom: 0;
     color: var(--text-primary);
 }
 
@@ -355,7 +399,7 @@ select:focus {
 
 .cllo-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     padding: 12px;
     background: var(--background);
@@ -367,15 +411,29 @@ select:focus {
     font-weight: 600;
     color: var(--primary-color);
     min-width: 60px;
+    padding-top: 9px;
+}
+
+.cllo-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .cllo-description {
-    flex: 1;
+    width: 100%;
     padding: 8px;
     border: 1px solid transparent;
     border-radius: 4px;
     background: transparent;
     font-size: 0.9375rem;
+    box-sizing: border-box;
+    font-family: inherit;
+    line-height: 1.4;
+    resize: none;
+    overflow: hidden;
+    min-height: 36px;
 }
 
 .cllo-description:focus {
@@ -384,9 +442,67 @@ select:focus {
     outline: none;
 }
 
+.cllo-pllo-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 0 8px;
+}
+
+.cllo-pllo-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.cllo-pllo-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+}
+
+.cllo-pllo-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8125rem;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.cllo-pllo-checkbox input {
+    cursor: pointer;
+}
+
 .cllo-actions {
     display: flex;
     gap: 4px;
+    padding-top: 4px;
+}
+
+/* Alignment Map */
+.alignment-assignments {
+    line-height: 1.5;
+}
+
+.alignment-group {
+    display: block;
+}
+
+.alignment-group + .alignment-group {
+    margin-top: 4px;
+}
+
+.alignment-row-uncovered td {
+    background-color: #fafafa;
+    color: var(--text-secondary);
+}
+
+.alignment-not-covered {
+    font-style: italic;
+    color: var(--text-muted) !important;
 }
 
 /* Summary Table */

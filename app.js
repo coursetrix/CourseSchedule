@@ -47,11 +47,17 @@ const demoCourse = {
     courseName: 'ENG 101 - Introduction to College Writing',
     courseStartDate: '2025-01-13',
     courseEndDate: '2025-05-02',
+    pllos: [
+        { id: 'demo-pllo-1', description: 'Apply critical thinking skills to analyze, evaluate, and synthesize information across contexts' },
+        { id: 'demo-pllo-2', description: 'Communicate effectively in written forms appropriate to audience, purpose, and discipline' },
+        { id: 'demo-pllo-3', description: 'Demonstrate information literacy by locating, evaluating, and ethically using credible sources' },
+        { id: 'demo-pllo-4', description: 'Engage in reflective practice to support ongoing growth as a writer and communicator' }
+    ],
     cllos: [
-        { id: 'demo-cllo-1', description: 'Develop and articulate clear thesis statements supported by evidence' },
-        { id: 'demo-cllo-2', description: 'Apply revision strategies to improve clarity, coherence, and style' },
-        { id: 'demo-cllo-3', description: 'Evaluate and integrate sources using proper citation methods' },
-        { id: 'demo-cllo-4', description: 'Demonstrate proficiency in standard written English conventions' }
+        { id: 'demo-cllo-1', description: 'Develop and articulate clear thesis statements supported by evidence', plloIds: ['demo-pllo-1', 'demo-pllo-2'] },
+        { id: 'demo-cllo-2', description: 'Apply revision strategies to improve clarity, coherence, and style', plloIds: ['demo-pllo-2'] },
+        { id: 'demo-cllo-3', description: 'Evaluate and integrate sources using proper citation methods', plloIds: ['demo-pllo-1', 'demo-pllo-3'] },
+        { id: 'demo-cllo-4', description: 'Demonstrate proficiency in standard written English conventions', plloIds: ['demo-pllo-2'] }
     ],
     assignmentTypes: ['Discussion', 'Quiz', 'Paper/Essay', 'Peer Review', 'Reflection'],
     modules: [
@@ -151,6 +157,7 @@ let state = {
     courseName: '',
     courseStartDate: '',
     courseEndDate: '',
+    pllos: [],
     cllos: [],
     assignmentTypes: [],
     modules: []
@@ -178,10 +185,101 @@ function loadFromLocalStorage() {
             if (!state.assignmentTypes) {
                 state.assignmentTypes = [...defaultAssignmentTypes];
             }
+            // Ensure pllos exists (for backwards compatibility)
+            if (!state.pllos) {
+                state.pllos = [];
+            }
+            // Ensure each CLLO has plloIds (for backwards compatibility)
+            state.cllos.forEach(cllo => {
+                if (!cllo.plloIds) cllo.plloIds = [];
+            });
         } catch (e) {
             console.error('Failed to load saved data:', e);
         }
     }
+}
+
+// ============================================
+// PLLO MANAGEMENT
+// ============================================
+
+function renderPllos() {
+    const container = document.getElementById('plloList');
+    if (!container) return;
+
+    if (state.pllos.length === 0) {
+        container.innerHTML = '<div class="empty-state">No PLLOs defined yet. Add your first program-level outcome.</div>';
+        return;
+    }
+
+    container.innerHTML = state.pllos.map((pllo, index) => `
+        <div class="cllo-item" data-id="${pllo.id}">
+            <span class="cllo-number">PLLO ${index + 1}</span>
+            <textarea class="cllo-description" rows="1"
+                      placeholder="Enter program-level outcome description..."
+                      oninput="autoResizeTextarea(this)"
+                      onchange="updatePlloDescription('${pllo.id}', this.value)">${escapeHtml(pllo.description)}</textarea>
+            <div class="cllo-actions">
+                <button class="btn btn-icon danger" onclick="deletePllo('${pllo.id}')" title="Delete">×</button>
+            </div>
+        </div>
+    `).join('');
+    initTextareaHeights(container);
+}
+
+function addPllo() {
+    state.pllos.push({
+        id: generateId(),
+        description: ''
+    });
+    saveToLocalStorage();
+    renderPllos();
+    renderCllos(); // Re-render CLLOs so new PLLO checkbox appears
+
+    // Focus the new input
+    const inputs = document.querySelectorAll('#plloList .cllo-description');
+    if (inputs.length > 0) {
+        inputs[inputs.length - 1].focus();
+    }
+}
+
+function updatePlloDescription(id, description) {
+    const pllo = state.pllos.find(p => p.id === id);
+    if (pllo) {
+        pllo.description = description;
+        saveToLocalStorage();
+        renderCllos(); // Refresh CLLO items so PLLO label stays current
+    }
+}
+
+function deletePllo(id) {
+    if (confirm('Are you sure you want to delete this PLLO? It will be removed from all CLLOs.')) {
+        state.pllos = state.pllos.filter(p => p.id !== id);
+
+        // Remove this PLLO from all CLLOs
+        state.cllos.forEach(cllo => {
+            cllo.plloIds = (cllo.plloIds || []).filter(pId => pId !== id);
+        });
+
+        saveToLocalStorage();
+        renderPllos();
+        renderCllos();
+        renderAlignmentMap();
+    }
+}
+
+function getPploNumber(id) {
+    const index = state.pllos.findIndex(p => p.id === id);
+    return index >= 0 ? index + 1 : '?';
+}
+
+function openPlloModal() {
+    renderPllos();
+    document.getElementById('plloModal').classList.remove('hidden');
+}
+
+function closePlloModal() {
+    document.getElementById('plloModal').classList.add('hidden');
 }
 
 // ============================================
@@ -196,23 +294,45 @@ function renderCllos() {
         return;
     }
 
+    const plloSection = state.pllos.length > 0 ? (cllo) => `
+        <div class="cllo-pllo-section">
+            <span class="cllo-pllo-label">Aligned PLLOs:</span>
+            <div class="cllo-pllo-checkboxes">
+                ${state.pllos.map((pllo, pIdx) => `
+                    <label class="cllo-pllo-checkbox">
+                        <input type="checkbox" value="${pllo.id}"
+                               ${(cllo.plloIds || []).includes(pllo.id) ? 'checked' : ''}
+                               onchange="updateClloPllos('${cllo.id}')">
+                        PLLO ${pIdx + 1}
+                    </label>
+                `).join('')}
+            </div>
+        </div>
+    ` : () => '';
+
     container.innerHTML = state.cllos.map((cllo, index) => `
         <div class="cllo-item" data-id="${cllo.id}">
             <span class="cllo-number">CLLO ${index + 1}</span>
-            <input type="text" class="cllo-description" value="${escapeHtml(cllo.description)}"
-                   placeholder="Enter learning outcome description..."
-                   onchange="updateClloDescription('${cllo.id}', this.value)">
+            <div class="cllo-body">
+                <textarea class="cllo-description" rows="1"
+                          placeholder="Enter learning outcome description..."
+                          oninput="autoResizeTextarea(this)"
+                          onchange="updateClloDescription('${cllo.id}', this.value)">${escapeHtml(cllo.description)}</textarea>
+                ${plloSection(cllo)}
+            </div>
             <div class="cllo-actions">
                 <button class="btn btn-icon danger" onclick="deleteCllo('${cllo.id}')" title="Delete">×</button>
             </div>
         </div>
     `).join('');
+    initTextareaHeights(container);
 }
 
 function addCllo() {
     state.cllos.push({
         id: generateId(),
-        description: ''
+        description: '',
+        plloIds: []
     });
     saveToLocalStorage();
     renderCllos();
@@ -233,9 +353,20 @@ function updateClloDescription(id, description) {
     }
 }
 
+function updateClloPllos(clloId) {
+    const cllo = state.cllos.find(c => c.id === clloId);
+    if (!cllo) return;
+
+    const clloEl = document.querySelector(`.cllo-item[data-id="${clloId}"]`);
+    if (!clloEl) return;
+
+    cllo.plloIds = [...clloEl.querySelectorAll('.cllo-pllo-checkboxes input:checked')].map(cb => cb.value);
+    saveToLocalStorage();
+    renderAlignmentMap();
+}
+
 function deleteCllo(id) {
     if (confirm('Are you sure you want to delete this CLLO? It will be removed from all assignments.')) {
-        const index = state.cllos.findIndex(c => c.id === id);
         state.cllos = state.cllos.filter(c => c.id !== id);
 
         // Remove this CLLO from all assignments
@@ -855,6 +986,7 @@ function saveAssignment() {
 
     saveToLocalStorage();
     renderModules();
+    renderAlignmentMap();
     renderPreview();
     renderAssignmentTypeSummary();
     closeAssignmentModal();
@@ -870,6 +1002,7 @@ function deleteAssignment(moduleId, assignmentId) {
         module.assignments = module.assignments.filter(a => a.id !== assignmentId);
         saveToLocalStorage();
         renderModules();
+        renderAlignmentMap();
         renderPreview();
         renderAssignmentTypeSummary();
     }
@@ -925,6 +1058,224 @@ function initializeSortables() {
             }
         });
     });
+}
+
+// ============================================
+// PLLO COVERAGE REPORT
+// ============================================
+
+function buildAlignmentData() {
+    return state.pllos.map(pllo => {
+        const alignedCllos = state.cllos.filter(cllo => (cllo.plloIds || []).includes(pllo.id));
+        const covered = alignedCllos.length > 0;
+
+        const assignmentsByModule = [];
+        if (covered) {
+            state.modules.forEach(module => {
+                const matches = module.assignments.filter(a =>
+                    a.clloIds.some(cId => alignedCllos.some(c => c.id === cId))
+                );
+                if (matches.length > 0) {
+                    assignmentsByModule.push({ moduleName: module.name, assignments: matches });
+                }
+            });
+        }
+
+        return { pllo, alignedCllos, assignmentsByModule, covered };
+    });
+}
+
+function formatAlignmentAssignments(assignmentsByModule) {
+    return assignmentsByModule
+        .map(group => `${escapeHtml(group.moduleName)}: ${group.assignments.map(a => escapeHtml(a.name)).join(', ')}`)
+        .join('\n');
+}
+
+function renderAlignmentMap() {
+    const section = document.getElementById('alignmentMapSection');
+    const container = document.getElementById('alignmentMapPreview');
+    const exportActions = document.getElementById('alignmentExportActions');
+
+    if (!state.pllos || state.pllos.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+    section.style.display = '';
+
+    const rows = buildAlignmentData();
+
+    if (rows.length === 0) {
+        container.innerHTML = '<div class="empty-state">No PLLOs defined yet. Use Manage PLLOs to add program-level outcomes, then align CLLOs to them in Course Setup.</div>';
+        exportActions.style.display = 'none';
+        return;
+    }
+
+    exportActions.style.display = '';
+
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:8%">PLLO</th>
+                    <th style="width:30%">Description</th>
+                    <th style="width:18%">Aligned CLLOs</th>
+                    <th>Assignments</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    rows.forEach(({ pllo, alignedCllos, assignmentsByModule, covered }) => {
+        const plloNum = getPploNumber(pllo.id);
+
+        if (!covered) {
+            html += `
+                <tr class="alignment-row-uncovered">
+                    <td>PLLO ${plloNum}</td>
+                    <td>${escapeHtml(pllo.description)}</td>
+                    <td colspan="2" class="alignment-not-covered">This PLLO is not addressed in this course</td>
+                </tr>
+            `;
+        } else {
+            const clloNums = alignedCllos.map(c => `CLLO ${getClloNumber(c.id)}`).join(', ');
+            const assignmentLines = assignmentsByModule.map(group =>
+                `<span class="alignment-group"><strong>${escapeHtml(group.moduleName)}:</strong> ${group.assignments.map(a => escapeHtml(a.name)).join(', ')}</span>`
+            ).join('');
+
+            html += `
+                <tr>
+                    <td>PLLO ${plloNum}</td>
+                    <td>${escapeHtml(pllo.description)}</td>
+                    <td>${clloNums}</td>
+                    <td class="alignment-assignments">${assignmentLines}</td>
+                </tr>
+            `;
+        }
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function generateAlignmentWordTable() {
+    const rows = buildAlignmentData();
+    let html = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset="utf-8">
+<style>
+    body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #000; padding: 6px; vertical-align: top; }
+    .cs-text { margin: 0 !important; padding: 0 !important; mso-para-margin: 0in !important; mso-margin-top-alt: 0in !important; mso-margin-bottom-alt: 0in !important; }
+</style>
+</head>
+<body>
+<table style="width:100%; border-collapse:collapse;">
+    <thead>
+        <tr style="background-color:#f2f2f2;">
+            <th style="width:8%; border:1px solid #000; padding:6px; text-align:left;"><p class="cs-text" style="font-weight:bold;">PLLO</p></th>
+            <th style="width:30%; border:1px solid #000; padding:6px; text-align:left;"><p class="cs-text" style="font-weight:bold;">Description</p></th>
+            <th style="width:18%; border:1px solid #000; padding:6px; text-align:left;"><p class="cs-text" style="font-weight:bold;">Aligned CLLOs</p></th>
+            <th style="border:1px solid #000; padding:6px; text-align:left;"><p class="cs-text" style="font-weight:bold;">Assignments</p></th>
+        </tr>
+    </thead>
+    <tbody>`;
+
+    rows.forEach(({ pllo, alignedCllos, assignmentsByModule, covered }) => {
+        const plloNum = getPploNumber(pllo.id);
+
+        if (!covered) {
+            html += `
+        <tr style="background-color:#fafafa;">
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">PLLO ${plloNum}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${escapeHtml(pllo.description)}</p></td>
+            <td colspan="2" style="border:1px solid #000; padding:6px; vertical-align:top; color:#888; font-style:italic;"><p class="cs-text">This PLLO is not addressed in this course</p></td>
+        </tr>`;
+        } else {
+            const clloNums = alignedCllos.map(c => `CLLO ${getClloNumber(c.id)}`).join(', ');
+            const assignmentLines = assignmentsByModule.map(group =>
+                `<b>${escapeHtml(group.moduleName)}:</b> ${group.assignments.map(a => escapeHtml(a.name)).join(', ')}`
+            ).join('<br>');
+
+            html += `
+        <tr>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">PLLO ${plloNum}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${escapeHtml(pllo.description)}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${clloNums}</p></td>
+            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${assignmentLines}</p></td>
+        </tr>`;
+        }
+    });
+
+    html += `
+    </tbody>
+</table>
+</body>
+</html>`;
+    return html;
+}
+
+function generateAlignmentMarkdown() {
+    const rows = buildAlignmentData();
+    let md = '| **PLLO** | **Description** | **Aligned CLLOs** | **Assignments** |\n';
+    md += '| -------- | --------------- | ----------------- | --------------- |\n';
+
+    rows.forEach(({ pllo, alignedCllos, assignmentsByModule, covered }) => {
+        const plloNum = getPploNumber(pllo.id);
+        if (!covered) {
+            md += `| PLLO ${plloNum} | ${pllo.description} | — | *Not addressed in this course* |\n`;
+        } else {
+            const clloNums = alignedCllos.map(c => `CLLO ${getClloNumber(c.id)}`).join(', ');
+            const assignments = assignmentsByModule.map(group =>
+                `**${group.moduleName}:** ${group.assignments.map(a => a.name).join(', ')}`
+            ).join('<br>');
+            md += `| PLLO ${plloNum} | ${pllo.description} | ${clloNums} | ${assignments} |\n`;
+        }
+    });
+    return md;
+}
+
+function generateAlignmentCsv() {
+    const rows = buildAlignmentData();
+    let csv = 'PLLO,Description,Aligned CLLOs,Assignments\n';
+
+    rows.forEach(({ pllo, alignedCllos, assignmentsByModule, covered }) => {
+        const plloNum = getPploNumber(pllo.id);
+        if (!covered) {
+            csv += `"PLLO ${plloNum}","${pllo.description}","—","Not addressed in this course"\n`;
+        } else {
+            const clloNums = alignedCllos.map(c => `CLLO ${getClloNumber(c.id)}`).join(', ');
+            const assignments = assignmentsByModule.map(group =>
+                `${group.moduleName}: ${group.assignments.map(a => a.name).join(', ')}`
+            ).join(' | ');
+            csv += `"PLLO ${plloNum}","${pllo.description}","${clloNums}","${assignments}"\n`;
+        }
+    });
+    return csv;
+}
+
+function copyAlignmentToClipboard() {
+    const rows = buildAlignmentData();
+    if (rows.length === 0) { showToast('No alignment data to copy.'); return; }
+    const html = generateAlignmentWordTable();
+    const blob = new Blob([html], { type: 'text/html' });
+    navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })]).then(() => {
+        showToast('Alignment map copied!', 'success');
+    }).catch(() => showToast('Failed to copy alignment map.'));
+}
+
+function copyAlignmentAsMarkdown() {
+    const rows = buildAlignmentData();
+    if (rows.length === 0) { showToast('No alignment data to copy.'); return; }
+    navigator.clipboard.writeText(generateAlignmentMarkdown()).then(() => {
+        showToast('Alignment map markdown copied!', 'success');
+    }).catch(() => showToast('Failed to copy markdown.'));
+}
+
+function downloadAlignmentCsv() {
+    const rows = buildAlignmentData();
+    if (rows.length === 0) { showToast('No alignment data to download.'); return; }
+    downloadFile('pllo-coverage-report.csv', generateAlignmentCsv(), 'text/csv');
 }
 
 // ============================================
@@ -1204,6 +1555,35 @@ async function doGeneratePDF() {
         yPos += 10;
     }
 
+    // PLLOs Section
+    if (state.pllos && state.pllos.length > 0) {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(31, 78, 120);
+        doc.text('Program-Level Learning Outcomes', margin, yPos);
+        yPos += 8;
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0);
+
+        state.pllos.forEach((pllo, index) => {
+            const plloText = `${index + 1}. ${pllo.description}`;
+            const splitText = doc.splitTextToSize(plloText, pageWidth - 2 * margin);
+
+            if (yPos + (splitText.length * 5) > pageHeight - 30) {
+                addFooter(1);
+                doc.addPage();
+                yPos = margin;
+            }
+
+            doc.text(splitText, margin, yPos);
+            yPos += splitText.length * 5 + 3;
+        });
+
+        yPos += 5;
+    }
+
     // CLLOs Section
     if (state.cllos && state.cllos.length > 0) {
         doc.setFontSize(14);
@@ -1218,7 +1598,8 @@ async function doGeneratePDF() {
 
         state.cllos.forEach((cllo, index) => {
             const clloNum = index + 1;
-            const clloText = `${clloNum}. ${cllo.description}`;
+            const alignedPllos = (cllo.plloIds || []).map(id => `PLLO ${getPploNumber(id)}`).join(', ');
+            const clloText = `${clloNum}. ${cllo.description}${alignedPllos ? `  [${alignedPllos}]` : ''}`;
 
             // Wrap text if needed
             const splitText = doc.splitTextToSize(clloText, pageWidth - 2 * margin);
@@ -1375,6 +1756,7 @@ function confirmNewCourse() {
         courseName: '',
         courseStartDate: '',
         courseEndDate: '',
+        pllos: [],
         cllos: [],
         assignmentTypes: [],
         modules: []
@@ -1456,6 +1838,14 @@ function confirmImport() {
             if (!state.assignmentTypes) {
                 state.assignmentTypes = [...defaultAssignmentTypes];
             }
+            // Ensure pllos exists
+            if (!state.pllos) {
+                state.pllos = [];
+            }
+            // Ensure each CLLO has plloIds
+            state.cllos.forEach(cllo => {
+                if (!cllo.plloIds) cllo.plloIds = [];
+            });
 
             saveToLocalStorage();
             renderAll();
@@ -1496,6 +1886,21 @@ function closeHelpModal() {
 // ============================================
 // UTILITY FUNCTIONS
 // ============================================
+
+function togglePanel(id) {
+    document.getElementById(id).classList.toggle('collapsed');
+}
+
+function autoResizeTextarea(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+}
+
+function initTextareaHeights(container) {
+    setTimeout(() => {
+        container.querySelectorAll('textarea.cllo-description').forEach(autoResizeTextarea);
+    }, 0);
+}
 
 function escapeHtml(text) {
     if (!text) return '';
@@ -1690,6 +2095,7 @@ function renderAll() {
     renderCllos();
     renderAssignmentTypes();
     renderModules();
+    renderAlignmentMap();
     renderPreview();
     renderAssignmentTypeSummary();
 }
@@ -1729,6 +2135,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('confirmRedistributeBtn').addEventListener('click', confirmRedistribute);
     document.getElementById('redistributeModal').addEventListener('click', function(e) {
         if (e.target === this) this.classList.add('hidden');
+    });
+
+    // PLLO modal buttons
+    document.getElementById('managePllosBtn').addEventListener('click', openPlloModal);
+    document.getElementById('addPlloBtn').addEventListener('click', addPllo);
+    document.getElementById('closePlloBtn').addEventListener('click', closePlloModal);
+    document.getElementById('plloModal').addEventListener('click', function(e) {
+        if (e.target === this) closePlloModal();
     });
 
     // CLLO buttons
@@ -1781,6 +2195,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') doGeneratePDF();
         if (e.key === 'Escape') document.getElementById('pdfModal').classList.add('hidden');
     });
+
+    // Alignment map export buttons
+    document.getElementById('copyAlignmentBtn').addEventListener('click', copyAlignmentToClipboard);
+    document.getElementById('copyAlignmentMarkdownBtn').addEventListener('click', copyAlignmentAsMarkdown);
+    document.getElementById('downloadAlignmentCsvBtn').addEventListener('click', downloadAlignmentCsv);
 
     // Export buttons
     document.getElementById('generatePdfBtn').addEventListener('click', generateCoursePDF);
@@ -1899,6 +2318,7 @@ document.addEventListener('DOMContentLoaded', function() {
             closeModuleModal();
             closeAboutModal();
             closeHelpModal();
+            closePlloModal();
             document.getElementById('saveModal').classList.add('hidden');
             document.getElementById('newCourseModal').classList.add('hidden');
             document.getElementById('importModal').classList.add('hidden');

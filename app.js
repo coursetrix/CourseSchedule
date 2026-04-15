@@ -379,6 +379,7 @@ function deleteCllo(id) {
         saveToLocalStorage();
         renderCllos();
         renderModules();
+        renderClloReport();
         renderPreview();
     }
 }
@@ -986,6 +987,7 @@ function saveAssignment() {
 
     saveToLocalStorage();
     renderModules();
+    renderClloReport();
     renderAlignmentMap();
     renderPreview();
     renderAssignmentTypeSummary();
@@ -1002,6 +1004,7 @@ function deleteAssignment(moduleId, assignmentId) {
         module.assignments = module.assignments.filter(a => a.id !== assignmentId);
         saveToLocalStorage();
         renderModules();
+        renderClloReport();
         renderAlignmentMap();
         renderPreview();
         renderAssignmentTypeSummary();
@@ -1058,6 +1061,188 @@ function initializeSortables() {
             }
         });
     });
+}
+
+// ============================================
+// CLLO COVERAGE REPORT
+// ============================================
+
+function buildClloReportData() {
+    return state.cllos.map(cllo => {
+        const assignmentsByModule = [];
+        state.modules.forEach(module => {
+            const matches = module.assignments.filter(a => (a.clloIds || []).includes(cllo.id));
+            if (matches.length > 0) {
+                assignmentsByModule.push({ moduleName: module.name, assignments: matches });
+            }
+        });
+        const totalCount = assignmentsByModule.reduce((sum, g) => sum + g.assignments.length, 0);
+        return { cllo, assignmentsByModule, totalCount };
+    });
+}
+
+function renderClloReport() {
+    const section = document.getElementById('clloReportSection');
+    const container = document.getElementById('clloReportPreview');
+    const exportActions = document.getElementById('clloReportExportActions');
+
+    if (!state.cllos || state.cllos.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+    section.style.display = '';
+
+    const rows = buildClloReportData();
+    exportActions.style.display = '';
+
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:8%">CLLO</th>
+                    <th style="width:30%">Description</th>
+                    <th>Assignments</th>
+                    <th style="width:8%; text-align:center;">Count</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    rows.forEach(({ cllo, assignmentsByModule, totalCount }) => {
+        const clloNum = getClloNumber(cllo.id);
+        const isMissing = totalCount === 0;
+
+        if (isMissing) {
+            html += `
+                <tr class="alignment-row-uncovered">
+                    <td>CLLO ${clloNum}</td>
+                    <td>${escapeHtml(cllo.description)}</td>
+                    <td colspan="2" class="alignment-not-covered">No assignments mapped to this CLLO</td>
+                </tr>
+            `;
+        } else {
+            const assignmentLines = assignmentsByModule.map(group =>
+                `<span class="alignment-group"><strong>${escapeHtml(group.moduleName)}:</strong> ${group.assignments.map(a => escapeHtml(a.name)).join(', ')}</span>`
+            ).join('');
+            html += `
+                <tr>
+                    <td>CLLO ${clloNum}</td>
+                    <td>${escapeHtml(cllo.description)}</td>
+                    <td class="alignment-assignments">${assignmentLines}</td>
+                    <td style="text-align:center; font-weight:600;">${totalCount}</td>
+                </tr>
+            `;
+        }
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function generateClloReportWordTable() {
+    const rows = buildClloReportData();
+    let html = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset="utf-8">
+<style>
+    body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #000; padding: 6px; vertical-align: top; }
+    .cs-text { margin: 0 !important; padding: 0 !important; mso-para-margin: 0in !important; mso-margin-top-alt: 0in !important; mso-margin-bottom-alt: 0in !important; }
+</style>
+</head>
+<body>
+<table style="width:100%; border-collapse:collapse;">
+    <thead>
+        <tr style="background-color:#f2f2f2;">
+            <th style="width:8%; border:1px solid #000; padding:6px; text-align:left;"><p class="cs-text" style="font-weight:bold;">CLLO</p></th>
+            <th style="width:30%; border:1px solid #000; padding:6px; text-align:left;"><p class="cs-text" style="font-weight:bold;">Description</p></th>
+            <th style="border:1px solid #000; padding:6px; text-align:left;"><p class="cs-text" style="font-weight:bold;">Assignments</p></th>
+            <th style="width:8%; border:1px solid #000; padding:6px; text-align:center;"><p class="cs-text" style="font-weight:bold;">Count</p></th>
+        </tr>
+    </thead>
+    <tbody>`;
+
+    rows.forEach(({ cllo, assignmentsByModule, totalCount }) => {
+        const clloNum = getClloNumber(cllo.id);
+        if (totalCount === 0) {
+            html += `
+        <tr style="background-color:#fafafa;">
+            <td style="border:1px solid #000; padding:6px;"><p class="cs-text">CLLO ${clloNum}</p></td>
+            <td style="border:1px solid #000; padding:6px;"><p class="cs-text">${escapeHtml(cllo.description)}</p></td>
+            <td colspan="2" style="border:1px solid #000; padding:6px; font-style:italic; color:#888;"><p class="cs-text">No assignments mapped to this CLLO</p></td>
+        </tr>`;
+        } else {
+            const assignmentLines = assignmentsByModule.map(g =>
+                `<b>${escapeHtml(g.moduleName)}:</b> ${g.assignments.map(a => escapeHtml(a.name)).join(', ')}`
+            ).join('<br>');
+            html += `
+        <tr>
+            <td style="border:1px solid #000; padding:6px;"><p class="cs-text">CLLO ${clloNum}</p></td>
+            <td style="border:1px solid #000; padding:6px;"><p class="cs-text">${escapeHtml(cllo.description)}</p></td>
+            <td style="border:1px solid #000; padding:6px;"><p class="cs-text">${assignmentLines}</p></td>
+            <td style="border:1px solid #000; padding:6px; text-align:center; font-weight:bold;"><p class="cs-text">${totalCount}</p></td>
+        </tr>`;
+        }
+    });
+
+    html += `\n    </tbody>\n</table>\n</body>\n</html>`;
+    return html;
+}
+
+function generateClloReportMarkdown() {
+    const rows = buildClloReportData();
+    let md = '| **CLLO** | **Description** | **Assignments** | **Count** |\n';
+    md += '| -------- | --------------- | --------------- | --------- |\n';
+    rows.forEach(({ cllo, assignmentsByModule, totalCount }) => {
+        const clloNum = getClloNumber(cllo.id);
+        if (totalCount === 0) {
+            md += `| CLLO ${clloNum} | ${cllo.description} | *No assignments mapped* | 0 |\n`;
+        } else {
+            const assignments = assignmentsByModule.map(g =>
+                `**${g.moduleName}:** ${g.assignments.map(a => a.name).join(', ')}`
+            ).join('<br>');
+            md += `| CLLO ${clloNum} | ${cllo.description} | ${assignments} | ${totalCount} |\n`;
+        }
+    });
+    return md;
+}
+
+function generateClloReportCsv() {
+    const rows = buildClloReportData();
+    let csv = 'CLLO,Description,Assignments,Count\n';
+    rows.forEach(({ cllo, assignmentsByModule, totalCount }) => {
+        const clloNum = getClloNumber(cllo.id);
+        if (totalCount === 0) {
+            csv += `"CLLO ${clloNum}","${cllo.description}","No assignments mapped",0\n`;
+        } else {
+            const assignments = assignmentsByModule.map(g =>
+                `${g.moduleName}: ${g.assignments.map(a => a.name).join(', ')}`
+            ).join(' | ');
+            csv += `"CLLO ${clloNum}","${cllo.description}","${assignments}",${totalCount}\n`;
+        }
+    });
+    return csv;
+}
+
+function copyClloReportToClipboard() {
+    if (!state.cllos.length) { showToast('No CLLOs defined.'); return; }
+    const blob = new Blob([generateClloReportWordTable()], { type: 'text/html' });
+    navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })]).then(() => {
+        showToast('CLLO report copied!', 'success');
+    }).catch(() => showToast('Failed to copy CLLO report.'));
+}
+
+function copyClloReportAsMarkdown() {
+    if (!state.cllos.length) { showToast('No CLLOs defined.'); return; }
+    navigator.clipboard.writeText(generateClloReportMarkdown()).then(() => {
+        showToast('CLLO report markdown copied!', 'success');
+    }).catch(() => showToast('Failed to copy markdown.'));
+}
+
+function downloadClloReportCsv() {
+    if (!state.cllos.length) { showToast('No CLLOs defined.'); return; }
+    downloadFile('cllo-coverage-report.csv', generateClloReportCsv(), 'text/csv');
 }
 
 // ============================================
@@ -2103,6 +2288,7 @@ function renderAll() {
     renderCllos();
     renderAssignmentTypes();
     renderModules();
+    renderClloReport();
     renderAlignmentMap();
     renderPreview();
     renderAssignmentTypeSummary();
@@ -2203,6 +2389,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') doGeneratePDF();
         if (e.key === 'Escape') document.getElementById('pdfModal').classList.add('hidden');
     });
+
+    // CLLO report export buttons
+    document.getElementById('copyClloReportBtn').addEventListener('click', copyClloReportToClipboard);
+    document.getElementById('copyClloReportMarkdownBtn').addEventListener('click', copyClloReportAsMarkdown);
+    document.getElementById('downloadClloReportCsvBtn').addEventListener('click', downloadClloReportCsv);
 
     // Alignment map export buttons
     document.getElementById('copyAlignmentBtn').addEventListener('click', copyAlignmentToClipboard);

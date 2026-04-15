@@ -121,6 +121,23 @@
                 </div>
             </section>
 
+            <!-- CLLO Coverage Report Section -->
+            <section class="panel collapsed" id="clloReportSection">
+                <div class="panel-heading" onclick="togglePanel('clloReportSection')">
+                    <h2>CLLO Coverage Report</h2>
+                    <button class="panel-toggle" title="Expand/Collapse">▼</button>
+                </div>
+                <div class="panel-body">
+                    <p class="help-text">Shows how many assignments address each course-level outcome and flags any CLLOs with no assignments mapped.</p>
+                    <div class="export-actions" id="clloReportExportActions">
+                        <button id="copyClloReportBtn" class="btn btn-secondary">Copy Table to Clipboard</button>
+                        <button id="copyClloReportMarkdownBtn" class="btn btn-secondary">Copy as Markdown</button>
+                        <button id="downloadClloReportCsvBtn" class="btn btn-secondary">Download CSV</button>
+                    </div>
+                    <div id="clloReportPreview" class="table-preview"></div>
+                </div>
+            </section>
+
             <!-- PLLO Coverage Report Section -->
             <section class="panel collapsed" id="alignmentMapSection">
                 <div class="panel-heading" onclick="togglePanel('alignmentMapSection')">

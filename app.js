@@ -56,7 +56,7 @@ const demoCourse = {
     cllos: [
         { id: 'demo-cllo-1', description: 'Develop and articulate clear thesis statements supported by evidence', plloIds: ['demo-pllo-1', 'demo-pllo-2'] },
         { id: 'demo-cllo-2', description: 'Apply revision strategies to improve clarity, coherence, and style', plloIds: ['demo-pllo-2'] },
-        { id: 'demo-cllo-3', description: 'Evaluate and integrate sources using proper citation methods', plloIds: ['demo-pllo-1', 'demo-pllo-3'] },
+        { id: 'demo-cllo-3', description: 'Evaluate and integrate sources using proper citation methods', plloIds: ['demo-pllo-1'] },
         { id: 'demo-cllo-4', description: 'Demonstrate proficiency in standard written English conventions', plloIds: ['demo-pllo-2'] },
         { id: 'demo-cllo-5', description: 'Utilize digital literacy skills to research and compose in online environments', plloIds: ['demo-pllo-4'] }
     ],
@@ -80,8 +80,8 @@ const demoCourse = {
             endDate: '2025-02-07',
             topic: 'The Writing Process',
             assignments: [
-                { id: 'demo-a-3', name: 'Writing Process Discussion', type: 'Discussion', points: 25, dueDate: '2025-01-31', clloIds: ['demo-cllo-2'] },
-                { id: 'demo-a-4', name: 'Narrative Essay', type: 'Paper/Essay', points: 100, dueDate: '2025-02-07', clloIds: ['demo-cllo-1', 'demo-cllo-2', 'demo-cllo-4'] }
+                { id: 'demo-a-3', name: 'Writing Process Discussion', type: 'Discussion', points: 25, dueDate: '2025-01-31', clloIds: [] },
+                { id: 'demo-a-4', name: 'Narrative Essay', type: 'Paper/Essay', points: 100, dueDate: '2025-02-07', clloIds: ['demo-cllo-1', 'demo-cllo-4'] }
             ]
         },
         {
@@ -113,7 +113,7 @@ const demoCourse = {
             endDate: '2025-03-21',
             topic: 'Source Integration',
             assignments: [
-                { id: 'demo-a-9', name: 'Peer Review 1', type: 'Peer Review', points: 50, dueDate: '2025-03-14', clloIds: ['demo-cllo-2'] },
+                { id: 'demo-a-9', name: 'Peer Review 1', type: 'Peer Review', points: 50, dueDate: '2025-03-14', clloIds: [] },
                 { id: 'demo-a-10', name: 'Argumentative Essay Final', type: 'Paper/Essay', points: 150, dueDate: '2025-03-21', clloIds: ['demo-cllo-1', 'demo-cllo-3', 'demo-cllo-4'] }
             ]
         },
@@ -124,8 +124,8 @@ const demoCourse = {
             endDate: '2025-04-04',
             topic: 'Revision Strategies',
             assignments: [
-                { id: 'demo-a-11', name: 'Revision Techniques Discussion', type: 'Discussion', points: 25, dueDate: '2025-03-28', clloIds: ['demo-cllo-2'] },
-                { id: 'demo-a-12', name: 'Midterm Reflection', type: 'Reflection', points: 50, dueDate: '2025-04-04', clloIds: ['demo-cllo-2', 'demo-cllo-4'] }
+                { id: 'demo-a-11', name: 'Revision Techniques Discussion', type: 'Discussion', points: 25, dueDate: '2025-03-28', clloIds: [] },
+                { id: 'demo-a-12', name: 'Midterm Reflection', type: 'Reflection', points: 50, dueDate: '2025-04-04', clloIds: ['demo-cllo-4'] }
             ]
         },
         {
@@ -146,9 +146,9 @@ const demoCourse = {
             endDate: '2025-05-02',
             topic: 'Final Portfolio',
             assignments: [
-                { id: 'demo-a-15', name: 'Peer Review 2', type: 'Peer Review', points: 50, dueDate: '2025-04-25', clloIds: ['demo-cllo-2'] },
-                { id: 'demo-a-16', name: 'Research Essay Final', type: 'Paper/Essay', points: 200, dueDate: '2025-05-01', clloIds: ['demo-cllo-1', 'demo-cllo-2', 'demo-cllo-3', 'demo-cllo-4'] },
-                { id: 'demo-a-17', name: 'Course Reflection', type: 'Reflection', points: 25, dueDate: '2025-05-02', clloIds: ['demo-cllo-2', 'demo-cllo-4'] }
+                { id: 'demo-a-15', name: 'Peer Review 2', type: 'Peer Review', points: 50, dueDate: '2025-04-25', clloIds: [] },
+                { id: 'demo-a-16', name: 'Research Essay Final', type: 'Paper/Essay', points: 200, dueDate: '2025-05-01', clloIds: ['demo-cllo-1', 'demo-cllo-3', 'demo-cllo-4'] },
+                { id: 'demo-a-17', name: 'Course Reflection', type: 'Reflection', points: 25, dueDate: '2025-05-02', clloIds: ['demo-cllo-4'] }
             ]
         }
     ]

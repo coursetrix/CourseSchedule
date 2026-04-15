@@ -240,7 +240,7 @@
                     <div class="help-step-number">2</div>
                     <div class="help-step-body">
                         <strong>Define Learning Outcomes</strong>
-                        <p>Add your Course-Level Learning Outcomes (CLLOs). You'll link individual assignments to these later to show alignment.</p>
+                        <p>Add your Course-Level Learning Outcomes (CLLOs) and optionally your Program-Level Learning Outcomes (PLLOs) via the <strong>Manage PLLOs</strong> button. Align CLLOs to PLLOs to enable the coverage report.</p>
                     </div>
                 </div>
                 <div class="help-step">
@@ -373,17 +373,51 @@
     <div id="aboutModal" class="modal hidden">
         <div class="modal-content">
             <h3>About Coursetrix</h3>
-            <p>As an Instructional Designer and Educational Technologist, I got tired of wrestling with Word tables to plan course designs. I built Coursetrix to solve that problem: a simple tool that lets educators blueprint their course structure (modules, assignments, and learning outcomes) before diving into LMS development.</p>
-            <p style="margin-top: 12px;">This is an open source project available on <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">GitHub</a>.</p>
-            <p style="margin-top: 16px;"><strong>Created by Martin Versluis</strong></p>
-            <p><a href="https://www.linkedin.com/in/martinversluis" target="_blank">Connect on LinkedIn</a></p>
-            <p style="margin-top: 12px; font-size: 0.85rem; color: #666;">Version 3.0.1</p>
+            <p style="margin-top: 4px; color: #6b7280; font-size: 0.875rem;">Version 3.0.2</p>
+            <p style="margin-top: 16px;">Built by an Instructional Designer who got tired of wrestling with Word tables. Coursetrix lets educators blueprint their course structure — modules, assignments, and learning outcome alignment — before diving into LMS development.</p>
+            <div class="about-creator">
+                <div>
+                    <p><strong>Created by Martin Versluis</strong></p>
+                    <p style="margin-top: 4px;"><a href="https://www.linkedin.com/in/martinversluis" target="_blank">Connect on LinkedIn</a> &nbsp;·&nbsp; <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">View on GitHub</a></p>
+                </div>
+            </div>
+            <div class="about-license">
+                <p>Source-available under the <strong>PolyForm Noncommercial License</strong>. Free for personal and educational use. Commercial use requires written permission from the author.</p>
+                <p style="margin-top: 6px;"><a href="https://github.com/coursetrix/CourseSchedule/blob/main/LICENSE" target="_blank">View full license</a> &nbsp;·&nbsp; <a href="https://github.com/coursetrix/CourseSchedule/issues" target="_blank">Report an issue</a></p>
+            </div>
             <div class="modal-actions">
+                <button id="whatsNewBtn" class="btn btn-secondary">What's New</button>
                 <button id="closeAboutBtn" class="btn btn-primary">Close</button>
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=2.0.1"></script>
+    <!-- What's New Modal -->
+    <div id="whatsNewModal" class="modal hidden">
+        <div class="modal-content modal-content-wide">
+            <h3>What's New in Coursetrix</h3>
+            <div class="whats-new-version">v3.0 — Program-Level Learning Outcomes</div>
+            <ul class="feature-list">
+                <li><strong>Program-Level Learning Outcomes (PLLOs)</strong> — Define program outcomes via the Manage PLLOs button and align CLLOs to them directly in Course Setup.</li>
+                <li><strong>PLLO Coverage Report</strong> — A dedicated report showing which program outcomes your course addresses, with supporting assignments grouped by unit. PLLOs not covered by the course are flagged clearly.</li>
+                <li><strong>Collapsible report panels</strong> — Course Schedule Report and PLLO Coverage Report panels collapse to keep the workspace clean.</li>
+            </ul>
+            <div class="whats-new-version" style="margin-top: 20px;">Core Features</div>
+            <ul class="feature-list">
+                <li><strong>Course Setup</strong> — Course name, date range, and assignment types with a live point summary.</li>
+                <li><strong>Learning Outcomes</strong> — CLLOs and PLLOs with full two-level alignment mapping.</li>
+                <li><strong>Schedule Builder</strong> — Modules and assignments with drag-and-drop reordering across modules.</li>
+                <li><strong>Redistribute Dates</strong> — Re-space all modules and assignments across a new date range in one click.</li>
+                <li><strong>Course Schedule Report</strong> — Export to PDF, copy to Word, Markdown, or CSV.</li>
+                <li><strong>PLLO Coverage Report</strong> — Export program-level alignment to Word, Markdown, or CSV.</li>
+                <li><strong>Auto-save</strong> — Everything saves automatically to your browser. Use Save Course to download a backup.</li>
+            </ul>
+            <div class="modal-actions">
+                <button id="closeWhatsNewBtn" class="btn btn-primary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=3.0.2"></script>
 </body>
 </html>

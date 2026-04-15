@@ -1874,6 +1874,14 @@ function closeAboutModal() {
     document.getElementById('aboutModal').classList.add('hidden');
 }
 
+function openWhatsNewModal() {
+    document.getElementById('whatsNewModal').classList.remove('hidden');
+}
+
+function closeWhatsNewModal() {
+    document.getElementById('whatsNewModal').classList.add('hidden');
+}
+
 function showHelpModal() {
     document.getElementById('helpModal').classList.remove('hidden');
 }
@@ -2298,6 +2306,16 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('aboutModal').classList.remove('hidden');
     });
     document.getElementById('closeAboutBtn').addEventListener('click', closeAboutModal);
+    document.getElementById('aboutModal').addEventListener('click', function(e) {
+        if (e.target === this) closeAboutModal();
+    });
+
+    // What's New modal
+    document.getElementById('whatsNewBtn').addEventListener('click', openWhatsNewModal);
+    document.getElementById('closeWhatsNewBtn').addEventListener('click', closeWhatsNewModal);
+    document.getElementById('whatsNewModal').addEventListener('click', function(e) {
+        if (e.target === this) closeWhatsNewModal();
+    });
 
     // Help modal
     document.getElementById('helpBtn').addEventListener('click', showHelpModal);
@@ -2317,6 +2335,7 @@ document.addEventListener('DOMContentLoaded', function() {
             closeAssignmentModal();
             closeModuleModal();
             closeAboutModal();
+            closeWhatsNewModal();
             closeHelpModal();
             closePlloModal();
             document.getElementById('saveModal').classList.add('hidden');

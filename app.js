@@ -57,7 +57,8 @@ const demoCourse = {
         { id: 'demo-cllo-1', description: 'Develop and articulate clear thesis statements supported by evidence', plloIds: ['demo-pllo-1', 'demo-pllo-2'] },
         { id: 'demo-cllo-2', description: 'Apply revision strategies to improve clarity, coherence, and style', plloIds: ['demo-pllo-2'] },
         { id: 'demo-cllo-3', description: 'Evaluate and integrate sources using proper citation methods', plloIds: ['demo-pllo-1', 'demo-pllo-3'] },
-        { id: 'demo-cllo-4', description: 'Demonstrate proficiency in standard written English conventions', plloIds: ['demo-pllo-2'] }
+        { id: 'demo-cllo-4', description: 'Demonstrate proficiency in standard written English conventions', plloIds: ['demo-pllo-2'] },
+        { id: 'demo-cllo-5', description: 'Utilize digital literacy skills to research and compose in online environments', plloIds: ['demo-pllo-4'] }
     ],
     assignmentTypes: ['Discussion', 'Quiz', 'Paper/Essay', 'Peer Review', 'Reflection'],
     modules: [
@@ -1254,19 +1255,18 @@ function buildAlignmentData() {
         const alignedCllos = state.cllos.filter(cllo => (cllo.plloIds || []).includes(pllo.id));
         const covered = alignedCllos.length > 0;
 
-        const assignmentsByModule = [];
-        if (covered) {
+        const clloCoverage = alignedCllos.map(cllo => {
+            const assignmentsByModule = [];
             state.modules.forEach(module => {
-                const matches = module.assignments.filter(a =>
-                    a.clloIds.some(cId => alignedCllos.some(c => c.id === cId))
-                );
+                const matches = module.assignments.filter(a => (a.clloIds || []).includes(cllo.id));
                 if (matches.length > 0) {
                     assignmentsByModule.push({ moduleName: module.name, assignments: matches });
                 }
             });
-        }
+            return { cllo, assignmentsByModule, hasAssignments: assignmentsByModule.length > 0 };
+        });
 
-        return { pllo, alignedCllos, assignmentsByModule, covered };
+        return { pllo, alignedCllos, clloCoverage, covered };
     });
 }
 
@@ -1310,7 +1310,7 @@ function renderAlignmentMap() {
             <tbody>
     `;
 
-    rows.forEach(({ pllo, alignedCllos, assignmentsByModule, covered }) => {
+    rows.forEach(({ pllo, alignedCllos, clloCoverage, covered }) => {
         const plloNum = getPploNumber(pllo.id);
 
         if (!covered) {
@@ -1323,9 +1323,16 @@ function renderAlignmentMap() {
             `;
         } else {
             const clloNums = alignedCllos.map(c => `CLLO ${getClloNumber(c.id)}`).join(', ');
-            const assignmentLines = assignmentsByModule.map(group =>
-                `<span class="alignment-group"><strong>${escapeHtml(group.moduleName)}:</strong> ${group.assignments.map(a => escapeHtml(a.name)).join(', ')}</span>`
-            ).join('');
+            const assignmentLines = clloCoverage.map(({ cllo, assignmentsByModule, hasAssignments }) => {
+                const clloNum = getClloNumber(cllo.id);
+                if (!hasAssignments) {
+                    return `<span class="alignment-group"><strong>CLLO ${clloNum}:</strong> <em class="alignment-not-covered-inline">No assignments mapped</em></span>`;
+                }
+                const moduleLines = assignmentsByModule.map(g =>
+                    `${escapeHtml(g.moduleName)}: ${g.assignments.map(a => escapeHtml(a.name)).join(', ')}`
+                ).join('; ');
+                return `<span class="alignment-group"><strong>CLLO ${clloNum}:</strong> ${moduleLines}</span>`;
+            }).join('');
 
             html += `
                 <tr>
@@ -1366,7 +1373,7 @@ function generateAlignmentWordTable() {
     </thead>
     <tbody>`;
 
-    rows.forEach(({ pllo, alignedCllos, assignmentsByModule, covered }) => {
+    rows.forEach(({ pllo, alignedCllos, clloCoverage, covered }) => {
         const plloNum = getPploNumber(pllo.id);
 
         if (!covered) {
@@ -1378,9 +1385,14 @@ function generateAlignmentWordTable() {
         </tr>`;
         } else {
             const clloNums = alignedCllos.map(c => `CLLO ${getClloNumber(c.id)}`).join(', ');
-            const assignmentLines = assignmentsByModule.map(group =>
-                `<b>${escapeHtml(group.moduleName)}:</b> ${group.assignments.map(a => escapeHtml(a.name)).join(', ')}`
-            ).join('<br>');
+            const assignmentLines = clloCoverage.map(({ cllo, assignmentsByModule, hasAssignments }) => {
+                const clloNum = getClloNumber(cllo.id);
+                if (!hasAssignments) return `<b>CLLO ${clloNum}:</b> <i>No assignments mapped</i>`;
+                const moduleLines = assignmentsByModule.map(g =>
+                    `${escapeHtml(g.moduleName)}: ${g.assignments.map(a => escapeHtml(a.name)).join(', ')}`
+                ).join('; ');
+                return `<b>CLLO ${clloNum}:</b> ${moduleLines}`;
+            }).join('<br>');
 
             html += `
         <tr>
@@ -1405,15 +1417,20 @@ function generateAlignmentMarkdown() {
     let md = '| **PLLO** | **Description** | **Aligned CLLOs** | **Assignments** |\n';
     md += '| -------- | --------------- | ----------------- | --------------- |\n';
 
-    rows.forEach(({ pllo, alignedCllos, assignmentsByModule, covered }) => {
+    rows.forEach(({ pllo, alignedCllos, clloCoverage, covered }) => {
         const plloNum = getPploNumber(pllo.id);
         if (!covered) {
             md += `| PLLO ${plloNum} | ${pllo.description} | — | *Not addressed in this course* |\n`;
         } else {
             const clloNums = alignedCllos.map(c => `CLLO ${getClloNumber(c.id)}`).join(', ');
-            const assignments = assignmentsByModule.map(group =>
-                `**${group.moduleName}:** ${group.assignments.map(a => a.name).join(', ')}`
-            ).join('<br>');
+            const assignments = clloCoverage.map(({ cllo, assignmentsByModule, hasAssignments }) => {
+                const clloNum = getClloNumber(cllo.id);
+                if (!hasAssignments) return `**CLLO ${clloNum}:** *No assignments mapped*`;
+                const moduleLines = assignmentsByModule.map(g =>
+                    `${g.moduleName}: ${g.assignments.map(a => a.name).join(', ')}`
+                ).join('; ');
+                return `**CLLO ${clloNum}:** ${moduleLines}`;
+            }).join('<br>');
             md += `| PLLO ${plloNum} | ${pllo.description} | ${clloNums} | ${assignments} |\n`;
         }
     });
@@ -1424,15 +1441,20 @@ function generateAlignmentCsv() {
     const rows = buildAlignmentData();
     let csv = 'PLLO,Description,Aligned CLLOs,Assignments\n';
 
-    rows.forEach(({ pllo, alignedCllos, assignmentsByModule, covered }) => {
+    rows.forEach(({ pllo, alignedCllos, clloCoverage, covered }) => {
         const plloNum = getPploNumber(pllo.id);
         if (!covered) {
             csv += `"PLLO ${plloNum}","${pllo.description}","—","Not addressed in this course"\n`;
         } else {
             const clloNums = alignedCllos.map(c => `CLLO ${getClloNumber(c.id)}`).join(', ');
-            const assignments = assignmentsByModule.map(group =>
-                `${group.moduleName}: ${group.assignments.map(a => a.name).join(', ')}`
-            ).join(' | ');
+            const assignments = clloCoverage.map(({ cllo, assignmentsByModule, hasAssignments }) => {
+                const clloNum = getClloNumber(cllo.id);
+                if (!hasAssignments) return `CLLO ${clloNum}: No assignments mapped`;
+                const moduleLines = assignmentsByModule.map(g =>
+                    `${g.moduleName}: ${g.assignments.map(a => a.name).join(', ')}`
+                ).join('; ');
+                return `CLLO ${clloNum}: ${moduleLines}`;
+            }).join(' | ');
             csv += `"PLLO ${plloNum}","${pllo.description}","${clloNums}","${assignments}"\n`;
         }
     });

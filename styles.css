@@ -505,6 +505,11 @@ select:focus {
     color: var(--text-muted) !important;
 }
 
+.alignment-not-covered-inline {
+    font-style: italic;
+    color: var(--text-muted);
+}
+
 /* Summary Table */
 .summary-table {
     width: 100%;

@@ -170,6 +170,137 @@ function generateId() {
 }
 
 // ============================================
+// COMMON CARTRIDGE EXPORT (Moodle import)
+// ============================================
+
+/* global JSZip */
+async function exportCommonCartridge() {
+    if (!state.modules || state.modules.length === 0) {
+        showToast('Add modules before exporting to Moodle.');
+        return;
+    }
+
+    const courseId = 'ct-' + Date.now();
+    const courseTitle = state.courseName || 'Untitled Course';
+
+    // Build manifest items and resources
+    let items = '';
+    let resources = '';
+
+    state.modules.forEach((mod, i) => {
+        const modId = `mod-${i}`;
+        const resId = `res-${i}`;
+        const filePath = `${modId}/index.html`;
+
+        items += `
+        <item identifier="${modId}" identifierref="${resId}">
+          <title>${escXml(mod.name || `Module ${i + 1}`)}</title>
+        </item>`;
+
+        resources += `
+    <resource identifier="${resId}" type="webcontent" href="${filePath}">
+      <file href="${filePath}"/>
+    </resource>`;
+    });
+
+    const manifest = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="${courseId}"
+  xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1"
+  xmlns:lom="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd">
+  <metadata>
+    <schema>IMS Common Cartridge</schema>
+    <schemaversion>1.1.0</schemaversion>
+    <lom:lom>
+      <lom:general>
+        <lom:title><lom:string language="en">${escXml(courseTitle)}</lom:string></lom:title>
+      </lom:general>
+    </lom:lom>
+  </metadata>
+  <organizations>
+    <organization identifier="org1" structure="rooted-hierarchy">
+      <item identifier="root">${items}
+      </item>
+    </organization>
+  </organizations>
+  <resources>${resources}
+  </resources>
+</manifest>`;
+
+    // Build per-module HTML pages
+    const zip = new JSZip();
+    zip.file('imsmanifest.xml', manifest);
+
+    state.modules.forEach((mod, i) => {
+        const modId = `mod-${i}`;
+        const dateRange = mod.startDate && mod.endDate
+            ? `<p class="dates">${formatDateRange(mod.startDate, mod.endDate)}</p>` : '';
+        const topic = mod.topic ? `<p class="topic"><strong>Topic:</strong> ${escXml(mod.topic)}</p>` : '';
+
+        let assignRows = '';
+        (mod.assignments || []).forEach(a => {
+            const due = a.dueDate ? formatShortDate(a.dueDate) : '—';
+            assignRows += `
+        <tr>
+          <td>${escXml(a.name)}</td>
+          <td>${escXml(a.type || '')}</td>
+          <td style="text-align:right">${a.points || ''}</td>
+          <td>${due}</td>
+        </tr>`;
+        });
+
+        const assignTable = assignRows ? `
+      <table>
+        <thead><tr><th>Assignment</th><th>Type</th><th>Points</th><th>Due</th></tr></thead>
+        <tbody>${assignRows}</tbody>
+      </table>` : '<p><em>No assignments in this module.</em></p>';
+
+        const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${escXml(mod.name || `Module ${i + 1}`)}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 24px auto; color: #222; }
+    h1 { font-size: 1.3em; border-bottom: 2px solid #a50e25; padding-bottom: 6px; }
+    .dates { color: #555; font-size: 0.95em; margin: 4px 0; }
+    .topic { margin: 8px 0 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+    th { background: #a50e25; color: #fff; padding: 6px 10px; text-align: left; }
+    td { padding: 5px 10px; border-bottom: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+  <h1>${escXml(mod.name || `Module ${i + 1}`)}</h1>
+  ${dateRange}
+  ${topic}
+  ${assignTable}
+</body>
+</html>`;
+
+        zip.folder(modId).file('index.html', html);
+    });
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const filename = (courseTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'course') + '.imscc';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('Common Cartridge exported — import the .imscc file into Moodle.');
+}
+
+function escXml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+// ============================================
 // COCHISE SYLLABUS GENERATOR INTEGRATION
 // ============================================
 
@@ -2423,6 +2554,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // CSG integration
     document.getElementById('sendToSyllabusBtn').addEventListener('click', sendToSyllabusGenerator);
+
+    // Moodle Common Cartridge export
+    document.getElementById('exportCCBtn').addEventListener('click', exportCommonCartridge);
 
     // Course name and dates
     document.getElementById('courseName').addEventListener('change', function() {

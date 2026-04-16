@@ -170,6 +170,78 @@ function generateId() {
 }
 
 // ============================================
+// COCHISE SYLLABUS GENERATOR INTEGRATION
+// ============================================
+
+function b64decode(str) {
+    return JSON.parse(new TextDecoder().decode(new Uint8Array([...atob(str)].map(c => c.charCodeAt(0)))));
+}
+
+function b64encode(obj) {
+    return btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(obj))));
+}
+
+function checkIncomingFromCSG() {
+    const hash = window.location.hash;
+    if (!hash.startsWith('#from-csg=')) return;
+    try {
+        const encoded = hash.slice('#from-csg='.length);
+        const payload = b64decode(encoded);
+        const courseName = [payload.courseNumber, payload.courseTitle].filter(Boolean).join(' — ');
+        if (courseName) {
+            state.courseName = courseName;
+            document.getElementById('courseName').value = courseName;
+        }
+        localStorage.setItem('coursetrix-csg-linked', 'true');
+        saveToLocalStorage();
+        history.replaceState(null, '', window.location.pathname);
+        updateSyllabusBtn();
+    } catch(e) {
+        console.warn('Could not parse CSG payload:', e);
+    }
+}
+
+function updateSyllabusBtn() {
+    const linked = localStorage.getItem('coursetrix-csg-linked') === 'true';
+    document.getElementById('sendToSyllabusBtn').classList.toggle('hidden', !linked);
+}
+
+function sendToSyllabusGenerator() {
+    const schedule = [];
+    (state.modules || []).forEach(mod => {
+        const dates = formatDateRange(mod.startDate, mod.endDate);
+        schedule.push({ module: mod.name || '', dates, topic: mod.topic || '', assignment: '', dueDate: '' });
+        (mod.assignments || []).forEach(a => {
+            const due = a.dueDate ? formatShortDate(a.dueDate) : '';
+            const label = a.points ? `${a.name} (${a.points} pts)` : a.name;
+            schedule.push({ module: '', dates: '', topic: '', assignment: label, dueDate: due });
+        });
+    });
+    const payload = { schedule };
+    const encoded = b64encode(payload);
+    window.open('https://syllabus.coursetrix.com/#from-coursetrix=' + encoded, '_blank');
+}
+
+function formatDateRange(start, end) {
+    if (!start && !end) return '';
+    const fmt = d => {
+        if (!d) return '';
+        const [, m, day] = d.split('-');
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return `${months[parseInt(m,10)-1]} ${parseInt(day,10)}`;
+    };
+    if (start && end) return `${fmt(start)}–${fmt(end)}`;
+    return fmt(start) || fmt(end);
+}
+
+function formatShortDate(d) {
+    if (!d) return '';
+    const [, m, day] = d.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[parseInt(m,10)-1]} ${parseInt(day,10)}`;
+}
+
+// ============================================
 // LOCAL STORAGE
 // ============================================
 
@@ -2324,6 +2396,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load saved data
     loadFromLocalStorage();
     renderAll();
+    checkIncomingFromCSG();
+    updateSyllabusBtn();
+
+    // CSG integration
+    document.getElementById('sendToSyllabusBtn').addEventListener('click', sendToSyllabusGenerator);
 
     // Course name and dates
     document.getElementById('courseName').addEventListener('change', function() {

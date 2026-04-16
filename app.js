@@ -207,6 +207,7 @@ function updateSyllabusBtn() {
 }
 
 function sendToSyllabusGenerator() {
+    // Build schedule rows
     const schedule = [];
     (state.modules || []).forEach(mod => {
         const dates = formatDateRange(mod.startDate, mod.endDate);
@@ -217,7 +218,19 @@ function sendToSyllabusGenerator() {
             schedule.push({ module: '', dates: '', topic: '', assignment: label, dueDate: due });
         });
     });
-    const payload = { schedule };
+
+    // Sum points per assignment type across all modules
+    const pointsMap = {};
+    (state.modules || []).forEach(mod => {
+        (mod.assignments || []).forEach(a => {
+            if (a.type) {
+                pointsMap[a.type] = (pointsMap[a.type] || 0) + (parseInt(a.points, 10) || 0);
+            }
+        });
+    });
+    const assignments = Object.entries(pointsMap).map(([type, points]) => ({ type, points: String(points) }));
+
+    const payload = { schedule, assignments };
     const encoded = b64encode(payload);
     window.open('https://syllabus.coursetrix.com/#from-coursetrix=' + encoded, '_blank');
 }

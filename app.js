@@ -206,6 +206,15 @@ function updateSyllabusBtn() {
     document.getElementById('sendToSyllabusBtn').classList.toggle('hidden', !linked);
 }
 
+// ⚠️  CSG INTEGRATION CONTRACT
+// This function is the single point of connection between Coursetrix and the
+// Cochise College Syllabus Generator (syllabus.coursetrix.com).
+// If you rename or restructure any of the following, update this function too:
+//   - state.modules           (array of module objects)
+//   - module.name, .startDate, .endDate, .topic
+//   - module.assignments      (array of assignment objects)
+//   - assignment.name, .type, .points, .dueDate
+// The CSG expects: { schedule: [...], assignments: [...] } encoded as base64 in the URL hash.
 function sendToSyllabusGenerator() {
     // Build schedule rows
     const schedule = [];

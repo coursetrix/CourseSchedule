@@ -704,6 +704,12 @@ function renderAssignmentTypeSummary() {
                     </tr>
                 `).join('')}
             </tbody>
+            <tfoot>
+                <tr class="summary-total-row">
+                    <td>Total</td>
+                    <td>${Object.values(totals).reduce((sum, v) => sum + v, 0)}</td>
+                </tr>
+            </tfoot>
         </table>
     `;
 

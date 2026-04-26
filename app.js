@@ -370,7 +370,8 @@ function sendToSyllabusGenerator() {
     });
     const assignments = Object.entries(pointsMap).map(([type, points]) => ({ type, points: String(points) }));
 
-    const payload = { schedule, assignments };
+    const outcomes = (state.cllos || []).map(c => c.description || '').filter(d => d.trim());
+    const payload = { schedule, assignments, ...(outcomes.length ? { outcomes } : {}) };
     const encoded = b64encode(payload);
     window.open('https://syllabus.coursetrix.com/#from-coursetrix=' + encoded, '_blank');
 }

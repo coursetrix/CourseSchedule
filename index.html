@@ -74,6 +74,11 @@
                 <div class="subsection">
                     <h3>Assignment Types</h3>
                     <p class="help-text">Customize the assignment types available for your course.</p>
+                    <div class="grading-mode-toggle" style="margin-bottom: 12px;">
+                        <span class="grading-mode-label">Grading Mode:</span>
+                        <button id="gradingModePoints" class="btn btn-small active" onclick="setGradingMode('points')">Points</button>
+                        <button id="gradingModeWeighted" class="btn btn-small" onclick="setGradingMode('weighted')">Weighted %</button>
+                    </div>
                     <div id="assignmentTypeList" class="tag-list"></div>
                     <div class="inline-form">
                         <select id="suggestedTypeSelect" style="max-width: 160px;">
@@ -82,7 +87,7 @@
                         <input type="text" id="newAssignmentType" placeholder="New type...">
                         <button id="addTypeBtn" class="btn btn-small">Add</button>
                     </div>
-                    <p class="help-text" style="margin-top: 16px; margin-bottom: 0;"><em>Note: Point totals will populate as you add assignments in the Schedule Builder.</em></p>
+                    <p class="help-text" style="margin-top: 16px; margin-bottom: 0;" id="gradingModeHint"><em>Note: Point totals will populate as you add assignments in the Schedule Builder.</em></p>
                     <div id="assignmentTypeSummary"></div>
                     <div id="summaryExportActions" class="export-actions" style="margin-top: 16px; display: none;">
                         <button id="copySummaryBtn" class="btn btn-primary">Copy Summary to Clipboard</button>
@@ -192,7 +197,7 @@
                     <label for="assignmentType">Type</label>
                     <select id="assignmentType"></select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="assignmentPointsGroup">
                     <label for="assignmentPoints">Points</label>
                     <input type="number" id="assignmentPoints" placeholder="e.g., 100" min="0">
                 </div>
@@ -394,7 +399,7 @@
     <div id="aboutModal" class="modal hidden">
         <div class="modal-content">
             <h3>About Coursetrix</h3>
-            <p style="margin-top: 4px; color: #6b7280; font-size: 0.875rem;">Version 3.0.2</p>
+            <p style="margin-top: 4px; color: #6b7280; font-size: 0.875rem;">Version 3.1.0</p>
             <p style="margin-top: 16px;">Built by an Instructional Designer who got tired of wrestling with Word tables. Coursetrix lets educators blueprint their course structure (modules, assignments, and learning outcome alignment) before diving into LMS development.</p>
             <div class="about-creator">
                 <div>
@@ -417,7 +422,14 @@
     <div id="whatsNewModal" class="modal hidden">
         <div class="modal-content modal-content-wide">
             <h3>What's New in Coursetrix</h3>
-            <div class="whats-new-version">v3.0 — Program-Level Learning Outcomes</div>
+            <div class="whats-new-version">v3.1 — Weighted Grading</div>
+            <ul class="feature-list">
+                <li><strong>Grading Mode toggle</strong> — Choose between Points and Weighted % in the Assignment Types section. Most instructors use points; weighted grading lets faculty assign a percentage to each assignment type instead of tracking individual point totals.</li>
+                <li><strong>Weight summary table</strong> — In weighted mode, enter the percentage for each type. A running total shows when weights reach 100%.</li>
+                <li><strong>Consistent across reports</strong> — Point values are hidden from the Schedule Builder, Course Schedule Report, Word export, Markdown, and CSV when in weighted mode. The Total Points row is omitted.</li>
+                <li><strong>CLLO transfer to Syllabus Generator</strong> — Course-Level Learning Outcomes now transfer automatically when sending your schedule to the Cochise College Syllabus Generator.</li>
+            </ul>
+            <div class="whats-new-version" style="margin-top: 20px;">v3.0 — Program-Level Learning Outcomes</div>
             <ul class="feature-list">
                 <li><strong>Program-Level Learning Outcomes (PLLOs)</strong> — Define program outcomes via the Manage PLLOs button and align CLLOs to them directly in Course Setup.</li>
                 <li><strong>PLLO Coverage Report</strong> — A dedicated report showing which program outcomes your course addresses, with supporting assignments grouped by unit. PLLOs not covered by the course are flagged clearly.</li>
@@ -439,6 +451,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=3.0.2"></script>
+    <script src="app.js?v=3.1.0"></script>
 </body>
 </html>

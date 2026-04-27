@@ -61,6 +61,8 @@ const demoCourse = {
         { id: 'demo-cllo-5', description: 'Utilize digital literacy skills to research and compose in online environments', plloIds: ['demo-pllo-4'] }
     ],
     assignmentTypes: ['Discussion', 'Quiz', 'Paper/Essay', 'Peer Review', 'Reflection'],
+    typeWeights: {},
+    gradingMode: 'points',
     modules: [
         {
             id: 'demo-mod-1',
@@ -161,6 +163,8 @@ let state = {
     pllos: [],
     cllos: [],
     assignmentTypes: [],
+    typeWeights: {},
+    gradingMode: 'points',
     modules: []
 };
 
@@ -368,10 +372,12 @@ function sendToSyllabusGenerator() {
             }
         });
     });
-    const assignments = Object.entries(pointsMap).map(([type, points]) => ({ type, points: String(points) }));
+    const assignments = state.gradingMode === 'weighted'
+        ? state.assignmentTypes.map(type => ({ type, weight: String(state.typeWeights[type] || 0) }))
+        : Object.entries(pointsMap).map(([type, points]) => ({ type, points: String(points) }));
 
     const outcomes = (state.cllos || []).map(c => c.description || '').filter(d => d.trim());
-    const payload = { schedule, assignments, ...(outcomes.length ? { outcomes } : {}) };
+    const payload = { schedule, assignments, gradingMode: state.gradingMode, ...(outcomes.length ? { outcomes } : {}) };
     const encoded = b64encode(payload);
     window.open('https://syllabus.coursetrix.com/#from-coursetrix=' + encoded, '_blank');
 }
@@ -412,6 +418,9 @@ function loadFromLocalStorage() {
             if (!state.assignmentTypes) {
                 state.assignmentTypes = [...defaultAssignmentTypes];
             }
+            // Ensure grading mode fields exist (for backwards compatibility)
+            if (!state.gradingMode) state.gradingMode = 'points';
+            if (!state.typeWeights) state.typeWeights = {};
             // Ensure pllos exists (for backwards compatibility)
             if (!state.pllos) {
                 state.pllos = [];
@@ -666,6 +675,23 @@ function removeAssignmentType(type) {
     renderAssignmentTypeSummary();
 }
 
+function setGradingMode(mode) {
+    state.gradingMode = mode;
+    saveToLocalStorage();
+    renderAssignmentTypeSummary();
+    // Show/hide points field in assignment modal
+    const ptsGroup = document.getElementById('assignmentPointsGroup');
+    if (ptsGroup) ptsGroup.style.display = mode === 'points' ? '' : 'none';
+    // Update toggle button states
+    document.getElementById('gradingModePoints').classList.toggle('active', mode === 'points');
+    document.getElementById('gradingModeWeighted').classList.toggle('active', mode === 'weighted');
+    // Update hint text
+    const hint = document.getElementById('gradingModeHint');
+    if (hint) hint.innerHTML = mode === 'weighted'
+        ? '<em>Enter the percentage weight for each assignment type. Weights must total 100%.</em>'
+        : '<em>Note: Point totals will populate as you add assignments in the Schedule Builder.</em>';
+}
+
 function renderAssignmentTypeSummary() {
     const container = document.getElementById('assignmentTypeSummary');
     const exportContainer = document.getElementById('summaryExportActions');
@@ -677,45 +703,93 @@ function renderAssignmentTypeSummary() {
         return;
     }
 
-    // Calculate totals per type
-    const totals = {};
-    state.assignmentTypes.forEach(type => totals[type] = 0);
+    let html;
 
-    state.modules.forEach(module => {
-        module.assignments.forEach(assignment => {
-            if (assignment.type && totals.hasOwnProperty(assignment.type)) {
-                totals[assignment.type] += (assignment.points || 0);
-            }
-        });
-    });
-
-    const html = `
-        <table class="summary-table">
-            <thead>
-                <tr>
-                    <th>Assignment Type</th>
-                    <th>Total Points</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${state.assignmentTypes.map(type => `
+    if (state.gradingMode === 'weighted') {
+        const totalWeight = state.assignmentTypes.reduce((sum, t) => sum + (Number(state.typeWeights[t]) || 0), 0);
+        const totalOk = Math.round(totalWeight) === 100;
+        html = `
+            <table class="summary-table">
+                <thead>
                     <tr>
-                        <td>${escapeHtml(type)}</td>
-                        <td>${totals[type]}</td>
+                        <th>Assignment Type</th>
+                        <th>Weight (%)</th>
                     </tr>
-                `).join('')}
-            </tbody>
-            <tfoot>
-                <tr class="summary-total-row">
-                    <td>Total</td>
-                    <td>${Object.values(totals).reduce((sum, v) => sum + v, 0)}</td>
-                </tr>
-            </tfoot>
-        </table>
-    `;
+                </thead>
+                <tbody>
+                    ${state.assignmentTypes.map(type => `
+                        <tr>
+                            <td>${escapeHtml(type)}</td>
+                            <td>
+                                <input type="number" min="0" max="100" step="0.1"
+                                       class="weight-input"
+                                       value="${Number(state.typeWeights[type] || 0)}"
+                                       oninput="updateTypeWeight('${escapeHtml(type)}', this.value)">
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+                <tfoot>
+                    <tr class="summary-total-row ${totalOk ? '' : 'weight-total-warn'}">
+                        <td>Total</td>
+                        <td>${totalWeight.toFixed(1)}%${totalOk ? ' ✓' : ' (must equal 100%)'}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        `;
+    } else {
+        // Calculate totals per type
+        const totals = {};
+        state.assignmentTypes.forEach(type => totals[type] = 0);
+        state.modules.forEach(module => {
+            module.assignments.forEach(assignment => {
+                if (assignment.type && totals.hasOwnProperty(assignment.type)) {
+                    totals[assignment.type] += (assignment.points || 0);
+                }
+            });
+        });
+
+        html = `
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Assignment Type</th>
+                        <th>Total Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${state.assignmentTypes.map(type => `
+                        <tr>
+                            <td>${escapeHtml(type)}</td>
+                            <td>${totals[type]}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+                <tfoot>
+                    <tr class="summary-total-row">
+                        <td>Total</td>
+                        <td>${Object.values(totals).reduce((sum, v) => sum + v, 0)}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        `;
+    }
 
     container.innerHTML = html;
     exportContainer.style.display = 'flex';
+}
+
+function updateTypeWeight(type, value) {
+    state.typeWeights[type] = parseFloat(value) || 0;
+    saveToLocalStorage();
+    // Update the summary total without re-rendering chips (avoids losing focus)
+    const totalCell = document.querySelector('#assignmentTypeSummary .summary-total-row td:last-child');
+    if (totalCell) {
+        const total = state.assignmentTypes.reduce((sum, t) => sum + (Number(state.typeWeights[t]) || 0), 0);
+        const totalOk = Math.round(total) === 100;
+        totalCell.textContent = `${total.toFixed(1)}%${totalOk ? ' ✓' : ' (must equal 100%)'}`;
+        totalCell.parentElement.classList.toggle('weight-total-warn', !totalOk);
+    }
 }
 
 function getSummaryData() {
@@ -882,7 +956,7 @@ function renderAssignments(module) {
                 <div class="assignment-name">${escapeHtml(assignment.name)}</div>
                 <div class="assignment-meta">
                     <span class="assignment-type">${escapeHtml(assignment.type)}</span>
-                    ${assignment.points ? `<span class="assignment-points">${assignment.points} pts</span>` : ''}
+                    ${(state.gradingMode !== 'weighted' && assignment.points) ? `<span class="assignment-points">${assignment.points} pts</span>` : ''}
                     <span class="assignment-cllos">${formatCllos(assignment.clloIds)}</span>
                 </div>
             </div>
@@ -1110,6 +1184,10 @@ function openAssignmentModal(moduleId, assignmentId = null) {
     } else {
         assignmentDateHint.textContent = '';
     }
+
+    // Show/hide points field based on grading mode
+    const ptsGroup = document.getElementById('assignmentPointsGroup');
+    if (ptsGroup) ptsGroup.style.display = state.gradingMode === 'points' ? '' : 'none';
 
     // Populate type dropdown
     const typeSelect = document.getElementById('assignmentType');
@@ -1759,6 +1837,7 @@ function renderPreview() {
         module.assignments.forEach((assignment) => {
             if (assignment.points) totalPoints += assignment.points;
             const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+            const weighted = state.gradingMode === 'weighted';
 
             html += `
                 <tr>
@@ -1766,7 +1845,7 @@ function renderPreview() {
                     <td></td>
                     <td></td>
                     <td>
-                        ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
+                        ${escapeHtml(assignment.name)} ${(!weighted && assignment.points) ? `(${assignment.points} pts)` : ''}
                         ${clloNums ? `<br><span style="font-size: 0.9em; color: #666;">CLLO: ${clloNums}</span>` : ''}
                     </td>
                     <td>${formatDate(assignment.dueDate)}</td>
@@ -1775,13 +1854,15 @@ function renderPreview() {
         });
     });
 
-    html += `
-        <tr style="font-weight: bold; background-color: var(--background);">
-            <td colspan="3" style="text-align: right;">Total Points</td>
-            <td>${totalPoints}</td>
-            <td></td>
-        </tr>
-    `;
+    if (state.gradingMode !== 'weighted') {
+        html += `
+            <tr style="font-weight: bold; background-color: var(--background);">
+                <td colspan="3" style="text-align: right;">Total Points</td>
+                <td>${totalPoints}</td>
+                <td></td>
+            </tr>
+        `;
+    }
 
     html += '</tbody></table>';
     container.innerHTML = html;
@@ -1862,6 +1943,7 @@ function generateWordTable() {
         module.assignments.forEach((assignment) => {
             if (assignment.points) totalPoints += assignment.points;
             const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
+            const weighted = state.gradingMode === 'weighted';
 
             html += `
         <tr>
@@ -1870,7 +1952,7 @@ function generateWordTable() {
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">
                 <p class="cs-text">
-                    ${escapeHtml(assignment.name)} ${assignment.points ? `(${assignment.points} pts)` : ''}
+                    ${escapeHtml(assignment.name)} ${(!weighted && assignment.points) ? `(${assignment.points} pts)` : ''}
                     ${clloNums ? `<br>CLLO: ${clloNums}` : ''}
                 </p>
             </td>
@@ -1879,12 +1961,14 @@ function generateWordTable() {
         });
     });
 
-    html += `
+    if (state.gradingMode !== 'weighted') {
+        html += `
         <tr style="font-weight:bold; background-color:#f2f2f2;">
             <td colspan="3" style="border:1px solid #000; padding:6px; text-align:right;"><p class="cs-text" style="text-align:right; font-weight:bold;">Total Points</p></td>
             <td style="border:1px solid #000; padding:6px;"><p class="cs-text" style="font-weight:bold;">${totalPoints}</p></td>
             <td style="border:1px solid #000; padding:6px;"></td>
         </tr>`;
+    }
 
     html += `
     </tbody>
@@ -1913,7 +1997,8 @@ function generateMarkdown() {
 
         module.assignments.forEach((assignment) => {
             const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
-            md += `| | | | ${assignment.name} ${assignment.points ? `(${assignment.points} pts)` : ''} ${clloNums ? `<br>CLLO: ${clloNums}` : ''} | ${formatDate(assignment.dueDate)} |\n`;
+            const ptsLabel = (state.gradingMode !== 'weighted' && assignment.points) ? ` (${assignment.points} pts)` : '';
+            md += `| | | | ${assignment.name}${ptsLabel} ${clloNums ? `<br>CLLO: ${clloNums}` : ''} | ${formatDate(assignment.dueDate)} |\n`;
         });
     });
 
@@ -1928,7 +2013,8 @@ function downloadCsv() {
 
         module.assignments.forEach((assignment) => {
             const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
-            csv += `"","","","${assignment.name} ${assignment.points ? `(${assignment.points} pts)` : ''}","${clloNums}","${formatDate(assignment.dueDate)}"\n`;
+            const ptsLabel = (state.gradingMode !== 'weighted' && assignment.points) ? ` (${assignment.points} pts)` : '';
+            csv += `"","","","${assignment.name}${ptsLabel}","${clloNums}","${formatDate(assignment.dueDate)}"\n`;
         });
     });
 
@@ -2306,6 +2392,7 @@ function confirmLoadDemo() {
     state = JSON.parse(JSON.stringify(demoCourse));
     saveToLocalStorage();
     renderAll();
+    setGradingMode(state.gradingMode || 'points');
     showToast('Demo course loaded!', 'success');
 }
 
@@ -2558,6 +2645,8 @@ document.addEventListener('DOMContentLoaded', function() {
     renderAll();
     checkIncomingFromCSG();
     updateSyllabusBtn();
+    // Sync grading mode toggle to loaded state
+    setGradingMode(state.gradingMode || 'points');
 
     // CSG integration
     document.getElementById('sendToSyllabusBtn').addEventListener('click', sendToSyllabusGenerator);

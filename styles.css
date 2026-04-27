@@ -548,6 +548,37 @@ select:focus {
     background: var(--background);
 }
 
+.weight-total-warn td {
+    color: #b91c1c;
+}
+
+.grading-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.grading-mode-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.grading-mode-toggle .btn.active {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.weight-input {
+    width: 70px;
+    padding: 2px 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 13px;
+    text-align: right;
+}
+
 /* Assignment Type Tags */
 .tag-list {
     display: flex;

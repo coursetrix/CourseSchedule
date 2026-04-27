@@ -358,7 +358,9 @@ function sendToSyllabusGenerator() {
         schedule.push({ module: mod.name || '', dates, topic: mod.topic || '', assignment: '', dueDate: '' });
         (mod.assignments || []).forEach(a => {
             const due = a.dueDate ? formatShortDate(a.dueDate) : '';
-            const label = a.points ? `${a.name} (${a.points} pts)` : a.name;
+            const label = state.gradingMode === 'weighted'
+                ? (a.type ? `${a.name} (${a.type})` : a.name)
+                : (a.points ? `${a.name} (${a.points} pts)` : a.name);
             schedule.push({ module: '', dates: '', topic: '', assignment: label, dueDate: due });
         });
     });

@@ -965,6 +965,7 @@ function renderAssignments(module) {
             <div class="assignment-due">${formatDate(assignment.dueDate)}</div>
             <div class="assignment-actions">
                 <button class="btn btn-icon" onclick="editAssignment('${module.id}', '${assignment.id}')" title="Edit">✎</button>
+                <button class="btn btn-icon" onclick="duplicateAssignment('${module.id}', '${assignment.id}')" title="Duplicate">⧉</button>
                 <button class="btn btn-icon danger" onclick="deleteAssignment('${module.id}', '${assignment.id}')" title="Delete">×</button>
             </div>
         </div>
@@ -1311,6 +1312,20 @@ function editAssignment(moduleId, assignmentId) {
     openAssignmentModal(moduleId, assignmentId);
 }
 
+function duplicateAssignment(moduleId, assignmentId) {
+    const module = state.modules.find(m => m.id === moduleId);
+    const index = module.assignments.findIndex(a => a.id === assignmentId);
+    const original = module.assignments[index];
+    const copy = { ...original, id: generateId(), name: original.name + ' (Copy)' };
+    module.assignments.splice(index + 1, 0, copy);
+    saveToLocalStorage();
+    renderModules();
+    renderClloReport();
+    renderAlignmentMap();
+    renderPreview();
+    renderAssignmentTypeSummary();
+}
+
 function deleteAssignment(moduleId, assignmentId) {
     if (confirm('Are you sure you want to delete this assignment?')) {
         const module = state.modules.find(m => m.id === moduleId);
@@ -1364,6 +1379,12 @@ function initializeSortables() {
 
                 // Remove from source
                 const movedAssignment = fromModule.assignments.splice(evt.oldIndex, 1)[0];
+
+                // Clear due date when moved to a different module
+                if (fromModuleId !== toModuleId && movedAssignment.dueDate) {
+                    movedAssignment.dueDate = '';
+                    showToast('Due date cleared — assignment moved to a new week. Edit it to set a new date.');
+                }
 
                 // Add to destination
                 toModule.assignments.splice(evt.newIndex, 0, movedAssignment);

@@ -56,7 +56,6 @@ Coursetrix provides a clean, intuitive interface that makes course design fast a
 - **Word-optimized export** — Copy a formatted table that pastes cleanly into Word
 - **Multiple formats** — Markdown and CSV for both the schedule and summary reports
 - **PDF export** — Generate a formatted PDF of the entire course to share with stakeholders
-- **Moodle export** — Export as a Common Cartridge (.imscc) file for direct import into Moodle
 
 ### General
 - **No account required** — Works entirely in your browser
@@ -86,7 +85,6 @@ No installation required. Just download and open `index.html` in your browser.
 Built with vanilla HTML, CSS, and JavaScript. No frameworks, no build process, no dependencies except:
 - [SortableJS](https://sortablejs.github.io/Sortable/) for drag-and-drop (loaded via CDN)
 - [jsPDF](https://github.com/parallax/jsPDF) for PDF generation (loaded via CDN)
-- [JSZip](https://stuk.github.io/jszip/) for Moodle export (loaded via CDN)
 
 This keeps it simple to deploy, modify, and maintain.
 

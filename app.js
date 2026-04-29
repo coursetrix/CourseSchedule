@@ -1349,8 +1349,16 @@ function openMoveMenu(moduleId, assignmentId, btn) {
         item.className = 'move-menu-item';
         item.textContent = target.name || 'Untitled Module';
         item.addEventListener('click', () => {
-            moveAssignmentToModule(moduleId, assignmentId, target.id);
             closeMoveMenu();
+            const assignment = state.modules.find(m => m.id === moduleId)?.assignments.find(a => a.id === assignmentId);
+            if (assignment?.dueDate) {
+                showConfirm(
+                    'This assignment has a due date that will be cleared when moved to a new week. Move anyway?',
+                    () => moveAssignmentToModule(moduleId, assignmentId, target.id)
+                );
+            } else {
+                moveAssignmentToModule(moduleId, assignmentId, target.id);
+            }
         });
         menu.appendChild(item);
     });
@@ -1381,7 +1389,6 @@ function moveAssignmentToModule(fromModuleId, assignmentId, toModuleId) {
     const [assignment] = fromModule.assignments.splice(index, 1);
     if (assignment.dueDate) {
         assignment.dueDate = '';
-        showAlert('Due date cleared — assignment moved to a new week. Edit it to set a new date.');
     }
     toModule.assignments.push(assignment);
     saveToLocalStorage();
@@ -1432,18 +1439,28 @@ function initializeSortables() {
                 // Remove from source
                 const movedAssignment = fromModule.assignments.splice(evt.oldIndex, 1)[0];
 
-                // Clear due date when moved to a different module
                 if (fromModuleId !== toModuleId && movedAssignment.dueDate) {
-                    movedAssignment.dueDate = '';
-                    showAlert('Due date cleared — assignment moved to a new week. Edit it to set a new date.');
+                    showConfirm(
+                        'This assignment has a due date that will be cleared when moved to a new week. Move anyway?',
+                        () => {
+                            movedAssignment.dueDate = '';
+                            toModule.assignments.splice(evt.newIndex, 0, movedAssignment);
+                            saveToLocalStorage();
+                            renderModules();
+                            renderPreview();
+                        },
+                        () => {
+                            fromModule.assignments.splice(evt.oldIndex, 0, movedAssignment);
+                            renderModules();
+                            renderPreview();
+                        }
+                    );
+                } else {
+                    toModule.assignments.splice(evt.newIndex, 0, movedAssignment);
+                    saveToLocalStorage();
+                    renderModules();
+                    renderPreview();
                 }
-
-                // Add to destination
-                toModule.assignments.splice(evt.newIndex, 0, movedAssignment);
-
-                saveToLocalStorage();
-                renderModules();
-                renderPreview();
             }
         });
     });
@@ -2568,6 +2585,44 @@ function snapToNearestSunday(dateStr) {
     const offsets = [0, -1, -2, -3, 3, 2, 1]; // indexed by getDay()
     date.setDate(date.getDate() + offsets[day]);
     return date.toISOString().split('T')[0];
+}
+
+function showConfirm(message, onConfirm, onCancel) {
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-overlay';
+
+    const dialog = document.createElement('div');
+    dialog.className = 'confirm-dialog';
+
+    const text = document.createElement('p');
+    text.className = 'confirm-message';
+    text.textContent = message;
+
+    const actions = document.createElement('div');
+    actions.className = 'confirm-actions';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn btn-secondary';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.addEventListener('click', () => {
+        overlay.remove();
+        if (onCancel) onCancel();
+    });
+
+    const okBtn = document.createElement('button');
+    okBtn.className = 'btn btn-primary';
+    okBtn.textContent = 'Move Assignment';
+    okBtn.addEventListener('click', () => {
+        overlay.remove();
+        onConfirm();
+    });
+
+    actions.appendChild(cancelBtn);
+    actions.appendChild(okBtn);
+    dialog.appendChild(text);
+    dialog.appendChild(actions);
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
 }
 
 function showAlert(message) {

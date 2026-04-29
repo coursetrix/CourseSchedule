@@ -959,6 +959,37 @@ select:focus {
     background: rgba(255, 255, 255, 0.4);
 }
 
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 4000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirm-dialog {
+    background: white;
+    border-radius: 10px;
+    padding: 24px;
+    max-width: 360px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-message {
+    margin: 0 0 20px;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
 .move-menu {
     position: fixed;
     background: white;

@@ -922,7 +922,6 @@ function renderModules() {
         <div class="module-item ${module.collapsed ? 'collapsed' : ''}" data-id="${module.id}">
             <div class="module-header">
                 <button class="collapse-toggle" onclick="toggleModuleCollapse('${module.id}')" title="Expand/Collapse">▼</button>
-                <span class="drag-handle">≡</span>
                 <div class="module-info">
                     <div class="module-title">${escapeHtml(module.name) || 'Untitled Module'}</div>
                     <div class="module-dates">${formatDateRange(module.startDate, module.endDate)}</div>
@@ -966,6 +965,7 @@ function renderAssignments(module) {
             <div class="assignment-actions">
                 <button class="btn btn-icon" onclick="editAssignment('${module.id}', '${assignment.id}')" title="Edit">✎</button>
                 <button class="btn btn-icon" onclick="duplicateAssignment('${module.id}', '${assignment.id}')" title="Duplicate">⧉</button>
+                <button class="btn btn-icon" onclick="openMoveMenu('${module.id}', '${assignment.id}', this)" title="Move to module">→</button>
                 <button class="btn btn-icon danger" onclick="deleteAssignment('${module.id}', '${assignment.id}')" title="Delete">×</button>
             </div>
         </div>
@@ -1326,6 +1326,72 @@ function duplicateAssignment(moduleId, assignmentId) {
     renderAssignmentTypeSummary();
 }
 
+function openMoveMenu(moduleId, assignmentId, btn) {
+    closeMoveMenu();
+
+    const otherModules = state.modules.filter(m => m.id !== moduleId);
+    if (otherModules.length === 0) {
+        showToast('No other modules to move to.');
+        return;
+    }
+
+    const menu = document.createElement('div');
+    menu.className = 'move-menu';
+    menu.id = 'activeMoveMenu';
+
+    const label = document.createElement('div');
+    label.className = 'move-menu-label';
+    label.textContent = 'Move to…';
+    menu.appendChild(label);
+
+    otherModules.forEach(target => {
+        const item = document.createElement('button');
+        item.className = 'move-menu-item';
+        item.textContent = target.name || 'Untitled Module';
+        item.addEventListener('click', () => {
+            moveAssignmentToModule(moduleId, assignmentId, target.id);
+            closeMoveMenu();
+        });
+        menu.appendChild(item);
+    });
+
+    document.body.appendChild(menu);
+
+    const rect = btn.getBoundingClientRect();
+    const menuWidth = 220;
+    let left = rect.right - menuWidth;
+    if (left < 8) left = 8;
+    let top = rect.bottom + 4;
+    if (top + 200 > window.innerHeight) top = rect.top - menu.offsetHeight - 4;
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+
+    setTimeout(() => document.addEventListener('click', closeMoveMenu, { once: true }), 0);
+}
+
+function closeMoveMenu() {
+    const existing = document.getElementById('activeMoveMenu');
+    if (existing) existing.remove();
+}
+
+function moveAssignmentToModule(fromModuleId, assignmentId, toModuleId) {
+    const fromModule = state.modules.find(m => m.id === fromModuleId);
+    const toModule = state.modules.find(m => m.id === toModuleId);
+    const index = fromModule.assignments.findIndex(a => a.id === assignmentId);
+    const [assignment] = fromModule.assignments.splice(index, 1);
+    if (assignment.dueDate) {
+        assignment.dueDate = '';
+        showAlert('Due date cleared — assignment moved to a new week. Edit it to set a new date.');
+    }
+    toModule.assignments.push(assignment);
+    saveToLocalStorage();
+    renderModules();
+    renderClloReport();
+    renderAlignmentMap();
+    renderPreview();
+    renderAssignmentTypeSummary();
+}
+
 function deleteAssignment(moduleId, assignmentId) {
     if (confirm('Are you sure you want to delete this assignment?')) {
         const module = state.modules.find(m => m.id === moduleId);
@@ -1344,24 +1410,6 @@ function deleteAssignment(moduleId, assignmentId) {
 // ============================================
 
 function initializeSortables() {
-    // Module sorting
-    const moduleList = document.getElementById('moduleList');
-    if (moduleList && state.modules.length > 0) {
-        new Sortable(moduleList, {
-            animation: 150,
-            handle: '.module-header',
-            ghostClass: 'sortable-ghost',
-            chosenClass: 'sortable-chosen',
-            onEnd: function(evt) {
-                const movedModule = state.modules.splice(evt.oldIndex, 1)[0];
-                state.modules.splice(evt.newIndex, 0, movedModule);
-                saveToLocalStorage();
-                renderModules();
-                renderPreview();
-            }
-        });
-    }
-
     // Assignment sorting within modules
     document.querySelectorAll('.assignment-list').forEach(list => {
         new Sortable(list, {
@@ -1370,6 +1418,10 @@ function initializeSortables() {
             handle: '.drag-handle',
             ghostClass: 'sortable-ghost',
             chosenClass: 'sortable-chosen',
+            scroll: true,
+            scrollSensitivity: 80,
+            scrollSpeed: 15,
+            bubbleScroll: true,
             onEnd: function(evt) {
                 const fromModuleId = evt.from.dataset.moduleId;
                 const toModuleId = evt.to.dataset.moduleId;
@@ -1383,7 +1435,7 @@ function initializeSortables() {
                 // Clear due date when moved to a different module
                 if (fromModuleId !== toModuleId && movedAssignment.dueDate) {
                     movedAssignment.dueDate = '';
-                    showToast('Due date cleared — assignment moved to a new week. Edit it to set a new date.');
+                    showAlert('Due date cleared — assignment moved to a new week. Edit it to set a new date.');
                 }
 
                 // Add to destination
@@ -2516,6 +2568,20 @@ function snapToNearestSunday(dateStr) {
     const offsets = [0, -1, -2, -3, 3, 2, 1]; // indexed by getDay()
     date.setDate(date.getDate() + offsets[day]);
     return date.toISOString().split('T')[0];
+}
+
+function showAlert(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-persistent';
+    const text = document.createElement('span');
+    text.textContent = message;
+    const btn = document.createElement('button');
+    btn.className = 'toast-ok';
+    btn.textContent = 'OK';
+    btn.addEventListener('click', () => toast.remove());
+    toast.appendChild(text);
+    toast.appendChild(btn);
+    document.body.appendChild(toast);
 }
 
 function showToast(message, type = '') {

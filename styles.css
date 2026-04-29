@@ -937,6 +937,68 @@ select:focus {
     background: var(--success-color);
 }
 
+.toast-persistent {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.toast-persistent .toast-ok {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.toast-persistent .toast-ok:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.move-menu {
+    position: fixed;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    z-index: 3000;
+    min-width: 200px;
+    max-width: 280px;
+    padding: 6px 0;
+    font-size: 0.875rem;
+}
+
+.move-menu-label {
+    padding: 6px 14px 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.move-menu-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.move-menu-item:hover {
+    background: var(--background-secondary);
+}
+
 @keyframes slideIn {
     from {
         transform: translateY(20px);

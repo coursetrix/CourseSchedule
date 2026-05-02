@@ -353,6 +353,15 @@ function updateSyllabusBtn() {
     document.getElementById('sendToSyllabusBtn').classList.toggle('hidden', !linked);
     document.getElementById('saveBtn').classList.toggle('hidden', linked);
     document.getElementById('loadBtn').classList.toggle('hidden', linked);
+    ['saveFirstNewCourseBtn','saveFirstImportBtn','saveFirstLoadDemoBtn'].forEach(id => {
+        document.getElementById(id).classList.toggle('hidden', linked);
+    });
+    const warning = linked
+        ? 'Send to Syllabus Generator before making this change to keep your current work.'
+        : 'Make sure to click <strong>Save Course</strong> if you want to keep your current work.';
+    ['newCourseWarning','importWarning','loadDemoWarning'].forEach(id => {
+        document.getElementById(id).innerHTML = warning;
+    });
 }
 
 // ⚠️  CSG INTEGRATION CONTRACT

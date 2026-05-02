@@ -351,8 +351,9 @@ function checkIncomingFromCSG() {
 function updateSyllabusBtn() {
     const linked = localStorage.getItem('coursetrix-csg-linked') === 'true';
     document.getElementById('sendToSyllabusBtn').classList.toggle('hidden', !linked);
-    document.getElementById('saveBtn').style.display  = linked ? 'none' : '';
-    document.getElementById('loadBtn').style.display  = linked ? 'none' : '';
+    document.getElementById('saveBtn').style.display   = linked ? 'none' : '';
+    document.getElementById('loadBtn').style.display   = linked ? 'none' : '';
+    document.getElementById('helpBtn').style.display   = linked ? 'none' : '';
     ['saveFirstNewCourseBtn','saveFirstImportBtn','saveFirstLoadDemoBtn'].forEach(id => {
         document.getElementById(id).style.display = linked ? 'none' : '';
     });

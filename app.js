@@ -351,6 +351,8 @@ function checkIncomingFromCSG() {
 function updateSyllabusBtn() {
     const linked = localStorage.getItem('coursetrix-csg-linked') === 'true';
     document.getElementById('sendToSyllabusBtn').classList.toggle('hidden', !linked);
+    document.getElementById('saveBtn').classList.toggle('hidden', linked);
+    document.getElementById('loadBtn').classList.toggle('hidden', linked);
 }
 
 // ⚠️  CSG INTEGRATION CONTRACT

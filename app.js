@@ -322,10 +322,22 @@ function checkIncomingFromCSG() {
     try {
         const encoded = hash.slice('#from-csg='.length);
         const payload = b64decode(encoded);
-        const courseName = [payload.courseNumber, payload.courseTitle].filter(Boolean).join(' — ');
-        if (courseName) {
-            state.courseName = courseName;
-            document.getElementById('courseName').value = courseName;
+        if (payload.coursetrixData && typeof payload.coursetrixData === 'object'
+                && Object.keys(payload.coursetrixData).length) {
+            // Full state returning from CCSG — restore everything
+            state = payload.coursetrixData;
+            // Ensure backwards-compatible defaults
+            if (!state.gradingMode) state.gradingMode = 'points';
+            if (!state.typeWeights) state.typeWeights = {};
+            renderAll();
+            setGradingMode(state.gradingMode);
+        } else {
+            // First visit — only course name available
+            const courseName = [payload.courseNumber, payload.courseTitle].filter(Boolean).join(' — ');
+            if (courseName) {
+                state.courseName = courseName;
+                document.getElementById('courseName').value = courseName;
+            }
         }
         localStorage.setItem('coursetrix-csg-linked', 'true');
         saveToLocalStorage();
@@ -379,7 +391,13 @@ function sendToSyllabusGenerator() {
         : Object.entries(pointsMap).map(([type, points]) => ({ type, points: String(points) }));
 
     const outcomes = (state.cllos || []).map(c => c.description || '').filter(d => d.trim());
-    const payload = { schedule, assignments, gradingMode: state.gradingMode, ...(outcomes.length ? { outcomes } : {}) };
+    const payload = {
+        schedule,
+        assignments,
+        gradingMode: state.gradingMode,
+        coursetrixData: state,
+        ...(outcomes.length ? { outcomes } : {})
+    };
     const encoded = b64encode(payload);
     window.open('https://syllabus.coursetrix.com/#from-coursetrix=' + encoded, '_blank');
 }

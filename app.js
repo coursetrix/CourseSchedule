@@ -368,7 +368,7 @@ function updateSyllabusBtn() {
 
 // ⚠️  CSG INTEGRATION CONTRACT
 // This function is the single point of connection between Coursetrix and the
-// Cochise College Syllabus Generator (syllabus.coursetrix.com).
+// Cochise College Syllabus Generator (cochise.edu).
 // If you rename or restructure any of the following, update this function too:
 //   - state.modules           (array of module objects)
 //   - module.name, .startDate, .endDate, .topic
@@ -412,7 +412,7 @@ function sendToSyllabusGenerator() {
         ...(outcomes.length ? { outcomes } : {})
     };
     const encoded = b64encode(payload);
-    window.open('https://syllabus.coursetrix.com/#from-coursetrix=' + encoded, '_blank');
+    window.open('https://www.cochise.edu/_resources/syllabus-generator/index.html#from-coursetrix=' + encoded, '_blank');
 }
 
 function formatDateRange(start, end) {

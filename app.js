@@ -160,6 +160,7 @@ let state = {
     courseName: '',
     courseStartDate: '',
     courseEndDate: '',
+    programTitle: '',
     pllos: [],
     cllos: [],
     assignmentTypes: [],
@@ -457,6 +458,7 @@ function loadFromLocalStorage() {
             if (!state.pllos) {
                 state.pllos = [];
             }
+            if (!state.programTitle) state.programTitle = '';
             // Ensure each CLLO has plloIds (for backwards compatibility)
             state.cllos.forEach(cllo => {
                 if (!cllo.plloIds) cllo.plloIds = [];
@@ -543,7 +545,13 @@ function getPploNumber(id) {
 
 function openPlloModal() {
     renderPllos();
+    document.getElementById('programTitleInput').value = state.programTitle || '';
     document.getElementById('plloModal').classList.remove('hidden');
+}
+
+function updateProgramTitle(value) {
+    state.programTitle = value;
+    saveToLocalStorage();
 }
 
 function closePlloModal() {
@@ -2710,11 +2718,31 @@ function redistributeModuleDates() {
         state.modules[0].startDate = startStr;
         state.modules[0].endDate = endStr;
     } else {
-        const daysPerModule = totalDays / moduleCount;
+        // Use proportional distribution if all modules have dates; otherwise distribute evenly
+        const allHaveDates = state.modules.every(m => m.startDate && m.endDate);
+        let proportions;
 
+        if (allHaveDates) {
+            const lengths = state.modules.map(m => {
+                const s = new Date(m.startDate + 'T00:00:00');
+                const e = new Date(m.endDate + 'T00:00:00');
+                return Math.max(1, Math.floor((e - s) / (1000 * 60 * 60 * 24)) + 1);
+            });
+            const totalOriginal = lengths.reduce((sum, d) => sum + d, 0);
+            proportions = lengths.map(d => d / totalOriginal);
+        } else {
+            proportions = state.modules.map(() => 1 / moduleCount);
+        }
+
+        // Build cumulative proportion breakpoints
+        let cumulative = 0;
         for (let i = 0; i < moduleCount; i++) {
-            const rawStartDay = Math.round(daysPerModule * i);
-            const rawEndDay = Math.round(daysPerModule * (i + 1)) - 1;
+            const rawStartDay = Math.round(cumulative * totalDays);
+            cumulative += proportions[i];
+            // Last module takes the remainder to absorb rounding drift
+            const rawEndDay = i === moduleCount - 1
+                ? totalDays - 1
+                : Math.round(cumulative * totalDays) - 1;
 
             const rawStart = new Date(courseStart);
             rawStart.setDate(rawStart.getDate() + rawStartDay);
@@ -2759,10 +2787,8 @@ function redistributeModuleDates() {
         }
     }
 
-    // Redistribute each module's assignments within that module's date range
+    // Set all assignment due dates to their module's end date
     state.modules.forEach(module => {
-        if (module.assignments.length === 0) return;
-
         module.assignments.forEach(assignment => {
             assignment.dueDate = module.endDate;
         });
@@ -2781,8 +2807,10 @@ function redistributeAssignmentDates() {
     }
 
     const totalAssignments = state.modules.reduce((sum, m) => sum + m.assignments.length, 0);
+    const allHaveDates = state.modules.every(m => m.startDate && m.endDate);
+    const distMethod = allHaveDates ? 'proportionally (preserving relative module lengths)' : 'evenly';
     document.getElementById('redistributeModalDesc').textContent =
-        `This will evenly space ${state.modules.length} module(s) and ${totalAssignments} assignment(s) across the course date range (${formatDate(state.courseStartDate)} – ${formatDate(state.courseEndDate)}).`;
+        `This will redistribute ${state.modules.length} module(s) and ${totalAssignments} assignment(s) ${distMethod} across the course date range (${formatDate(state.courseStartDate)} – ${formatDate(state.courseEndDate)}). Assignment due dates will be set to each module's end date.`;
     document.getElementById('redistributeModal').classList.remove('hidden');
 }
 

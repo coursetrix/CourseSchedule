@@ -417,7 +417,7 @@ function sendToSyllabusGenerator() {
         ...(outcomes.length ? { outcomes } : {})
     };
     const encoded = b64encode(payload);
-    window.open('https://www.cochise.edu/_resources/syllabus-generator/index.html#from-coursetrix=' + encoded, '_blank');
+    window.open('https://syllabus.coursetrix.com/#from-coursetrix=' + encoded, '_blank');
 }
 
 function formatDateRange(start, end) {

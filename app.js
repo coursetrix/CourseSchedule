@@ -386,7 +386,12 @@ function sendToSyllabusGenerator() {
             const label = state.gradingMode === 'weighted'
                 ? (a.type ? `${a.name} (${a.type})` : a.name)
                 : (a.points ? `${a.name} (${a.points} pts)` : a.name);
-            schedule.push({ module: '', dates: '', topic: '', assignment: label, dueDate: due });
+            const clloNums = (a.clloIds || []).map(id => {
+                const idx = (state.cllos || []).findIndex(c => c.id === id);
+                return idx >= 0 ? idx + 1 : null;
+            }).filter(n => n !== null);
+            const cllos = clloNums.length ? clloNums.join(', ') : '';
+            schedule.push({ module: '', dates: '', topic: '', assignment: label, dueDate: due, cllos });
         });
     });
 

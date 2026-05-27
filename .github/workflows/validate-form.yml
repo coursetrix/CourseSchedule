@@ -1,0 +1,24 @@
+name: Validate static form
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify form file
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          html = Path('aiis-deliverable-submission.html')
+          assert html.exists(), 'aiis-deliverable-submission.html is missing'
+          content = html.read_text(encoding='utf-8')
+          assert content.lstrip().startswith('<!DOCTYPE html'), 'Form file must start with <!DOCTYPE html>'
+          assert 'const POWER_AUTOMATE_URL' in content, 'POWER_AUTOMATE_URL config is missing'
+          print('Form file exists and has valid HTML structure.')
+          PY

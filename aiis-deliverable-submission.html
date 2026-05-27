@@ -168,6 +168,10 @@
       margin-top: 0.3rem;
     }
 
+    .hidden {
+      display: none;
+    }
+
     .form-footer {
       padding: 1.5rem 2rem;
       border-top: 1px solid #b8cce0;
@@ -392,6 +396,7 @@
               <option value="" disabled selected>Select level</option>
               <option value="Level 1">Level 1</option>
               <option value="Level 2">Level 2</option>
+              <option value="Level 3">Level 3</option>
             </select>
           </div>
           <div class="field">
@@ -399,11 +404,27 @@
             <select id="deliverableType" name="deliverableType" required>
               <option value="" disabled selected>Select type</option>
               <option value="Reflection Journal">Reflection Journal</option>
-              <option value="Assignment Design Plan">Assignment Design Plan</option>
+              <option value="Studio Session Deliverable">Studio Session Deliverable</option>
               <option value="Enhanced AI Assignment">Enhanced AI Assignment</option>
-              <option value="Other">Other</option>
             </select>
           </div>
+        </div>
+
+        <div class="field hidden" id="sessionField">
+          <label for="session">Session <span class="required">*</span></label>
+          <select id="session" name="session">
+            <option value="" disabled selected>Select session</option>
+            <option value="Session 1">Session 1</option>
+            <option value="Session 2">Session 2</option>
+            <option value="Session 3">Session 3</option>
+            <option value="Session 4">Session 4</option>
+            <option value="Session 5">Session 5</option>
+            <option value="Session 6">Session 6</option>
+            <option value="Session 7">Session 7</option>
+            <option value="Session 8">Session 8</option>
+            <option value="Session 9">Session 9</option>
+          </select>
+          <p class="field-hint">Select the session number for Level 1 submissions.</p>
         </div>
 
         <div class="field">
@@ -489,6 +510,24 @@
     btn.querySelector(".btn-label").textContent = on ? "Submitting…" : "Submit Deliverable";
   }
 
+  function updateSessionField() {
+    var level = document.getElementById("level").value;
+    var sessionField = document.getElementById("sessionField");
+    var sessionSelect = document.getElementById("session");
+
+    if (level === "Level 1") {
+      sessionField.classList.remove("hidden");
+      sessionSelect.required = true;
+    } else {
+      sessionField.classList.add("hidden");
+      sessionSelect.required = false;
+      sessionSelect.value = "";
+    }
+  }
+
+  document.getElementById("level").addEventListener("change", updateSessionField);
+  document.addEventListener("DOMContentLoaded", updateSessionField);
+
   // ─────────────────────────────────────────────────────────────────
   // File size warning on selection
   // ─────────────────────────────────────────────────────────────────
@@ -550,6 +589,7 @@
         participantType: form.participantType.value,
         cohort:          form.cohort.value,
         level:           form.level.value,
+        session:         form.session ? form.session.value : "",
         deliverableType: form.deliverableType.value,
         description:     form.description.value.trim(),
         submittedAt:     new Date().toISOString(),

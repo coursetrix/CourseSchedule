@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AiiS Deliverable Submission | Cochise College</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: #dce6f0;
+      padding: 2rem 1rem;
+    }
+
+    .form-card {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #b8cce0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(15, 45, 82, 0.12);
+    }
+
+    .form-header {
+      padding: 2rem 2rem 1.75rem;
+      background: #0f2d52;
+      border-bottom: none;
+    }
+
+    .form-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-header p {
+      font-size: 0.9375rem;
+      color: #a8c4e0;
+    }
+
+    .form-body {
+      padding: 2rem;
+    }
+
+    .form-section {
+      margin-bottom: 2rem;
+    }
+
+    .form-section-title {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #0f2d52;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid #0f2d52;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 520px) {
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field {
+      margin-bottom: 1.25rem;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+      color: #374151;
+    }
+
+    label .required {
+      color: #dc2626;
+      margin-left: 2px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.5625rem 0.75rem;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      color: #1a1a1a;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 6px;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #0f2d52;
+      box-shadow: 0 0 0 3px rgba(15, 45, 82, 0.15);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.6rem center;
+      padding-right: 2.25rem;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      font-family: inherit;
+      color: #4b5563;
+      border: 1px dashed #9ca3af;
+      border-radius: 6px;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    input[type="file"]:hover {
+      border-color: #6b7280;
+      background: #f3f4f6;
+    }
+
+    input[type="file"]:focus {
+      outline: none;
+      border-color: #0f2d52;
+      box-shadow: 0 0 0 3px rgba(15, 45, 82, 0.15);
+    }
+
+    .field-hint {
+      font-size: 0.8125rem;
+      color: #6b7280;
+      margin-top: 0.3rem;
+    }
+
+    .form-footer {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid #b8cce0;
+      background: #eef4fb;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    .btn-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.75rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: #ffffff;
+      background: #0f2d52;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: #1a3f6f;
+      box-shadow: 0 2px 6px rgba(15, 45, 82, 0.4);
+    }
+
+    .btn-submit:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(15, 45, 82, 0.3);
+    }
+
+    .btn-submit:disabled {
+      background: #7a9dbf;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: none;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .btn-submit.loading .spinner {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .required-note {
+      font-size: 0.8125rem;
+      color: #6b7280;
+    }
+
+    .alert {
+      display: none;
+      padding: 0.875rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9375rem;
+      margin: 0 2rem 1.5rem;
+    }
+
+    .alert.alert-error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+
+    .alert.alert-warning {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+    }
+
+    .success-screen {
+      display: none;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: #dcfce7;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+
+    .success-icon svg {
+      width: 28px;
+      height: 28px;
+      stroke: #16a34a;
+    }
+
+    .success-screen h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 0.5rem;
+    }
+
+    .success-screen p {
+      font-size: 0.9375rem;
+      color: #4b5563;
+      max-width: 420px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .btn-close {
+      display: inline-block;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      font-family: inherit;
+      color: #0f2d52;
+      background: transparent;
+      border: 1px solid #0f2d52;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-close:hover {
+      background: #dce6f0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-card">
+
+  <div class="form-header">
+    <h1>AI Innovation Studio: Deliverable Submission</h1>
+    <p>Complete all required fields and upload your deliverable to submit it for review.</p>
+  </div>
+
+  <!-- Success screen (hidden until submission succeeds) -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+      </svg>
+    </div>
+    <h2>Deliverable Submitted</h2>
+    <p>Your deliverable has been received. A confirmation has been sent to your email address. Martin Versluis will follow up regarding verification and ESP processing.</p>
+    <button class="btn-close" id="closeWindowBtn">Close Window</button>
+  </div>
+
+  <form id="aiisForm" novalidate>
+
+    <!-- Error banner -->
+    <div class="alert alert-error" id="errorBanner" role="alert"></div>
+    <!-- File size warning banner -->
+    <div class="alert alert-warning" id="sizeBanner" role="alert"></div>
+
+    <div class="form-body">
+
+      <!-- Participant Information -->
+      <div class="form-section">
+        <div class="form-section-title">Participant Information</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First Name <span class="required">*</span></label>
+            <input type="text" id="firstName" name="firstName" autocomplete="given-name" required placeholder="Jane" />
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name <span class="required">*</span></label>
+            <input type="text" id="lastName" name="lastName" autocomplete="family-name" required placeholder="Smith" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email Address <span class="required">*</span></label>
+          <input type="email" id="email" name="email" autocomplete="email" placeholder="jane.smith@cochise.edu" required />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="participantType">Participant Type <span class="required">*</span></label>
+            <select id="participantType" name="participantType" required>
+              <option value="" disabled selected>Select type</option>
+              <option value="Innovation Fellow">Innovation Fellow</option>
+              <option value="General Faculty">General Faculty</option>
+              <option value="Staff">Staff</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="cohort">Cohort <span class="required">*</span></label>
+            <select id="cohort" name="cohort" required>
+              <option value="" disabled selected>Select cohort</option>
+              <option value="Cohort 1">Cohort 1</option>
+              <option value="Cohort 2">Cohort 2</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Submission Details -->
+      <div class="form-section">
+        <div class="form-section-title">Submission Details</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="level">Level <span class="required">*</span></label>
+            <select id="level" name="level" required>
+              <option value="" disabled selected>Select level</option>
+              <option value="Level 1">Level 1</option>
+              <option value="Level 2">Level 2</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="deliverableType">Deliverable Type <span class="required">*</span></label>
+            <select id="deliverableType" name="deliverableType" required>
+              <option value="" disabled selected>Select type</option>
+              <option value="Reflection Journal">Reflection Journal</option>
+              <option value="Assignment Design Plan">Assignment Design Plan</option>
+              <option value="Enhanced AI Assignment">Enhanced AI Assignment</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="description">Describe your deliverable <span class="required">*</span></label>
+          <textarea id="description" name="description" placeholder="In 2–3 sentences, describe what you're submitting and what it demonstrates." required></textarea>
+        </div>
+
+      </div>
+
+      <!-- File Upload -->
+      <div class="form-section">
+        <div class="form-section-title">Upload Deliverable</div>
+
+        <div class="field">
+          <label for="documents">Upload Deliverable <span class="required">*</span></label>
+          <input
+            type="file"
+            id="documents"
+            name="documents"
+            multiple
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+            required
+          />
+          <p class="field-hint">Accepted formats: PDF, Word (.doc/.docx), JPEG, PNG. You may select multiple files. Total size limit: 20 MB.</p>
+        </div>
+
+      </div>
+
+    </div><!-- /.form-body -->
+
+    <div class="form-footer">
+      <span class="required-note"><span style="color:#dc2626">*</span> Required fields</span>
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span class="spinner"></span>
+        <span class="btn-label">Submit Deliverable</span>
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  // ─────────────────────────────────────────────────────────────────
+  // CONFIGURATION — paste the Power Automate HTTP trigger URL below
+  // ─────────────────────────────────────────────────────────────────
+  const POWER_AUTOMATE_URL = "PASTE_POWER_AUTOMATE_URL_HERE";
+  const MAX_TOTAL_BYTES    = 20 * 1024 * 1024; // 20 MB
+
+  // ─────────────────────────────────────────────────────────────────
+  // Helpers
+  // ─────────────────────────────────────────────────────────────────
+  function fileToBase64(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        resolve({
+          name:    file.name,
+          type:    file.type,
+          sizeKB:  Math.round(file.size / 1024),
+          content: reader.result.split(",")[1]
+        });
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function showError(msg) {
+    var banner = document.getElementById("errorBanner");
+    banner.textContent = msg;
+    banner.style.display = "block";
+    banner.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function hideError() {
+    document.getElementById("errorBanner").style.display = "none";
+  }
+
+  function setLoading(on) {
+    var btn = document.getElementById("submitBtn");
+    btn.disabled = on;
+    btn.classList.toggle("loading", on);
+    btn.querySelector(".btn-label").textContent = on ? "Submitting…" : "Submit Deliverable";
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // File size warning on selection
+  // ─────────────────────────────────────────────────────────────────
+  document.getElementById("documents").addEventListener("change", function () {
+    var files      = Array.from(this.files);
+    var totalBytes = files.reduce(function (sum, f) { return sum + f.size; }, 0);
+    var banner     = document.getElementById("sizeBanner");
+
+    if (totalBytes > MAX_TOTAL_BYTES) {
+      banner.textContent = "Selected files exceed the 20 MB total limit. Please reduce the number or size of files before submitting.";
+      banner.style.display = "block";
+    } else {
+      banner.style.display = "none";
+    }
+  });
+
+  // ─────────────────────────────────────────────────────────────────
+  // Form submission
+  // ─────────────────────────────────────────────────────────────────
+  document.getElementById("aiisForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    hideError();
+
+    var form = e.target;
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    var fileInput  = document.getElementById("documents");
+    var files      = Array.from(fileInput.files);
+    var totalBytes = files.reduce(function (sum, f) { return sum + f.size; }, 0);
+
+    if (files.length === 0) {
+      showError("Please upload at least one file.");
+      return;
+    }
+
+    if (totalBytes > MAX_TOTAL_BYTES) {
+      showError("Total file size exceeds 20 MB. Please reduce the number or size of files.");
+      return;
+    }
+
+    if (POWER_AUTOMATE_URL === "PASTE_POWER_AUTOMATE_URL_HERE") {
+      showError("Form is not yet connected to a submission endpoint. Please contact your administrator.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      var encodedFiles = await Promise.all(files.map(fileToBase64));
+
+      var payload = {
+        firstName:       form.firstName.value.trim(),
+        lastName:        form.lastName.value.trim(),
+        email:           form.email.value.trim(),
+        participantType: form.participantType.value,
+        cohort:          form.cohort.value,
+        level:           form.level.value,
+        deliverableType: form.deliverableType.value,
+        description:     form.description.value.trim(),
+        submittedAt:     new Date().toISOString(),
+        files:           encodedFiles
+      };
+
+      var response = await fetch(POWER_AUTOMATE_URL, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("Server returned " + response.status);
+      }
+
+      form.style.display = "none";
+      document.getElementById("successScreen").style.display = "block";
+
+    } catch (err) {
+      setLoading(false);
+      showError(
+        "Something went wrong while submitting your deliverable. Please try again, or contact Martin Versluis directly if the problem continues."
+      );
+      console.error("AiiS form submission error:", err);
+    }
+  });
+
+  document.getElementById("closeWindowBtn").addEventListener("click", function () {
+    window.close();
+  });
+</script>
+
+</body>
+</html>

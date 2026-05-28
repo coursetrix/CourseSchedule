@@ -330,7 +330,7 @@
     </div>
     <h2>Deliverable Submitted</h2>
     <p>Your deliverable has been received. A confirmation has been sent to your email address.</p>
-    <button class="btn-close" id="closeWindowBtn">Close Window</button>
+    <button class="btn-close" id="closeWindowBtn">Submit Another</button>
   </div>
 
   <form id="aiisForm" novalidate>
@@ -619,7 +619,11 @@
   });
 
   document.getElementById("closeWindowBtn").addEventListener("click", function () {
-    window.close();
+    document.getElementById("successScreen").style.display = "none";
+    document.getElementById("aiisForm").reset();
+    document.getElementById("sessionField").classList.add("hidden");
+    document.getElementById("errorBanner").style.display = "none";
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 </script>
 

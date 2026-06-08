@@ -458,6 +458,10 @@
 
     </div><!-- /.form-body -->
 
+    <div style="display:none" aria-hidden="true">
+      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+    </div>
+
     <div class="form-footer">
       <span class="required-note"><span style="color:#dc2626">*</span> Required fields</span>
       <button type="submit" class="btn-submit" id="submitBtn">
@@ -555,6 +559,10 @@
     hideError();
 
     var form = e.target;
+
+    if (document.getElementById("website").value !== "") {
+      return;
+    }
 
     if (!form.checkValidity()) {
       form.reportValidity();

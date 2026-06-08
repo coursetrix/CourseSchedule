@@ -583,7 +583,11 @@
     try {
       var recaptchaToken = await new Promise(function(resolve, reject) {
         grecaptcha.ready(function() {
-          grecaptcha.execute("6LeoOhQtAAAAAKmVeqpW9NIID5Kj7myXZ_phZJqM", { action: "submit" }).then(resolve).catch(reject);
+          try {
+            grecaptcha.execute("6LeoOhQtAAAAAKmVeqpW9NIID5Kj7myXZ_phZJqM", { action: "submit" }).then(resolve).catch(reject);
+          } catch(e) {
+            reject(e);
+          }
         });
       });
       var encodedFiles = await Promise.all(files.map(fileToBase64));

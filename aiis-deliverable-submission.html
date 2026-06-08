@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AiiS Deliverable Submission | Cochise College</title>
+  <!-- reCAPTCHA disabled — re-enable when Cloudflare Turnstile is configured
   <script src="https://www.google.com/recaptcha/api.js?render=6LcgYBQtAAAABQOy6jTkk-mkXWOlysw13qjJ5xX"></script>
+  -->
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -581,15 +583,7 @@
     setLoading(true);
 
     try {
-      var recaptchaToken = await new Promise(function(resolve, reject) {
-        grecaptcha.ready(function() {
-          try {
-            grecaptcha.execute("6LcgYBQtAAAABQOy6jTkk-mkXWOlysw13qjJ5xX", { action: "submit" }).then(resolve).catch(reject);
-          } catch(e) {
-            reject(e);
-          }
-        });
-      });
+      var recaptchaToken = "pending-captcha-setup";
       var encodedFiles = await Promise.all(files.map(fileToBase64));
 
       var payload = {

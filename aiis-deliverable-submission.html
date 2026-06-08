@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AiiS Deliverable Submission | Cochise College</title>
-  <script src="https://www.google.com/recaptcha/api.js?render=6LeoOhQtAAAAAKmVeqpW9NIID5Kj7myXZ_phZJqM"></script>
+  <!-- reCAPTCHA disabled pending key fix -->
+  <!-- <script src="https://www.google.com/recaptcha/api.js?render=6LeoOhQtAAAAAKmVeqpW9NIID5Kj7myXZ_phZJqM"></script> -->
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -581,15 +582,7 @@
     setLoading(true);
 
     try {
-      var recaptchaToken = await new Promise(function(resolve, reject) {
-        grecaptcha.ready(function() {
-          try {
-            grecaptcha.execute("6LeoOhQtAAAAAKmVeqpW9NIID5Kj7myXZ_phZJqM", { action: "submit" }).then(resolve).catch(reject);
-          } catch(e) {
-            reject(e);
-          }
-        });
-      });
+      var recaptchaToken = "disabled";
       var encodedFiles = await Promise.all(files.map(fileToBase64));
 
       var payload = {

@@ -92,6 +92,33 @@ The form POSTs this shape to Power Automate:
 }
 ```
 
+## Security
+
+### Current State
+- **Honeypot field** (`#website`, hidden) is implemented — silently blocks bots that auto-fill forms
+- **hCaptcha is next** — IT security requires a recognized third-party CAPTCHA solution
+
+### Pending: hCaptcha Integration
+Google reCAPTCHA Enterprise was attempted but requires Google Cloud billing setup. hCaptcha is the chosen replacement.
+
+**Steps to complete:**
+1. Go to **hcaptcha.com**, create a free account
+2. Add site with domain `aiis.coursetrix.com`
+3. Get **Site Key** and **Secret Key**
+4. Check if Cochise College qualifies for the hCaptcha nonprofit/education program (removes usage limits)
+5. Update the form:
+   - Add hCaptcha script tag to `<head>`
+   - Replace `recaptchaToken = "pending-captcha-setup"` with hCaptcha token generation
+6. Update Power Automate:
+   - Re-enable the **HTTP** step (currently disabled) — change URI to `https://hcaptcha.com/siteverify`
+   - Update Body with hCaptcha secret key and token
+   - Re-enable the **Condition** step (currently disabled) — verify `success` is `true`
+
+### Power Automate CAPTCHA Steps (currently disabled)
+- **HTTP** — calls CAPTCHA verify API, currently set to Google's siteverify endpoint (needs updating to hCaptcha)
+- **Condition** — checks `outputs('HTTP')?['body']?['success']` is equal to `true`, goes to **False → Terminate** if check fails
+- Condition is currently hardcoded to `1 is equal to 1` (always True) as a temporary bypass
+
 ## Success Message
 > "Your deliverable has been received. A confirmation has been sent to your email address."
 

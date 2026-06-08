@@ -620,9 +620,12 @@
 
   document.getElementById("closeWindowBtn").addEventListener("click", function () {
     document.getElementById("successScreen").style.display = "none";
-    document.getElementById("aiisForm").reset();
+    var form = document.getElementById("aiisForm");
+    form.reset();
+    form.style.display = "block";
     document.getElementById("sessionField").classList.add("hidden");
     document.getElementById("errorBanner").style.display = "none";
+    setLoading(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 </script>

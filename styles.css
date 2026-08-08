@@ -13,6 +13,8 @@
     --text-primary: #111827;
     --text-secondary: #4b5563;
     --text-muted: #9ca3af;
+    --accent-teal: #199eb3;
+    --accent-teal-hover: #157e8f;
 }
 
 /* Reset & Base */
@@ -53,21 +55,20 @@ header h1 {
 
 .header-branding {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    align-items: center;
 }
 
 .header-logo {
-    height: 60px;
+    height: 68px;
     width: auto;
+    display: block;
+    object-fit: contain;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
 }
 
-.header-tagline {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin: 0;
-    font-weight: 500;
-    font-style: italic;
+.header-logo:hover {
+    opacity: 0.8;
 }
 
 .header-actions {
@@ -205,7 +206,8 @@ main {
 
 input[type="text"],
 input[type="date"],
-select {
+select,
+textarea {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid var(--border-color);
@@ -216,10 +218,18 @@ select {
 
 input[type="text"]:focus,
 input[type="date"]:focus,
-select:focus {
+select:focus,
+textarea:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+textarea {
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.4;
+    min-height: 42px;
 }
 
 .date-hint {
@@ -238,6 +248,30 @@ select:focus {
 .inline-form input {
     flex: 1;
     max-width: 200px;
+}
+
+.suggestions-list {
+    position: fixed;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    z-index: 1000;
+    min-width: 180px;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+
+.suggestions-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.suggestions-item:hover {
+    background: var(--hover-bg, #f0f4ff);
 }
 
 /* Buttons */
@@ -278,18 +312,6 @@ select:focus {
     background: #f9fafb;
     border-color: #d1d5db;
 }
-
-.btn-send-syllabus {
-    background: #a50e25;
-    color: white;
-    border: none;
-    font-weight: 600;
-    padding: 6px 10px;
-    font-size: 13px;
-    white-space: nowrap;
-}
-.btn-send-syllabus:hover { background: #8a0b1e; }
-.btn-send-syllabus.hidden { display: none; }
 
 .btn-help {
     background: white;
@@ -542,6 +564,12 @@ select:focus {
     font-weight: 600;
 }
 
+.summary-ec-row td {
+    font-style: italic;
+    color: var(--text-secondary);
+    background: var(--background);
+}
+
 .summary-total-row td {
     font-weight: 600;
     border-top: 2px solid var(--border-color);
@@ -606,6 +634,23 @@ select:focus {
 
 .tag .remove-tag:hover {
     color: var(--danger-color);
+}
+
+.tag .reorder-tag {
+    cursor: pointer;
+    color: var(--accent-teal);
+    font-size: 0.65rem;
+    line-height: 1;
+}
+
+.tag .reorder-tag:hover {
+    color: var(--accent-teal-hover);
+}
+
+.tag .reorder-tag.disabled {
+    visibility: hidden;
+    cursor: default;
+    pointer-events: none;
 }
 
 /* Module List */
@@ -688,6 +733,24 @@ select:focus {
 .module-dates {
     font-size: 0.875rem;
     color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.date-flag {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.module-dates .date-flag {
+    margin-left: 0;
 }
 
 .module-topic {
@@ -767,6 +830,15 @@ select:focus {
         font-size: 0.75rem;
         margin-right: 8px;
     }
+
+.assignment-ec {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-right: 8px;
+}
 
 .assignment-cllos {
     color: var(--text-muted);
@@ -1066,6 +1138,13 @@ select:focus {
     font-size: 0.8125rem;
 }
 
+.btn-footer-demo {
+    margin-top: 12px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    border-radius: 14px;
+}
+
 /* About Modal */
 .about-creator {
     margin-top: 16px;
@@ -1136,4 +1215,31 @@ select:focus {
     .export-actions .btn {
         width: 100%;
     }
+}
+
+/* Module dates outside the course date range (e.g. after a semester date
+   change where the offered redistribution was declined) */
+.dates-range-notice {
+    font-size: 13px;
+    color: #92400e;
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+}
+
+/* Optional per-type description in the Assignment Type Summary table */
+.type-desc-input {
+    width: 100%;
+    padding: 5px 8px;
+    font-size: 12.5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.th-optional {
+    font-weight: 400;
+    font-size: 11px;
+    color: #777;
 }

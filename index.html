@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coursetrix - Course Planning Made Simple</title>
+    <title>Coursetrix — Course Schedule Builder</title>
     <link rel="stylesheet" href="styles.css?v=2.0.1">
     <!-- SortableJS for drag-and-drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -19,17 +19,15 @@
     <div class="container">
         <header>
             <div class="header-branding">
-                <img src="Coursetrix logo.png" alt="Coursetrix" class="header-logo">
-                <p class="header-tagline">Course Planning Made Simple</p>
+                <img src="Coursetrix logo.png" alt="Coursetrix — Course Planning Made Simple" class="header-logo" id="logoLink" title="About Coursetrix">
             </div>
             <div class="header-actions">
-                <button id="sendToSyllabusBtn" class="btn btn-send-syllabus hidden" title="Send schedule to Cochise College Syllabus Generator">&#10148; Send to Syllabus</button>
                 <button id="helpBtn" class="btn btn-help" title="How it works">?</button>
-                <button id="newCourseBtn" class="btn btn-primary">New Course</button>
-                <button id="loadDemoBtn" class="btn btn-secondary">Load Demo</button>
                 <button id="loadBtn" class="btn btn-secondary">Import Course</button>
                 <button id="saveBtn" class="btn btn-secondary">Save Course</button>
+                <!-- Moodle export button hidden until feature is ready
                 <button id="exportCCBtn" class="btn btn-secondary" title="Coming soon" disabled style="opacity:0.45;cursor:not-allowed;">Export to Moodle</button>
+                -->
                 <input type="file" id="fileInput" accept=".json" hidden>
             </div>
         </header>
@@ -59,11 +57,6 @@
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-top: 16px;">
-                    <button id="redistributeDatesBtn" class="btn btn-primary">Redistribute Dates</button>
-                    <p class="help-text" style="margin-top: 8px;">Evenly space modules across the course date range (aligned to Mon–Sun weeks), then distribute each module's assignments within its date range.</p>
-                </div>
-
                 <div class="subsection">
                     <h3>Course-Level Learning Outcomes (CLLOs)</h3>
                     <p class="help-text">Define the learning outcomes for your course. These will be referenced in assignments.</p>
@@ -81,19 +74,14 @@
                     </div>
                     <div id="assignmentTypeList" class="tag-list"></div>
                     <div class="inline-form">
-                        <select id="suggestedTypeSelect" style="max-width: 160px;">
-                            <option value="">💡 Ideas...</option>
-                        </select>
                         <input type="text" id="newAssignmentType" placeholder="New type...">
                         <button id="addTypeBtn" class="btn btn-small">Add</button>
+                        <div class="suggestions-wrap">
+                            <button type="button" id="suggestionsBtn" class="btn btn-small btn-secondary">💡 Suggestions</button>
+                        </div>
                     </div>
                     <p class="help-text" style="margin-top: 16px; margin-bottom: 0;" id="gradingModeHint"><em>Note: Point totals will populate as you add assignments in the Schedule Builder.</em></p>
                     <div id="assignmentTypeSummary"></div>
-                    <div id="summaryExportActions" class="export-actions" style="margin-top: 16px; display: none;">
-                        <button id="copySummaryBtn" class="btn btn-primary">Copy Summary to Clipboard</button>
-                        <button id="copySummaryMarkdownBtn" class="btn btn-secondary">Copy as Markdown</button>
-                        <button id="downloadSummaryCsvBtn" class="btn btn-secondary">Download CSV</button>
-                    </div>
                 </div>
             </section>
 
@@ -102,13 +90,15 @@
                 <div class="section-header">
                     <div>
                         <h2>Schedule Builder</h2>
-                        <p class="help-text">Drag modules to reorder. Drag assignments within or between modules.</p>
+                        <p class="help-text">Drag assignments within or between modules.</p>
                     </div>
                     <div class="section-actions">
+                        <button id="redistributeDatesBtn" class="btn btn-small btn-secondary" title="Evenly space modules across the course date range (aligned to Mon–Sun weeks), then distribute each module's assignments within its date range.">Redistribute Dates</button>
                         <button id="expandAllBtn" class="btn btn-small btn-secondary">Expand All</button>
                         <button id="collapseAllBtn" class="btn btn-small btn-secondary">Collapse All</button>
                     </div>
                 </div>
+                <div id="datesOutOfRangeNotice" class="dates-range-notice" style="display:none"></div>
                 <div id="moduleList" class="module-list"></div>
                 <button id="addModuleBtn" class="btn btn-add">+ Add Module</button>
             </section>
@@ -167,8 +157,9 @@
     </div>
 
         <footer class="app-footer">
-            <p><strong>Coursetrix</strong> by Martin Versluis | <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">View on GitHub</a> | <a href="https://github.com/coursetrix/CourseSchedule/issues" target="_blank">Feedback</a> | <a href="#" id="aboutLink">About</a></p>
+            <p><strong>Coursetrix</strong> by Martin Versluis | <a href="https://github.com/coursetrix/Coursetrix" target="_blank">View on GitHub</a> | <a href="https://github.com/coursetrix/Coursetrix/issues" target="_blank">Feedback</a> | <a href="#" id="aboutLink">About</a></p>
             <p class="footer-note">Blueprint your course design with modules, assignments, and learning outcome alignment.</p>
+            <button id="loadDemoBtn" class="btn btn-secondary btn-footer-demo">Load Demo</button>
         </footer>
 
     <!-- Modal for managing PLLOs -->
@@ -194,7 +185,7 @@
             <h3 id="modalTitle">Add Assignment</h3>
             <div class="form-group">
                 <label for="assignmentName">Assignment Name</label>
-                <input type="text" id="assignmentName" placeholder="e.g., Discussion 1">
+                <textarea id="assignmentName" placeholder="e.g., Discussion 1" maxlength="150" rows="2"></textarea>
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -206,14 +197,26 @@
                     <input type="number" id="assignmentPoints" placeholder="e.g., 100" min="0">
                 </div>
             </div>
+            <div class="form-group" id="assignmentExtraCreditGroup">
+                <label style="display:flex;align-items:center;gap:8px;font-weight:normal;cursor:pointer">
+                    <input type="checkbox" id="assignmentExtraCredit" style="width:auto;margin:0">
+                    This is extra credit — points won't count toward course point totals
+                </label>
+            </div>
             <div class="form-group">
                 <label>CLLOs</label>
                 <div id="clloCheckboxes" class="checkbox-group"></div>
             </div>
-            <div class="form-group">
-                <label for="assignmentDue">Due Date</label>
-                <input type="date" id="assignmentDue">
-                <p class="date-hint" id="assignmentDateHint"></p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="assignmentDue">Due Date</label>
+                    <input type="date" id="assignmentDue">
+                    <p class="date-hint" id="assignmentDateHint"></p>
+                </div>
+                <div class="form-group">
+                    <label for="assignmentTime">Due Time <span style="font-weight:normal;color:#888">(optional)</span></label>
+                    <input type="text" id="assignmentTime" placeholder="e.g. 11:59 pm">
+                </div>
             </div>
             <div class="modal-actions">
                 <button id="cancelAssignmentBtn" class="btn btn-secondary">Cancel</button>
@@ -228,7 +231,7 @@
             <h3 id="moduleModalTitle">Add Module</h3>
             <div class="form-group">
                 <label for="moduleName">Module Name</label>
-                <input type="text" id="moduleName" placeholder="e.g., Introduction to Research">
+                <textarea id="moduleName" placeholder="e.g., Introduction to Research" maxlength="150" rows="2"></textarea>
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -243,7 +246,7 @@
             <p class="date-hint" id="moduleDateHint"></p>
             <div class="form-group">
                 <label for="moduleTopic">Topic(s)</label>
-                <input type="text" id="moduleTopic" placeholder="e.g., Research ethics, Literature review">
+                <textarea id="moduleTopic" placeholder="e.g., Research ethics, Literature review" maxlength="150" rows="2"></textarea>
             </div>
             <div class="modal-actions">
                 <button id="cancelModuleBtn" class="btn btn-secondary">Cancel</button>
@@ -284,7 +287,7 @@
                     <div class="help-step-number">4</div>
                     <div class="help-step-body">
                         <strong>Build Your Schedule</strong>
-                        <p>Create modules and fill them with assignments. Set due dates, point values, and CLLO links. Drag and drop to reorder anything.</p>
+                        <p>Create modules and fill them with assignments. Set due dates, point values, and CLLO links. Drag and drop to reorder assignments.</p>
                     </div>
                 </div>
                 <div class="help-step">
@@ -324,20 +327,6 @@
             <div class="modal-actions">
                 <button id="cancelSaveBtn" class="btn btn-secondary">Cancel</button>
                 <button id="confirmSaveBtn" class="btn btn-primary">Save JSON File</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- New Course Modal -->
-    <div id="newCourseModal" class="modal hidden">
-        <div class="modal-content">
-            <h3>New Course</h3>
-            <p>This will clear all current course data and start fresh.</p>
-            <p style="margin-top: 12px;" id="newCourseWarning">Make sure to click <strong>Save Course</strong> if you want to keep your current work.</p>
-            <div class="modal-actions">
-                <button id="cancelNewCourseBtn" class="btn btn-secondary">Cancel</button>
-                <button id="saveFirstNewCourseBtn" class="btn btn-secondary">Save First</button>
-                <button id="confirmNewCourseBtn" class="btn btn-primary">Start New Course</button>
             </div>
         </div>
     </div>
@@ -403,67 +392,25 @@
     <div id="aboutModal" class="modal hidden">
         <div class="modal-content">
             <h3>About Coursetrix</h3>
-            <p style="margin-top: 4px; color: #6b7280; font-size: 0.875rem;">Version 3.2.1</p>
-            <p style="margin-top: 16px;">Built by an Instructional Designer who got tired of wrestling with Word tables. Coursetrix lets educators blueprint their course structure (modules, assignments, and learning outcome alignment) before diving into LMS development.</p>
+            <p style="margin-top: 16px;"><strong>Coursetrix</strong> is a free, open-source course-planning tool. Use it to blueprint your course structure, including modules, assignments, and learning outcome alignment — entirely in your browser, no account required.</p>
+            <p style="margin-top: 12px;">Coursetrix was built by an Instructional Designer who got tired of wrestling with Word tables. It lets educators design course structure before diving into LMS development.</p>
             <div class="about-creator">
                 <div>
                     <p><strong>Created by Martin Versluis</strong></p>
-                    <p style="margin-top: 4px;"><a href="https://www.linkedin.com/in/martinversluis" target="_blank">Connect on LinkedIn</a> &nbsp;·&nbsp; <a href="https://github.com/coursetrix/CourseSchedule" target="_blank">View on GitHub</a></p>
+                    <p style="margin-top: 4px;"><a href="https://www.linkedin.com/in/martinversluis" target="_blank">Connect on LinkedIn</a> &nbsp;·&nbsp; <a href="https://github.com/coursetrix/Coursetrix" target="_blank">View on GitHub</a></p>
                 </div>
             </div>
             <div class="about-license">
                 <p>Source-available under the <strong>PolyForm Noncommercial License</strong>. Free for personal and educational use. Commercial use requires written permission from the author.</p>
-                <p style="margin-top: 6px;"><a href="https://github.com/coursetrix/CourseSchedule/blob/main/LICENSE" target="_blank">View full license</a> &nbsp;·&nbsp; <a href="https://github.com/coursetrix/CourseSchedule/issues" target="_blank">Report an issue</a></p>
+                <p style="margin-top: 6px;"><a href="https://github.com/coursetrix/Coursetrix/blob/main/LICENSE" target="_blank">View full license</a> &nbsp;·&nbsp; <a href="https://github.com/coursetrix/Coursetrix/issues" target="_blank">Report an issue</a></p>
             </div>
             <div class="modal-actions">
-                <button id="whatsNewBtn" class="btn btn-secondary">What's New</button>
                 <button id="closeAboutBtn" class="btn btn-primary">Close</button>
             </div>
         </div>
     </div>
 
-    <!-- What's New Modal -->
-    <div id="whatsNewModal" class="modal hidden">
-        <div class="modal-content modal-content-wide">
-            <h3>What's New in Coursetrix</h3>
-            <div class="whats-new-version">v3.2.1 — Bug Fix</div>
-            <ul class="feature-list">
-                <li><strong>Fix Manage PLLOs button</strong> — Resolved a regression where the Manage PLLOs button stopped opening the modal after the Program Title field was added.</li>
-            </ul>
-            <div class="whats-new-version" style="margin-top: 20px;">v3.2 — Duplicate Assignments</div>
-            <ul class="feature-list">
-                <li><strong>Duplicate assignment</strong> — Click the ⧉ icon on any assignment to create a copy immediately below it. The duplicate inherits all fields and can be dragged to any week.</li>
-                <li><strong>Smarter drag-and-drop</strong> — When an assignment is dragged to a different week, its due date is automatically cleared to prevent date conflicts, with a prompt to set a new one.</li>
-            </ul>
-            <div class="whats-new-version" style="margin-top: 20px;">v3.1 — Weighted Grading</div>
-            <ul class="feature-list">
-                <li><strong>Grading Mode toggle</strong> — Choose between Points and Weighted % in the Assignment Types section. Most instructors use points; weighted grading lets faculty assign a percentage to each assignment type instead of tracking individual point totals.</li>
-                <li><strong>Weight summary table</strong> — In weighted mode, enter the percentage for each type. A running total shows when weights reach 100%.</li>
-                <li><strong>Consistent across reports</strong> — Point values are hidden from the Schedule Builder, Course Schedule Report, Word export, Markdown, and CSV when in weighted mode. The Total Points row is omitted.</li>
-                <li><strong>CLLO transfer to Syllabus Generator</strong> — Course-Level Learning Outcomes now transfer automatically when sending your schedule to the Cochise College Syllabus Generator.</li>
-            </ul>
-            <div class="whats-new-version" style="margin-top: 20px;">v3.0 — Program-Level Learning Outcomes</div>
-            <ul class="feature-list">
-                <li><strong>Program-Level Learning Outcomes (PLLOs)</strong> — Define program outcomes via the Manage PLLOs button and align CLLOs to them directly in Course Setup.</li>
-                <li><strong>PLLO Coverage Report</strong> — A dedicated report showing which program outcomes your course addresses, with supporting assignments grouped by unit. PLLOs not covered by the course are flagged clearly.</li>
-                <li><strong>Collapsible report panels</strong> — Course Schedule Report and PLLO Coverage Report panels collapse to keep the workspace clean.</li>
-            </ul>
-            <div class="whats-new-version" style="margin-top: 20px;">Core Features</div>
-            <ul class="feature-list">
-                <li><strong>Course Setup</strong> — Course name, date range, and assignment types with a live point summary.</li>
-                <li><strong>Learning Outcomes</strong> — CLLOs and PLLOs with full two-level alignment mapping.</li>
-                <li><strong>Schedule Builder</strong> — Modules and assignments with drag-and-drop reordering across modules.</li>
-                <li><strong>Redistribute Dates</strong> — Re-space all modules and assignments across a new date range in one click.</li>
-                <li><strong>Course Schedule Report</strong> — Export to PDF, copy to Word, Markdown, or CSV.</li>
-                <li><strong>PLLO Coverage Report</strong> — Export program-level alignment to Word, Markdown, or CSV.</li>
-                <li><strong>Auto-save</strong> — Everything saves automatically to your browser. Use Save Course to download a backup.</li>
-            </ul>
-            <div class="modal-actions">
-                <button id="closeWhatsNewBtn" class="btn btn-primary">Close</button>
-            </div>
-        </div>
-    </div>
 
-    <script src="app.js?v=3.2.1"></script>
+    <script src="app.js?v=3.5"></script>
 </body>
 </html>

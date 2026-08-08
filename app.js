@@ -45,8 +45,9 @@ const suggestedAssignmentTypes = [
 // Demo course data for new users
 const demoCourse = {
     courseName: 'ENG 101 - Introduction to College Writing',
-    courseStartDate: '2025-01-13',
-    courseEndDate: '2025-05-02',
+    courseStartDate: '2027-01-13',
+    courseEndDate: '2027-05-02',
+    programTitle: '',
     pllos: [
         { id: 'demo-pllo-1', description: 'Apply critical thinking skills to analyze, evaluate, and synthesize information across contexts' },
         { id: 'demo-pllo-2', description: 'Communicate effectively in written forms appropriate to audience, purpose, and discipline' },
@@ -62,95 +63,96 @@ const demoCourse = {
     ],
     assignmentTypes: ['Discussion', 'Quiz', 'Paper/Essay', 'Peer Review', 'Reflection'],
     typeWeights: {},
+    typeDescriptions: {},
     gradingMode: 'points',
     modules: [
         {
             id: 'demo-mod-1',
             name: 'Unit 1',
-            startDate: '2025-01-13',
-            endDate: '2025-01-24',
+            startDate: '2027-01-13',
+            endDate: '2027-01-24',
             topic: 'Introduction to College Writing',
             assignments: [
-                { id: 'demo-a-1', name: 'Introductions Discussion', type: 'Discussion', points: 25, dueDate: '2025-01-17', clloIds: ['demo-cllo-4'] },
-                { id: 'demo-a-2', name: 'Diagnostic Essay', type: 'Paper/Essay', points: 50, dueDate: '2025-01-24', clloIds: ['demo-cllo-1', 'demo-cllo-4'] }
+                { id: 'demo-a-1', name: 'Introductions Discussion', type: 'Discussion', points: 25, dueDate: '2027-01-17', clloIds: ['demo-cllo-4'] },
+                { id: 'demo-a-2', name: 'Diagnostic Essay', type: 'Paper/Essay', points: 50, dueDate: '2027-01-24', clloIds: ['demo-cllo-1', 'demo-cllo-4'] }
             ]
         },
         {
             id: 'demo-mod-2',
             name: 'Unit 2',
-            startDate: '2025-01-27',
-            endDate: '2025-02-07',
+            startDate: '2027-01-27',
+            endDate: '2027-02-07',
             topic: 'The Writing Process',
             assignments: [
-                { id: 'demo-a-3', name: 'Writing Process Discussion', type: 'Discussion', points: 25, dueDate: '2025-01-31', clloIds: [] },
-                { id: 'demo-a-4', name: 'Narrative Essay', type: 'Paper/Essay', points: 100, dueDate: '2025-02-07', clloIds: ['demo-cllo-1', 'demo-cllo-4'] }
+                { id: 'demo-a-3', name: 'Writing Process Discussion', type: 'Discussion', points: 25, dueDate: '2027-01-31', clloIds: [] },
+                { id: 'demo-a-4', name: 'Narrative Essay', type: 'Paper/Essay', points: 100, dueDate: '2027-02-07', clloIds: ['demo-cllo-1', 'demo-cllo-4'] }
             ]
         },
         {
             id: 'demo-mod-3',
             name: 'Unit 3',
-            startDate: '2025-02-10',
-            endDate: '2025-02-21',
+            startDate: '2027-02-10',
+            endDate: '2027-02-21',
             topic: 'Argument and Evidence',
             assignments: [
-                { id: 'demo-a-5', name: 'Argument Analysis Discussion', type: 'Discussion', points: 25, dueDate: '2025-02-14', clloIds: ['demo-cllo-1'] },
-                { id: 'demo-a-6', name: 'Quiz 1: Writing Fundamentals', type: 'Quiz', points: 50, dueDate: '2025-02-21', clloIds: ['demo-cllo-4'] }
+                { id: 'demo-a-5', name: 'Argument Analysis Discussion', type: 'Discussion', points: 25, dueDate: '2027-02-14', clloIds: ['demo-cllo-1'] },
+                { id: 'demo-a-6', name: 'Quiz 1: Writing Fundamentals', type: 'Quiz', points: 50, dueDate: '2027-02-21', clloIds: ['demo-cllo-4'] }
             ]
         },
         {
             id: 'demo-mod-4',
             name: 'Unit 4',
-            startDate: '2025-02-24',
-            endDate: '2025-03-07',
+            startDate: '2027-02-24',
+            endDate: '2027-03-07',
             topic: 'Research Fundamentals',
             assignments: [
-                { id: 'demo-a-7', name: 'Finding Sources Discussion', type: 'Discussion', points: 25, dueDate: '2025-02-28', clloIds: ['demo-cllo-3'] },
-                { id: 'demo-a-8', name: 'Argumentative Essay Draft', type: 'Paper/Essay', points: 50, dueDate: '2025-03-07', clloIds: ['demo-cllo-1', 'demo-cllo-3'] }
+                { id: 'demo-a-7', name: 'Finding Sources Discussion', type: 'Discussion', points: 25, dueDate: '2027-02-28', clloIds: ['demo-cllo-3'] },
+                { id: 'demo-a-8', name: 'Argumentative Essay Draft', type: 'Paper/Essay', points: 50, dueDate: '2027-03-07', clloIds: ['demo-cllo-1', 'demo-cllo-3'] }
             ]
         },
         {
             id: 'demo-mod-5',
             name: 'Unit 5',
-            startDate: '2025-03-10',
-            endDate: '2025-03-21',
+            startDate: '2027-03-10',
+            endDate: '2027-03-21',
             topic: 'Source Integration',
             assignments: [
-                { id: 'demo-a-9', name: 'Peer Review 1', type: 'Peer Review', points: 50, dueDate: '2025-03-14', clloIds: [] },
-                { id: 'demo-a-10', name: 'Argumentative Essay Final', type: 'Paper/Essay', points: 150, dueDate: '2025-03-21', clloIds: ['demo-cllo-1', 'demo-cllo-3', 'demo-cllo-4'] }
+                { id: 'demo-a-9', name: 'Peer Review 1', type: 'Peer Review', points: 50, dueDate: '2027-03-14', clloIds: [] },
+                { id: 'demo-a-10', name: 'Argumentative Essay Final', type: 'Paper/Essay', points: 150, dueDate: '2027-03-21', clloIds: ['demo-cllo-1', 'demo-cllo-3', 'demo-cllo-4'] }
             ]
         },
         {
             id: 'demo-mod-6',
             name: 'Unit 6',
-            startDate: '2025-03-24',
-            endDate: '2025-04-04',
+            startDate: '2027-03-24',
+            endDate: '2027-04-04',
             topic: 'Revision Strategies',
             assignments: [
-                { id: 'demo-a-11', name: 'Revision Techniques Discussion', type: 'Discussion', points: 25, dueDate: '2025-03-28', clloIds: [] },
-                { id: 'demo-a-12', name: 'Midterm Reflection', type: 'Reflection', points: 50, dueDate: '2025-04-04', clloIds: ['demo-cllo-4'] }
+                { id: 'demo-a-11', name: 'Revision Techniques Discussion', type: 'Discussion', points: 25, dueDate: '2027-03-28', clloIds: [] },
+                { id: 'demo-a-12', name: 'Midterm Reflection', type: 'Reflection', points: 50, dueDate: '2027-04-04', clloIds: ['demo-cllo-4'] }
             ]
         },
         {
             id: 'demo-mod-7',
             name: 'Unit 7',
-            startDate: '2025-04-07',
-            endDate: '2025-04-18',
+            startDate: '2027-04-07',
+            endDate: '2027-04-18',
             topic: 'Style and Voice',
             assignments: [
-                { id: 'demo-a-13', name: 'Quiz 2: Research & Citation', type: 'Quiz', points: 50, dueDate: '2025-04-11', clloIds: ['demo-cllo-3', 'demo-cllo-4'] },
-                { id: 'demo-a-14', name: 'Research Essay Draft', type: 'Paper/Essay', points: 50, dueDate: '2025-04-18', clloIds: ['demo-cllo-1', 'demo-cllo-3'] }
+                { id: 'demo-a-13', name: 'Quiz 2: Research & Citation', type: 'Quiz', points: 50, dueDate: '2027-04-11', clloIds: ['demo-cllo-3', 'demo-cllo-4'] },
+                { id: 'demo-a-14', name: 'Research Essay Draft', type: 'Paper/Essay', points: 50, dueDate: '2027-04-18', clloIds: ['demo-cllo-1', 'demo-cllo-3'] }
             ]
         },
         {
             id: 'demo-mod-8',
             name: 'Unit 8',
-            startDate: '2025-04-21',
-            endDate: '2025-05-02',
+            startDate: '2027-04-21',
+            endDate: '2027-05-02',
             topic: 'Final Portfolio',
             assignments: [
-                { id: 'demo-a-15', name: 'Peer Review 2', type: 'Peer Review', points: 50, dueDate: '2025-04-25', clloIds: [] },
-                { id: 'demo-a-16', name: 'Research Essay Final', type: 'Paper/Essay', points: 200, dueDate: '2025-05-01', clloIds: ['demo-cllo-1', 'demo-cllo-3', 'demo-cllo-4'] },
-                { id: 'demo-a-17', name: 'Course Reflection', type: 'Reflection', points: 25, dueDate: '2025-05-02', clloIds: ['demo-cllo-4'] }
+                { id: 'demo-a-15', name: 'Peer Review 2', type: 'Peer Review', points: 50, dueDate: '2027-04-25', clloIds: [] },
+                { id: 'demo-a-16', name: 'Research Essay Final', type: 'Paper/Essay', points: 200, dueDate: '2027-05-01', clloIds: ['demo-cllo-1', 'demo-cllo-3', 'demo-cllo-4'] },
+                { id: 'demo-a-17', name: 'Course Reflection', type: 'Reflection', points: 25, dueDate: '2027-05-02', clloIds: ['demo-cllo-4'] }
             ]
         }
     ]
@@ -165,6 +167,7 @@ let state = {
     cllos: [],
     assignmentTypes: [],
     typeWeights: {},
+    typeDescriptions: {},
     gradingMode: 'points',
     modules: []
 };
@@ -305,132 +308,6 @@ function escXml(str) {
         .replace(/"/g, '&quot;');
 }
 
-// ============================================
-// COCHISE SYLLABUS GENERATOR INTEGRATION
-// ============================================
-
-function b64decode(str) {
-    return JSON.parse(new TextDecoder().decode(new Uint8Array([...atob(str)].map(c => c.charCodeAt(0)))));
-}
-
-function b64encode(obj) {
-    return btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(obj))));
-}
-
-function checkIncomingFromCSG() {
-    const hash = window.location.hash;
-    if (!hash.startsWith('#from-csg=')) return;
-    try {
-        const encoded = hash.slice('#from-csg='.length);
-        const payload = b64decode(encoded);
-        if (payload.coursetrixData && typeof payload.coursetrixData === 'object'
-                && Object.keys(payload.coursetrixData).length) {
-            // Full state returning from CCSG — restore everything
-            state = payload.coursetrixData;
-            // Ensure backwards-compatible defaults
-            if (!state.gradingMode) state.gradingMode = 'points';
-            if (!state.typeWeights) state.typeWeights = {};
-            renderAll();
-            setGradingMode(state.gradingMode);
-        } else {
-            // First visit — only course name available
-            const courseName = [payload.courseNumber, payload.courseTitle].filter(Boolean).join(' — ');
-            if (courseName) {
-                state.courseName = courseName;
-                document.getElementById('courseName').value = courseName;
-            }
-        }
-        localStorage.setItem('coursetrix-csg-linked', 'true');
-        saveToLocalStorage();
-        history.replaceState(null, '', window.location.pathname);
-        updateSyllabusBtn();
-    } catch(e) {
-        console.warn('Could not parse CSG payload:', e);
-    }
-}
-
-function updateSyllabusBtn() {
-    const linked = localStorage.getItem('coursetrix-csg-linked') === 'true';
-    document.getElementById('sendToSyllabusBtn').classList.toggle('hidden', !linked);
-    document.getElementById('saveBtn').style.display   = linked ? 'none' : '';
-    document.getElementById('helpBtn').style.display   = linked ? 'none' : '';
-    ['saveFirstNewCourseBtn','saveFirstImportBtn','saveFirstLoadDemoBtn'].forEach(id => {
-        document.getElementById(id).style.display = linked ? 'none' : '';
-    });
-    const warning = linked
-        ? 'Send to Syllabus Generator before making this change to keep your current work.'
-        : 'Make sure to click <strong>Save Course</strong> if you want to keep your current work.';
-    ['newCourseWarning','importWarning','loadDemoWarning'].forEach(id => {
-        document.getElementById(id).innerHTML = warning;
-    });
-}
-
-// ⚠️  CSG INTEGRATION CONTRACT
-// This function is the single point of connection between Coursetrix and the
-// Cochise College Syllabus Generator (cochise.edu).
-// If you rename or restructure any of the following, update this function too:
-//   - state.modules           (array of module objects)
-//   - module.name, .startDate, .endDate, .topic
-//   - module.assignments      (array of assignment objects)
-//   - assignment.name, .type, .points, .dueDate
-// The CSG expects: { schedule: [...], assignments: [...] } encoded as base64 in the URL hash.
-function sendToSyllabusGenerator() {
-    // Build schedule rows
-    const schedule = [];
-    (state.modules || []).forEach(mod => {
-        const dates = formatDateRange(mod.startDate, mod.endDate);
-        schedule.push({ module: mod.name || '', dates, topic: mod.topic || '', assignment: '', dueDate: '' });
-        (mod.assignments || []).forEach(a => {
-            const due = a.dueDate ? formatShortDate(a.dueDate) : '';
-            const label = state.gradingMode === 'weighted'
-                ? (a.type ? `${a.name} (${a.type})` : a.name)
-                : (a.points ? `${a.name} (${a.points} pts)` : a.name);
-            const clloNums = (a.clloIds || []).map(id => {
-                const idx = (state.cllos || []).findIndex(c => c.id === id);
-                return idx >= 0 ? idx + 1 : null;
-            }).filter(n => n !== null);
-            const cllos = clloNums.length ? clloNums.join(', ') : '';
-            schedule.push({ module: '', dates: '', topic: '', assignment: label, dueDate: due, cllos });
-        });
-    });
-
-    // Sum points per assignment type across all modules
-    const pointsMap = {};
-    (state.modules || []).forEach(mod => {
-        (mod.assignments || []).forEach(a => {
-            if (a.type) {
-                pointsMap[a.type] = (pointsMap[a.type] || 0) + (parseInt(a.points, 10) || 0);
-            }
-        });
-    });
-    const assignments = state.gradingMode === 'weighted'
-        ? state.assignmentTypes.map(type => ({ type, weight: String(state.typeWeights[type] || 0) }))
-        : Object.entries(pointsMap).map(([type, points]) => ({ type, points: String(points) }));
-
-    const outcomes = (state.cllos || []).map(c => c.description || '').filter(d => d.trim());
-    const payload = {
-        schedule,
-        assignments,
-        gradingMode: state.gradingMode,
-        coursetrixData: state,
-        ...(outcomes.length ? { outcomes } : {})
-    };
-    const encoded = b64encode(payload);
-    window.open('https://syllabus.coursetrix.com#from-coursetrix=' + encoded, '_blank');
-}
-
-function formatDateRange(start, end) {
-    if (!start && !end) return '';
-    const fmt = d => {
-        if (!d) return '';
-        const [, m, day] = d.split('-');
-        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        return `${months[parseInt(m,10)-1]} ${parseInt(day,10)}`;
-    };
-    if (start && end) return `${fmt(start)}–${fmt(end)}`;
-    return fmt(start) || fmt(end);
-}
-
 function formatShortDate(d) {
     if (!d) return '';
     const [, m, day] = d.split('-');
@@ -458,6 +335,7 @@ function loadFromLocalStorage() {
             // Ensure grading mode fields exist (for backwards compatibility)
             if (!state.gradingMode) state.gradingMode = 'points';
             if (!state.typeWeights) state.typeWeights = {};
+            if (!state.typeDescriptions) state.typeDescriptions = {};
             // Ensure pllos exists (for backwards compatibility)
             if (!state.pllos) {
                 state.pllos = [];
@@ -676,12 +554,23 @@ function getClloNumber(id) {
 function renderAssignmentTypes() {
     const container = document.getElementById('assignmentTypeList');
 
-    container.innerHTML = state.assignmentTypes.map(type => `
+    container.innerHTML = state.assignmentTypes.map((type, index) => `
         <span class="tag">
+            <span class="reorder-tag ${index === 0 ? 'disabled' : ''}" onclick="moveAssignmentType(${index}, -1)" title="Move up">▲</span>
+            <span class="reorder-tag ${index === state.assignmentTypes.length - 1 ? 'disabled' : ''}" onclick="moveAssignmentType(${index}, 1)" title="Move down">▼</span>
             ${escapeHtml(type)}
             <span class="remove-tag" onclick="removeAssignmentType('${escapeHtml(type)}')" title="Remove">×</span>
         </span>
     `).join('');
+}
+
+function moveAssignmentType(index, direction) {
+    const target = index + direction;
+    if (target < 0 || target >= state.assignmentTypes.length) return;
+    [state.assignmentTypes[index], state.assignmentTypes[target]] = [state.assignmentTypes[target], state.assignmentTypes[index]];
+    saveToLocalStorage();
+    renderAssignmentTypes();
+    renderAssignmentTypeSummary();
 }
 
 function addAssignmentType() {
@@ -714,6 +603,7 @@ function removeAssignmentType(type) {
     }
 
     state.assignmentTypes = state.assignmentTypes.filter(t => t !== type);
+    delete state.typeDescriptions[type];
     saveToLocalStorage();
     renderAssignmentTypes();
     renderAssignmentTypeSummary();
@@ -738,16 +628,21 @@ function setGradingMode(mode) {
 
 function renderAssignmentTypeSummary() {
     const container = document.getElementById('assignmentTypeSummary');
-    const exportContainer = document.getElementById('summaryExportActions');
-    if (!container || !exportContainer) return;
+    if (!container) return;
 
     if (state.assignmentTypes.length === 0) {
         container.innerHTML = '';
-        exportContainer.style.display = 'none';
         return;
     }
 
     let html;
+
+    const descInput = type => `
+        <input type="text" maxlength="120"
+               class="type-desc-input"
+               value="${escapeAttr(state.typeDescriptions[type] || '')}"
+               placeholder="Optional brief note, e.g. Weekly reading response, due Sundays"
+               oninput="updateTypeDescription('${escapeHtml(type)}', this.value)">`;
 
     if (state.gradingMode === 'weighted') {
         const totalWeight = state.assignmentTypes.reduce((sum, t) => sum + (Number(state.typeWeights[t]) || 0), 0);
@@ -757,6 +652,7 @@ function renderAssignmentTypeSummary() {
                 <thead>
                     <tr>
                         <th>Assignment Type</th>
+                        <th>Description <span class="th-optional">(optional, max 120 characters — shown in syllabus)</span></th>
                         <th>Weight (%)</th>
                     </tr>
                 </thead>
@@ -764,6 +660,7 @@ function renderAssignmentTypeSummary() {
                     ${state.assignmentTypes.map(type => `
                         <tr>
                             <td>${escapeHtml(type)}</td>
+                            <td>${descInput(type)}</td>
                             <td>
                                 <input type="number" min="0" max="100" step="0.1"
                                        class="weight-input"
@@ -775,20 +672,26 @@ function renderAssignmentTypeSummary() {
                 </tbody>
                 <tfoot>
                     <tr class="summary-total-row ${totalOk ? '' : 'weight-total-warn'}">
-                        <td>Total</td>
+                        <td colspan="2">Total</td>
                         <td>${totalWeight.toFixed(1)}%${totalOk ? ' ✓' : ' (must equal 100%)'}</td>
                     </tr>
                 </tfoot>
             </table>
         `;
     } else {
-        // Calculate totals per type
+        // Calculate totals per type — extra credit points stay out of type
+        // totals and the course total, and roll up into their own line instead
         const totals = {};
+        let extraCreditTotal = 0;
         state.assignmentTypes.forEach(type => totals[type] = 0);
         state.modules.forEach(module => {
             module.assignments.forEach(assignment => {
                 if (assignment.type && totals.hasOwnProperty(assignment.type)) {
-                    totals[assignment.type] += (assignment.points || 0);
+                    if (assignment.extraCredit) {
+                        extraCreditTotal += (assignment.points || 0);
+                    } else {
+                        totals[assignment.type] += (assignment.points || 0);
+                    }
                 }
             });
         });
@@ -798,6 +701,7 @@ function renderAssignmentTypeSummary() {
                 <thead>
                     <tr>
                         <th>Assignment Type</th>
+                        <th>Description <span class="th-optional">(optional, max 120 characters — shown in syllabus)</span></th>
                         <th>Total Points</th>
                     </tr>
                 </thead>
@@ -805,22 +709,33 @@ function renderAssignmentTypeSummary() {
                     ${state.assignmentTypes.map(type => `
                         <tr>
                             <td>${escapeHtml(type)}</td>
+                            <td>${descInput(type)}</td>
                             <td>${totals[type]}</td>
                         </tr>
                     `).join('')}
                 </tbody>
                 <tfoot>
                     <tr class="summary-total-row">
-                        <td>Total</td>
+                        <td colspan="2">Total</td>
                         <td>${Object.values(totals).reduce((sum, v) => sum + v, 0)}</td>
                     </tr>
+                    ${extraCreditTotal > 0 ? `
+                    <tr class="summary-ec-row">
+                        <td colspan="2">Extra Credit Available (not included in total)</td>
+                        <td>+${extraCreditTotal}</td>
+                    </tr>` : ''}
                 </tfoot>
             </table>
         `;
     }
 
     container.innerHTML = html;
-    exportContainer.style.display = 'flex';
+}
+
+function updateTypeDescription(type, value) {
+    state.typeDescriptions[type] = value;
+    saveToLocalStorage();
+    // No re-render — keeps focus in the input while typing (same as updateTypeWeight)
 }
 
 function updateTypeWeight(type, value) {
@@ -850,109 +765,86 @@ function getSummaryData() {
     return totals;
 }
 
-function generateSummaryWordTable() {
-    const totals = getSummaryData();
-    let html = `
-<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-<head>
-<meta charset="utf-8">
-<style>
-    body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #000; padding: 6px; vertical-align: top; }
-    .cs-text { margin: 0 !important; padding: 0 !important; mso-para-margin: 0in !important; mso-margin-top-alt: 0in !important; mso-margin-bottom-alt: 0in !important; }
-</style>
-</head>
-<body>
-<table style="width:100%; border-collapse:collapse;">
-    <thead>
-        <tr style="background-color:#f2f2f2;">
-            <th style="width:60%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p class="cs-text" style="font-weight:bold;">Assignment Type</p></th>
-            <th style="width:40%; border:1px solid #000; padding:6px; text-align:left; font-weight:bold;"><p class="cs-text" style="font-weight:bold;">Total Points</p></th>
-        </tr>
-    </thead>
-    <tbody>`;
-
-    state.assignmentTypes.forEach(type => {
-        html += `
-        <tr>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${escapeHtml(type)}</p></td>
-            <td style="border:1px solid #000; padding:6px; vertical-align:top;"><p class="cs-text">${totals[type]}</p></td>
-        </tr>`;
-    });
-
-    html += `
-    </tbody>
-</table>
-</body>
-</html>`;
-    return html;
-}
-
-function copySummaryTableToClipboard() {
-    if (state.assignmentTypes.length === 0) {
-        showToast('No summary to copy.');
-        return;
-    }
-    const html = generateSummaryWordTable();
-    const blob = new Blob([html], { type: 'text/html' });
-    const clipboardItem = new ClipboardItem({ 'text/html': blob });
-    navigator.clipboard.write([clipboardItem]).then(() => {
-        showToast('Summary table copied!', 'success');
-    }).catch(() => {
-        showToast('Failed to copy summary table.');
-    });
-}
-
-function generateSummaryMarkdown() {
-    const totals = getSummaryData();
-    let md = '| **Assignment Type** | **Total Points** |\n';
-    md += '| ------------------- | ---------------- |\n';
-
-    state.assignmentTypes.forEach(type => {
-        md += `| ${escapeHtml(type)} | ${totals[type]} |\n`;
-    });
-    return md;
-}
-
-function copySummaryAsMarkdown() {
-    if (state.assignmentTypes.length === 0) {
-        showToast('No summary to copy.');
-        return;
-    }
-    const markdown = generateSummaryMarkdown();
-    navigator.clipboard.writeText(markdown).then(() => {
-        showToast('Summary markdown copied!', 'success');
-    }).catch(() => {
-        showToast('Failed to copy summary markdown.');
-    });
-}
-
-function generateSummaryCsv() {
-    const totals = getSummaryData();
-    let csv = 'Assignment Type,Total Points\n';
-    state.assignmentTypes.forEach(type => {
-        csv += `"${escapeHtml(type)}",${totals[type]}\n`;
-    });
-    return csv;
-}
-
-function downloadSummaryCsv() {
-    if (state.assignmentTypes.length === 0) {
-        showToast('No summary to download.');
-        return;
-    }
-    const csv = generateSummaryCsv();
-    downloadFile('assignment-summary.csv', csv, 'text/csv');
-}
-
+// REMOVED: generateSummaryWordTable, copySummaryTableToClipboard, generateSummaryMarkdown,
+// copySummaryAsMarkdown, generateSummaryCsv, downloadSummaryCsv — export buttons removed
 // ============================================
 // MODULE MANAGEMENT
 // ============================================
 
 let moduleSortable = null;
 
+// Standing nudge when module dates fall outside the course date range —
+// typically after the course dates changed and the offered redistribution
+// was declined. Cleared by fixing the dates (or redistributing).
+function updateDatesRangeNotice() {
+    const el = document.getElementById('datesOutOfRangeNotice');
+    if (!el) return;
+    const cs = state.courseStartDate, ce = state.courseEndDate;
+    let out = 0;
+    if (cs || ce) {
+        (state.modules || []).forEach(m => {
+            const dates = [m.startDate, m.endDate].filter(Boolean);
+            if (dates.some(d => (cs && d < cs) || (ce && d > ce))) out++;
+        });
+    }
+    if (out > 0) {
+        const range = (cs && ce) ? ` (${formatDate(cs)} – ${formatDate(ce)})` : '';
+        el.textContent = `⚠ ${out === 1 ? '1 module has' : out + ' modules have'} dates outside the course dates${range}. Redistribute Dates can reflow the schedule to fit.`;
+        el.style.display = '';
+    } else {
+        el.style.display = 'none';
+    }
+}
+
+// Returns 'missing' if a module has no start/end date, 'order' if its dates
+// fall out of chronological order relative to the previous module, else null.
+// Self-heals on every render — nothing is stored, so fixing the dates (by hand
+// or via Redistribute Dates) clears the flag automatically.
+function getModuleDateIssue(module, index) {
+    if (!module.startDate || !module.endDate) return 'missing';
+    const prev = index > 0 ? state.modules[index - 1] : null;
+    if (prev && prev.startDate && module.startDate < prev.startDate) return 'order';
+    return null;
+}
+
+// Same idea as getModuleDateIssue, but for an assignment's position within its
+// module's assignment list. Fires after a drag-reorder (or Move to module)
+// leaves the due date out of step with the assignment's new position.
+function getAssignmentDateIssue(module, assignment, index) {
+    if (!assignment.dueDate) return 'missing';
+    const prev = index > 0 ? module.assignments[index - 1] : null;
+    if (prev && prev.dueDate && assignment.dueDate < prev.dueDate) return 'order';
+    return null;
+}
+
+// Clicked from an assignment's amber date-flag dot. Offers to set the due
+// date to the module's end date — a quick fix for a missing or out-of-order
+// due date, confirmed before anything changes.
+function fixAssignmentDueDate(moduleId, assignmentId) {
+    const module = state.modules.find(m => m.id === moduleId);
+    if (!module) return;
+    const assignment = module.assignments.find(a => a.id === assignmentId);
+    if (!assignment) return;
+    if (!module.endDate) {
+        showToast('Set this module\'s dates first, then try again.');
+        return;
+    }
+    showConfirm(
+        `Set this assignment's due date to ${formatDate(module.endDate)}, the end of "${module.name || 'this module'}"?`,
+        () => {
+            assignment.dueDate = module.endDate;
+            saveToLocalStorage();
+            renderModules();
+            renderPreview();
+            showToast('Due date updated.', 'success');
+        },
+        null,
+        'Set Due Date'
+    );
+}
+
 function renderModules() {
+    updateDatesRangeNotice();
     const container = document.getElementById('moduleList');
 
     if (state.modules.length === 0) {
@@ -960,18 +852,29 @@ function renderModules() {
         return;
     }
 
+    const dateFlag = (module, index) => {
+        const issue = getModuleDateIssue(module, index);
+        if (!issue) return '';
+        const tip = issue === 'missing'
+            ? 'This module has no dates yet. Click Redistribute Dates to fit it into the schedule.'
+            : 'This module’s dates don’t match its position in the list. Click Redistribute Dates to fix the schedule.';
+        return `<span class="date-flag" title="${escapeAttr(tip)}" onclick="redistributeAssignmentDates()"></span>`;
+    };
+
     container.innerHTML = state.modules.map((module, index) => `
         <div class="module-item ${module.collapsed ? 'collapsed' : ''}" data-id="${module.id}">
             <div class="module-header">
                 <button class="collapse-toggle" onclick="toggleModuleCollapse('${module.id}')" title="Expand/Collapse">▼</button>
                 <div class="module-info">
                     <div class="module-title">${escapeHtml(module.name) || 'Untitled Module'}</div>
-                    <div class="module-dates">${formatDateRange(module.startDate, module.endDate)}</div>
+                    <div class="module-dates">${formatDateRange(module.startDate, module.endDate)}${dateFlag(module, index)}</div>
                     ${module.topic ? `<div class="module-topic">${escapeHtml(module.topic)}</div>` : ''}
                 </div>
                 <span class="assignment-count">${module.assignments.length} assignment${module.assignments.length !== 1 ? 's' : ''}</span>
                 <div class="module-actions">
                     <button class="btn btn-icon" onclick="editModule('${module.id}')" title="Edit">✎</button>
+                    <button class="btn btn-icon" onclick="duplicateModule('${module.id}')" title="Duplicate">⧉</button>
+                    <button class="btn btn-icon" onclick="openModuleMoveMenu('${module.id}', this)" title="Move module">→</button>
                     <button class="btn btn-icon danger" onclick="deleteModule('${module.id}')" title="Delete">×</button>
                 </div>
             </div>
@@ -992,18 +895,28 @@ function renderAssignments(module) {
         return '<div class="empty-state">No assignments in this module</div>';
     }
 
-    return module.assignments.map(assignment => `
+    const dateFlag = (assignment, index) => {
+        const issue = getAssignmentDateIssue(module, assignment, index);
+        if (!issue) return '';
+        const tip = issue === 'missing'
+            ? 'This assignment has no due date yet. Click to set it to the end of the module.'
+            : 'This assignment’s due date doesn’t match its position in the list. Click to fix it.';
+        return `<span class="date-flag" title="${escapeAttr(tip)}" onclick="fixAssignmentDueDate('${module.id}', '${assignment.id}')"></span>`;
+    };
+
+    return module.assignments.map((assignment, index) => `
         <div class="assignment-item" data-id="${assignment.id}">
             <span class="drag-handle">≡</span>
             <div class="assignment-info">
                 <div class="assignment-name">${escapeHtml(assignment.name)}</div>
                 <div class="assignment-meta">
-                    <span class="assignment-type">${escapeHtml(assignment.type)}</span>
-                    ${(state.gradingMode !== 'weighted' && assignment.points) ? `<span class="assignment-points">${assignment.points} pts</span>` : ''}
+                    ${assignment.type ? `<span class="assignment-type">${escapeHtml(assignment.type)}</span>` : ''}
+                    ${(state.gradingMode !== 'weighted' && assignment.points) ? `<span class="assignment-points">${assignment.extraCredit ? '+' : ''}${assignment.points} pts</span>` : ''}
+                    ${assignment.extraCredit ? '<span class="assignment-ec">Extra Credit</span>' : ''}
                     <span class="assignment-cllos">${formatCllos(assignment.clloIds)}</span>
                 </div>
             </div>
-            <div class="assignment-due">${formatDate(assignment.dueDate)}</div>
+            <div class="assignment-due">${formatDate(assignment.dueDate)}${dateFlag(assignment, index)}${assignment.dueTime ? `<span style="color:#888;font-size:11px;margin-left:4px">${escapeHtml(assignment.dueTime)}</span>` : ''}</div>
             <div class="assignment-actions">
                 <button class="btn btn-icon" onclick="editAssignment('${module.id}', '${assignment.id}')" title="Edit">✎</button>
                 <button class="btn btn-icon" onclick="duplicateAssignment('${module.id}', '${assignment.id}')" title="Duplicate">⧉</button>
@@ -1034,9 +947,11 @@ function formatCllos(clloIds) {
 
 // Module Modal
 let editingModuleId = null;
+let duplicatingModuleId = null;
 
-function openModuleModal(moduleId = null) {
+function openModuleModal(moduleId = null, duplicateFromId = null) {
     editingModuleId = moduleId;
+    duplicatingModuleId = null;
     const modal = document.getElementById('moduleModal');
     const title = document.getElementById('moduleModalTitle');
 
@@ -1073,27 +988,35 @@ function openModuleModal(moduleId = null) {
         endDateInput.value = module.endDate || '';
         document.getElementById('moduleTopic').value = module.topic || '';
     } else {
-        title.textContent = 'Add Module';
-        document.getElementById('moduleName').value = '';
-        document.getElementById('moduleTopic').value = '';
+        const dupSource = duplicateFromId ? state.modules.find(m => m.id === duplicateFromId) : null;
+        duplicatingModuleId = dupSource ? duplicateFromId : null;
+        title.textContent = dupSource ? 'Duplicate Module' : 'Add Module';
+        document.getElementById('moduleName').value = dupSource && dupSource.name ? dupSource.name + ' (Copy)' : '';
+        document.getElementById('moduleTopic').value = dupSource ? (dupSource.topic || '') : '';
 
-        // Smart date suggestion: use day after last module ends, or course start date
+        // Smart date suggestion: use day after last module ends, or course start date.
+        // Skips past any dateless modules so a moved/dateless module elsewhere in the
+        // list doesn't throw off the suggestion.
         let suggestedStart = state.courseStartDate || '';
-        if (state.modules.length > 0) {
-            const lastModule = state.modules[state.modules.length - 1];
-            if (lastModule.endDate) {
-                // Add one day to last module's end date
-                const nextDay = new Date(lastModule.endDate + 'T00:00:00');
+        for (let i = state.modules.length - 1; i >= 0; i--) {
+            if (state.modules[i].endDate) {
+                const nextDay = new Date(state.modules[i].endDate + 'T00:00:00');
                 nextDay.setDate(nextDay.getDate() + 1);
                 suggestedStart = nextDay.toISOString().split('T')[0];
+                break;
             }
         }
         startDateInput.value = suggestedStart;
 
-        // Default end date to one week after start date
+        // Default end date: match the duplicated module's span, otherwise one week
         if (suggestedStart) {
+            let spanDays = 6; // 6 days later = 1 week span
+            if (dupSource && dupSource.startDate && dupSource.endDate) {
+                const srcSpan = Math.round((new Date(dupSource.endDate + 'T00:00:00') - new Date(dupSource.startDate + 'T00:00:00')) / 86400000);
+                if (srcSpan >= 0) spanDays = srcSpan;
+            }
             const endDate = new Date(suggestedStart + 'T00:00:00');
-            endDate.setDate(endDate.getDate() + 6); // 6 days later = 1 week span
+            endDate.setDate(endDate.getDate() + spanDays);
             // Don't exceed course end date
             if (state.courseEndDate && endDate > new Date(state.courseEndDate + 'T00:00:00')) {
                 endDateInput.value = state.courseEndDate;
@@ -1112,6 +1035,7 @@ function openModuleModal(moduleId = null) {
 function closeModuleModal() {
     document.getElementById('moduleModal').classList.add('hidden');
     editingModuleId = null;
+    duplicatingModuleId = null;
 }
 
 function saveModule() {
@@ -1126,6 +1050,7 @@ function saveModule() {
     if (validateDateRange(startInput, state.courseStartDate, state.courseEndDate, 'course')) return;
     if (validateDateRange(endInput, state.courseStartDate, state.courseEndDate, 'course')) return;
 
+    let didDuplicate = false;
     if (editingModuleId) {
         const module = state.modules.find(m => m.id === editingModuleId);
         module.name = name;
@@ -1133,24 +1058,76 @@ function saveModule() {
         module.endDate = endDate;
         module.topic = topic;
     } else {
-        state.modules.push({
+        const newModule = {
             id: generateId(),
             name,
             startDate,
             endDate,
             topic,
             assignments: []
-        });
+        };
+
+        const dupSource = duplicatingModuleId ? state.modules.find(m => m.id === duplicatingModuleId) : null;
+        if (dupSource) {
+            didDuplicate = true;
+            // Shift copied due dates by the same number of days the module moved;
+            // if that can't be computed or a shifted date falls outside the new
+            // module's range, clear the due date instead of guessing.
+            let offsetDays = null;
+            if (dupSource.startDate && startDate) {
+                offsetDays = Math.round((new Date(startDate + 'T00:00:00') - new Date(dupSource.startDate + 'T00:00:00')) / 86400000);
+            }
+            const minDate = startDate || state.courseStartDate || '';
+            const maxDate = endDate || state.courseEndDate || '';
+            let clearedDates = 0;
+            newModule.assignments = dupSource.assignments.map(a => {
+                const copy = { ...a, id: generateId(), clloIds: [...(a.clloIds || [])] };
+                if (copy.dueDate) {
+                    let shiftedStr = '';
+                    if (offsetDays !== null) {
+                        const shifted = new Date(copy.dueDate + 'T00:00:00');
+                        shifted.setDate(shifted.getDate() + offsetDays);
+                        shiftedStr = shifted.toISOString().split('T')[0];
+                        if ((minDate && shiftedStr < minDate) || (maxDate && shiftedStr > maxDate)) shiftedStr = '';
+                    }
+                    copy.dueDate = shiftedStr;
+                    if (!shiftedStr) {
+                        copy.dueTime = '';
+                        clearedDates++;
+                    }
+                }
+                return copy;
+            });
+            newModule.collapsed = false;
+            if (clearedDates > 0) {
+                showToast(`Module duplicated. ${clearedDates} due date${clearedDates === 1 ? '' : 's'} didn't fit the new date range and ${clearedDates === 1 ? 'was' : 'were'} cleared.`);
+            } else if (newModule.assignments.length > 0) {
+                showToast('Module duplicated — assignment due dates updated to the new dates.');
+            } else {
+                showToast('Module duplicated.');
+            }
+        }
+
+        state.modules.push(newModule);
     }
 
     saveToLocalStorage();
     renderModules();
     renderPreview();
+    if (didDuplicate) {
+        renderClloReport();
+        renderAlignmentMap();
+        renderAssignmentTypeSummary();
+    }
     closeModuleModal();
 }
 
 function editModule(id) {
     openModuleModal(id);
+}
+
+function duplicateModule(id) {
+    openModuleModal(null, id);
 }
 
 function toggleModuleCollapse(id) {
@@ -1195,6 +1172,94 @@ function deleteModule(id) {
     }
 }
 
+// Modules can't be drag-reordered — instead this menu lists every other
+// position in the list (mirroring openMoveMenu's assignment-move pattern)
+// and moveModuleTo() splices the module there.
+function openModuleMoveMenu(moduleId, btn) {
+    closeMoveMenu();
+
+    const curIdx = state.modules.findIndex(m => m.id === moduleId);
+    if (curIdx === -1) return;
+
+    const options = [];
+    for (let target = 0; target <= state.modules.length; target++) {
+        const insertAt = target > curIdx ? target - 1 : target;
+        if (insertAt === curIdx) continue; // no-op: before itself or immediately after itself
+        let label;
+        if (target === 0) label = 'Move to top';
+        else if (target === state.modules.length) label = 'Move to bottom';
+        else label = `Move before: ${state.modules[target].name || 'Untitled Module'}`;
+        options.push({ target, label });
+    }
+
+    if (options.length === 0) {
+        showToast('No other position to move to.');
+        return;
+    }
+
+    const menu = document.createElement('div');
+    menu.className = 'move-menu';
+    menu.id = 'activeMoveMenu';
+
+    const label = document.createElement('div');
+    label.className = 'move-menu-label';
+    label.textContent = 'Move module…';
+    menu.appendChild(label);
+
+    options.forEach(opt => {
+        const item = document.createElement('button');
+        item.className = 'move-menu-item';
+        item.textContent = opt.label;
+        item.addEventListener('click', () => {
+            closeMoveMenu();
+            moveModuleTo(moduleId, opt.target);
+        });
+        menu.appendChild(item);
+    });
+
+    document.body.appendChild(menu);
+
+    const rect = btn.getBoundingClientRect();
+    const menuWidth = 220;
+    let left = rect.right - menuWidth;
+    if (left < 8) left = 8;
+    let top = rect.bottom + 4;
+    if (top + 200 > window.innerHeight) top = rect.top - menu.offsetHeight - 4;
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+
+    setTimeout(() => document.addEventListener('click', closeMoveMenu, { once: true }), 0);
+}
+
+function moveModuleTo(moduleId, targetIndex) {
+    const curIdx = state.modules.findIndex(m => m.id === moduleId);
+    if (curIdx === -1) return;
+
+    const [mod] = state.modules.splice(curIdx, 1);
+    const insertAt = targetIndex > curIdx ? targetIndex - 1 : targetIndex;
+    state.modules.splice(insertAt, 0, mod);
+
+    const hadDates = !!(mod.startDate || mod.endDate);
+    if (hadDates) {
+        mod.startDate = '';
+        mod.endDate = '';
+    }
+
+    saveToLocalStorage();
+    renderModules();
+    renderPreview();
+
+    if (hadDates) {
+        showConfirm(
+            'Moving this module cleared its dates. Redistribute all module dates now to fit the new order?',
+            () => redistributeAssignmentDates(),
+            null,
+            'Redistribute Now',
+            'Not Now'
+        );
+    }
+}
+
 // ============================================
 // ASSIGNMENT MANAGEMENT
 // ============================================
@@ -1230,13 +1295,10 @@ function openAssignmentModal(moduleId, assignmentId = null) {
         assignmentDateHint.textContent = '';
     }
 
-    // Show/hide points field based on grading mode
-    const ptsGroup = document.getElementById('assignmentPointsGroup');
-    if (ptsGroup) ptsGroup.style.display = state.gradingMode === 'points' ? '' : 'none';
-
-    // Populate type dropdown
+    // Populate type dropdown — blank option first so an item can carry no type
+    // at all (e.g. informational schedule entries that aren't graded work)
     const typeSelect = document.getElementById('assignmentType');
-    typeSelect.innerHTML = state.assignmentTypes.map(type =>
+    typeSelect.innerHTML = '<option value="">— None —</option>' + state.assignmentTypes.map(type =>
         `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`
     ).join('');
 
@@ -1258,9 +1320,11 @@ function openAssignmentModal(moduleId, assignmentId = null) {
         const assignment = module.assignments.find(a => a.id === assignmentId);
 
         document.getElementById('assignmentName').value = assignment.name || '';
-        document.getElementById('assignmentType').value = assignment.type || state.assignmentTypes[0];
+        document.getElementById('assignmentType').value = assignment.type || '';
         document.getElementById('assignmentPoints').value = assignment.points || '';
+        document.getElementById('assignmentExtraCredit').checked = !!assignment.extraCredit;
         dueInput.value = assignment.dueDate || '';
+        document.getElementById('assignmentTime').value = assignment.dueTime || '';
 
         // Check the appropriate CLLOs
         assignment.clloIds.forEach(clloId => {
@@ -1270,8 +1334,10 @@ function openAssignmentModal(moduleId, assignmentId = null) {
     } else {
         title.textContent = 'Add Assignment';
         document.getElementById('assignmentName').value = '';
-        document.getElementById('assignmentType').value = state.assignmentTypes[0];
+        document.getElementById('assignmentType').value = state.assignmentTypes[0] || '';
         document.getElementById('assignmentPoints').value = '';
+        document.getElementById('assignmentExtraCredit').checked = false;
+        document.getElementById('assignmentTime').value = '';
 
         // Default to module end date for due date (common pattern)
         dueInput.value = module.endDate || '';
@@ -1283,8 +1349,21 @@ function openAssignmentModal(moduleId, assignmentId = null) {
         });
     }
 
+    syncAssignmentPointsVisibility();
     modal.classList.remove('hidden');
     document.getElementById('assignmentName').focus();
+}
+
+// Points only apply to typed assignments in points mode — an untyped item is
+// informational, and its points would never land in any assignment-type total.
+// Extra credit likewise only applies to typed assignments.
+function syncAssignmentPointsVisibility() {
+    const ptsGroup = document.getElementById('assignmentPointsGroup');
+    if (!ptsGroup) return;
+    const noType = document.getElementById('assignmentType').value === '';
+    ptsGroup.style.display = (state.gradingMode === 'points' && !noType) ? '' : 'none';
+    const ecGroup = document.getElementById('assignmentExtraCreditGroup');
+    if (ecGroup) ecGroup.style.display = noType ? 'none' : '';
 }
 
 function closeAssignmentModal() {
@@ -1297,7 +1376,10 @@ function saveAssignment() {
     const name = document.getElementById('assignmentName').value.trim();
     const type = document.getElementById('assignmentType').value;
     const points = document.getElementById('assignmentPoints').value;
+    // Extra credit only applies to typed assignments — untyped items carry no points
+    const extraCredit = !!type && document.getElementById('assignmentExtraCredit').checked;
     const dueDate = document.getElementById('assignmentDue').value;
+    const dueTime = document.getElementById('assignmentTime').value.trim();
 
     // Get selected CLLOs
     const clloIds = [];
@@ -1327,16 +1409,20 @@ function saveAssignment() {
         const assignment = module.assignments.find(a => a.id === editingAssignmentId);
         assignment.name = name;
         assignment.type = type;
-        assignment.points = points ? parseInt(points, 10) : null;
+        assignment.points = (type && points) ? parseInt(points, 10) : null;
+        assignment.extraCredit = extraCredit;
         assignment.dueDate = dueDate;
+        assignment.dueTime = dueTime;
         assignment.clloIds = clloIds;
     } else {
         module.assignments.push({
             id: generateId(),
             name,
             type,
-            points: points ? parseInt(points, 10) : null,
+            points: (type && points) ? parseInt(points, 10) : null,
+            extraCredit,
             dueDate,
+            dueTime,
             clloIds
         });
     }
@@ -1942,6 +2028,7 @@ function renderPreview() {
     }
 
     let totalPoints = 0;
+    let ecTotal = 0;
 
     let html = `
         <table>
@@ -1969,9 +2056,15 @@ function renderPreview() {
         `;
 
         module.assignments.forEach((assignment) => {
-            if (assignment.points) totalPoints += assignment.points;
+            if (assignment.points) {
+                if (assignment.extraCredit) ecTotal += assignment.points;
+                else totalPoints += assignment.points;
+            }
             const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
             const weighted = state.gradingMode === 'weighted';
+            const ptsLabel = (!weighted && assignment.points)
+                ? `(${assignment.extraCredit ? 'Extra Credit: +' : ''}${assignment.points} pts)`
+                : (assignment.extraCredit ? '(Extra Credit)' : '');
 
             html += `
                 <tr>
@@ -1979,7 +2072,7 @@ function renderPreview() {
                     <td></td>
                     <td></td>
                     <td>
-                        ${escapeHtml(assignment.name)} ${(!weighted && assignment.points) ? `(${assignment.points} pts)` : ''}
+                        ${escapeHtml(assignment.name)} ${ptsLabel}
                         ${clloNums ? `<br><span style="font-size: 0.9em; color: #666;">CLLO: ${clloNums}</span>` : ''}
                     </td>
                     <td>${formatDate(assignment.dueDate)}</td>
@@ -1996,6 +2089,15 @@ function renderPreview() {
                 <td></td>
             </tr>
         `;
+        if (ecTotal > 0) {
+            html += `
+            <tr style="font-style: italic; background-color: var(--background);">
+                <td colspan="3" style="text-align: right;">Extra Credit Available (not included in total)</td>
+                <td>+${ecTotal}</td>
+                <td></td>
+            </tr>
+        `;
+        }
     }
 
     html += '</tbody></table>';
@@ -2040,6 +2142,7 @@ function generateWordTable() {
     // Column widths optimized for Word (total ~6.5 inches for letter paper with 1" margins)
     // Module: 8%, Dates: 15%, Topic: 20%, Assignments: 30%, CLLO: 12%, Due: 15%
     let totalPoints = 0;
+    let ecTotal = 0;
     let html = `
 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
 <head>
@@ -2075,9 +2178,15 @@ function generateWordTable() {
         </tr>`;
 
         module.assignments.forEach((assignment) => {
-            if (assignment.points) totalPoints += assignment.points;
+            if (assignment.points) {
+                if (assignment.extraCredit) ecTotal += assignment.points;
+                else totalPoints += assignment.points;
+            }
             const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
             const weighted = state.gradingMode === 'weighted';
+            const ptsLabel = (!weighted && assignment.points)
+                ? `(${assignment.extraCredit ? 'Extra Credit: +' : ''}${assignment.points} pts)`
+                : (assignment.extraCredit ? '(Extra Credit)' : '');
 
             html += `
         <tr>
@@ -2086,7 +2195,7 @@ function generateWordTable() {
             <td style="border:1px solid #000; padding:6px; vertical-align:top;"></td>
             <td style="border:1px solid #000; padding:6px; vertical-align:top;">
                 <p class="cs-text">
-                    ${escapeHtml(assignment.name)} ${(!weighted && assignment.points) ? `(${assignment.points} pts)` : ''}
+                    ${escapeHtml(assignment.name)} ${ptsLabel}
                     ${clloNums ? `<br>CLLO: ${clloNums}` : ''}
                 </p>
             </td>
@@ -2102,6 +2211,14 @@ function generateWordTable() {
             <td style="border:1px solid #000; padding:6px;"><p class="cs-text" style="font-weight:bold;">${totalPoints}</p></td>
             <td style="border:1px solid #000; padding:6px;"></td>
         </tr>`;
+        if (ecTotal > 0) {
+            html += `
+        <tr style="font-style:italic; background-color:#f2f2f2;">
+            <td colspan="3" style="border:1px solid #000; padding:6px; text-align:right;"><p class="cs-text" style="text-align:right; font-style:italic;">Extra Credit Available (not included in total)</p></td>
+            <td style="border:1px solid #000; padding:6px;"><p class="cs-text" style="font-style:italic;">+${ecTotal}</p></td>
+            <td style="border:1px solid #000; padding:6px;"></td>
+        </tr>`;
+        }
     }
 
     html += `
@@ -2131,7 +2248,9 @@ function generateMarkdown() {
 
         module.assignments.forEach((assignment) => {
             const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
-            const ptsLabel = (state.gradingMode !== 'weighted' && assignment.points) ? ` (${assignment.points} pts)` : '';
+            const ptsLabel = (state.gradingMode !== 'weighted' && assignment.points)
+                ? ` (${assignment.extraCredit ? 'Extra Credit: +' : ''}${assignment.points} pts)`
+                : (assignment.extraCredit ? ' (Extra Credit)' : '');
             md += `| | | | ${assignment.name}${ptsLabel} ${clloNums ? `<br>CLLO: ${clloNums}` : ''} | ${formatDate(assignment.dueDate)} |\n`;
         });
     });
@@ -2147,7 +2266,9 @@ function downloadCsv() {
 
         module.assignments.forEach((assignment) => {
             const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
-            const ptsLabel = (state.gradingMode !== 'weighted' && assignment.points) ? ` (${assignment.points} pts)` : '';
+            const ptsLabel = (state.gradingMode !== 'weighted' && assignment.points)
+                ? ` (${assignment.extraCredit ? 'Extra Credit: +' : ''}${assignment.points} pts)`
+                : (assignment.extraCredit ? ' (Extra Credit)' : '');
             csv += `"","","","${assignment.name}${ptsLabel}","${clloNums}","${formatDate(assignment.dueDate)}"\n`;
         });
     });
@@ -2331,6 +2452,7 @@ async function doGeneratePDF() {
     const scheduleData = [];
     const moduleRowIndices = new Set();
     let totalPoints = 0;
+    let ecTotal = 0;
 
     state.modules.forEach((module) => {
         moduleRowIndices.add(scheduleData.length);
@@ -2343,9 +2465,15 @@ async function doGeneratePDF() {
         ]);
 
         module.assignments.forEach((assignment) => {
-            if (assignment.points) totalPoints += assignment.points;
+            if (assignment.points) {
+                if (assignment.extraCredit) ecTotal += assignment.points;
+                else totalPoints += assignment.points;
+            }
             const clloNums = assignment.clloIds.map(id => getClloNumber(id)).sort((a,b) => a - b).join(', ');
-            const assignmentText = `${assignment.name}${assignment.points ? ` (${assignment.points} pts)` : ''}${clloNums ? `\nCLLO: ${clloNums}` : ''}`;
+            const ptsLabel = assignment.points
+                ? ` (${assignment.extraCredit ? 'Extra Credit: +' : ''}${assignment.points} pts)`
+                : (assignment.extraCredit ? ' (Extra Credit)' : '');
+            const assignmentText = `${assignment.name}${ptsLabel}${clloNums ? `\nCLLO: ${clloNums}` : ''}`;
 
             scheduleData.push([
                 '',
@@ -2359,6 +2487,9 @@ async function doGeneratePDF() {
 
     // Add total row
     scheduleData.push(['', '', 'Total Points', totalPoints.toString(), '']);
+    if (ecTotal > 0) {
+        scheduleData.push(['', '', 'Extra Credit Available', `+${ecTotal} (not included in total)`, '']);
+    }
 
     doc.autoTable({
         startY: yPos,
@@ -2404,26 +2535,6 @@ async function doGeneratePDF() {
 // ============================================
 // JSON SAVE/LOAD
 // ============================================
-
-function newCourse() {
-    document.getElementById('newCourseModal').classList.remove('hidden');
-}
-
-function confirmNewCourse() {
-    document.getElementById('newCourseModal').classList.add('hidden');
-    state = {
-        courseName: '',
-        courseStartDate: '',
-        courseEndDate: '',
-        pllos: [],
-        cllos: [],
-        assignmentTypes: [],
-        modules: []
-    };
-    saveToLocalStorage();
-    renderAll();
-    showToast('New course started.', 'success');
-}
 
 function saveToJson() {
     const defaultFilename = state.courseName
@@ -2497,6 +2608,10 @@ function confirmImport() {
             if (!state.assignmentTypes) {
                 state.assignmentTypes = [...defaultAssignmentTypes];
             }
+            // Ensure grading mode fields exist
+            if (!state.gradingMode) state.gradingMode = 'points';
+            if (!state.typeWeights) state.typeWeights = {};
+            if (!state.typeDescriptions) state.typeDescriptions = {};
             // Ensure pllos exists
             if (!state.pllos) {
                 state.pllos = [];
@@ -2534,14 +2649,6 @@ function closeAboutModal() {
     document.getElementById('aboutModal').classList.add('hidden');
 }
 
-function openWhatsNewModal() {
-    document.getElementById('whatsNewModal').classList.remove('hidden');
-}
-
-function closeWhatsNewModal() {
-    document.getElementById('whatsNewModal').classList.add('hidden');
-}
-
 function showHelpModal() {
     document.getElementById('helpModal').classList.remove('hidden');
 }
@@ -2575,6 +2682,11 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// For text placed inside quoted HTML attributes (escapeHtml leaves quotes alone)
+function escapeAttr(text) {
+    return escapeHtml(text).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 function downloadFile(filename, content, mimeType) {
@@ -2629,7 +2741,7 @@ function snapToNearestSunday(dateStr) {
     return date.toISOString().split('T')[0];
 }
 
-function showConfirm(message, onConfirm, onCancel) {
+function showConfirm(message, onConfirm, onCancel, confirmText = 'Move Assignment', cancelText = 'Cancel') {
     const overlay = document.createElement('div');
     overlay.className = 'confirm-overlay';
 
@@ -2645,7 +2757,7 @@ function showConfirm(message, onConfirm, onCancel) {
 
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'btn btn-secondary';
-    cancelBtn.textContent = 'Cancel';
+    cancelBtn.textContent = cancelText;
     cancelBtn.addEventListener('click', () => {
         overlay.remove();
         if (onCancel) onCancel();
@@ -2653,7 +2765,7 @@ function showConfirm(message, onConfirm, onCancel) {
 
     const okBtn = document.createElement('button');
     okBtn.className = 'btn btn-primary';
-    okBtn.textContent = 'Move Assignment';
+    okBtn.textContent = confirmText;
     okBtn.addEventListener('click', () => {
         overlay.remove();
         onConfirm();
@@ -2849,16 +2961,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load saved data
     loadFromLocalStorage();
     renderAll();
-    checkIncomingFromCSG();
-    updateSyllabusBtn();
     // Sync grading mode toggle to loaded state
     setGradingMode(state.gradingMode || 'points');
 
-    // CSG integration
-    document.getElementById('sendToSyllabusBtn').addEventListener('click', sendToSyllabusGenerator);
-
     // Moodle Common Cartridge export
-    document.getElementById('exportCCBtn').addEventListener('click', exportCommonCartridge);
+    document.getElementById('exportCCBtn')?.addEventListener('click', exportCommonCartridge);
 
     // Course name and dates
     document.getElementById('courseName').addEventListener('change', function() {
@@ -2905,21 +3012,43 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') addAssignmentType();
     });
 
-    // Populate suggested types
-    const suggestedSelect = document.getElementById('suggestedTypeSelect');
+    // Suggestions popover for assignment types — appended to body to escape overflow:hidden panels
+    const suggestionsBtn = document.getElementById('suggestionsBtn');
+    const newTypeInput = document.getElementById('newAssignmentType');
+    const suggestionsList = document.createElement('div');
+    suggestionsList.className = 'suggestions-list';
+    suggestionsList.style.display = 'none';
+    document.body.appendChild(suggestionsList);
+
     suggestedAssignmentTypes.forEach(type => {
-        const option = document.createElement('option');
-        option.value = type;
-        option.textContent = type;
-        suggestedSelect.appendChild(option);
+        const item = document.createElement('div');
+        item.className = 'suggestions-item';
+        item.textContent = type;
+        item.addEventListener('mousedown', (e) => {
+            e.preventDefault(); // prevent blur before click registers
+            newTypeInput.value = type;
+            suggestionsList.style.display = 'none';
+            newTypeInput.focus();
+        });
+        suggestionsList.appendChild(item);
     });
 
-    suggestedSelect.addEventListener('change', function() {
-        if (this.value) {
-            const input = document.getElementById('newAssignmentType');
-            input.value = this.value;
-            this.value = ''; // Reset dropdown
-            input.focus(); // Focus input so user can edit or hit enter
+    suggestionsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = suggestionsList.style.display !== 'none';
+        if (isOpen) {
+            suggestionsList.style.display = 'none';
+        } else {
+            const rect = suggestionsBtn.getBoundingClientRect();
+            suggestionsList.style.top = (rect.bottom + 4) + 'px';
+            suggestionsList.style.left = rect.left + 'px';
+            suggestionsList.style.display = 'block';
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!suggestionsBtn.contains(e.target)) {
+            suggestionsList.style.display = 'none';
         }
     });
 
@@ -2933,6 +3062,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Assignment modal buttons
     document.getElementById('cancelAssignmentBtn').addEventListener('click', closeAssignmentModal);
     document.getElementById('saveAssignmentBtn').addEventListener('click', saveAssignment);
+    document.getElementById('assignmentType').addEventListener('change', syncAssignmentPointsVisibility);
 
     // PDF modal
     document.getElementById('cancelPdfBtn').addEventListener('click', () => {
@@ -2963,14 +3093,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('copyMarkdownBtn').addEventListener('click', copyAsMarkdown);
     document.getElementById('downloadCsvBtn').addEventListener('click', downloadCsv);
 
-    // Summary Export buttons
-    document.getElementById('copySummaryBtn').addEventListener('click', copySummaryTableToClipboard);
-    document.getElementById('copySummaryMarkdownBtn').addEventListener('click', copySummaryAsMarkdown);
-    document.getElementById('downloadSummaryCsvBtn').addEventListener('click', downloadSummaryCsv);
-
     // Save/Load buttons
-    document.getElementById('newCourseBtn').addEventListener('click', newCourse);
-    document.getElementById('loadDemoBtn').addEventListener('click', loadDemoCourse);
     document.getElementById('saveBtn').addEventListener('click', saveToJson);
     document.getElementById('loadBtn').addEventListener('click', () => {
         document.getElementById('fileInput').click();
@@ -2982,6 +3105,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Load Demo button + modal
+    document.getElementById('loadDemoBtn').addEventListener('click', loadDemoCourse);
+    document.getElementById('cancelLoadDemoBtn').addEventListener('click', () => {
+        document.getElementById('loadDemoModal').classList.add('hidden');
+    });
+    document.getElementById('saveFirstLoadDemoBtn').addEventListener('click', () => {
+        document.getElementById('loadDemoModal').classList.add('hidden');
+        saveFirst(confirmLoadDemo);
+    });
+    document.getElementById('confirmLoadDemoBtn').addEventListener('click', confirmLoadDemo);
+    document.getElementById('loadDemoModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.add('hidden');
+    });
+
     // Save modal
     document.getElementById('cancelSaveBtn').addEventListener('click', () => {
         document.getElementById('saveModal').classList.add('hidden');
@@ -2991,19 +3128,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') confirmSave();
     });
     document.getElementById('saveModal').addEventListener('click', function(e) {
-        if (e.target === this) this.classList.add('hidden');
-    });
-
-    // New Course modal
-    document.getElementById('cancelNewCourseBtn').addEventListener('click', () => {
-        document.getElementById('newCourseModal').classList.add('hidden');
-    });
-    document.getElementById('saveFirstNewCourseBtn').addEventListener('click', () => {
-        document.getElementById('newCourseModal').classList.add('hidden');
-        saveFirst(confirmNewCourse);
-    });
-    document.getElementById('confirmNewCourseBtn').addEventListener('click', confirmNewCourse);
-    document.getElementById('newCourseModal').addEventListener('click', function(e) {
         if (e.target === this) this.classList.add('hidden');
     });
 
@@ -3024,19 +3148,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Load Demo modal
-    document.getElementById('cancelLoadDemoBtn').addEventListener('click', () => {
-        document.getElementById('loadDemoModal').classList.add('hidden');
-    });
-    document.getElementById('saveFirstLoadDemoBtn').addEventListener('click', () => {
-        document.getElementById('loadDemoModal').classList.add('hidden');
-        saveFirst(confirmLoadDemo);
-    });
-    document.getElementById('confirmLoadDemoBtn').addEventListener('click', confirmLoadDemo);
-    document.getElementById('loadDemoModal').addEventListener('click', function(e) {
-        if (e.target === this) this.classList.add('hidden');
-    });
-
     // Close modals on outside click
     document.getElementById('assignmentModal').addEventListener('click', function(e) {
         if (e.target === this) closeAssignmentModal();
@@ -3053,16 +3164,13 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         document.getElementById('aboutModal').classList.remove('hidden');
     });
+    document.getElementById('logoLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('aboutModal').classList.remove('hidden');
+    });
     document.getElementById('closeAboutBtn').addEventListener('click', closeAboutModal);
     document.getElementById('aboutModal').addEventListener('click', function(e) {
         if (e.target === this) closeAboutModal();
-    });
-
-    // What's New modal
-    document.getElementById('whatsNewBtn').addEventListener('click', openWhatsNewModal);
-    document.getElementById('closeWhatsNewBtn').addEventListener('click', closeWhatsNewModal);
-    document.getElementById('whatsNewModal').addEventListener('click', function(e) {
-        if (e.target === this) closeWhatsNewModal();
     });
 
     // Help modal
@@ -3072,22 +3180,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === this) closeHelpModal();
     });
 
-    // Show help modal on first visit
-    if (!localStorage.getItem('coursetrixHelpSeen')) {
-        showHelpModal();
-    }
-
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeAssignmentModal();
             closeModuleModal();
             closeAboutModal();
-            closeWhatsNewModal();
             closeHelpModal();
             closePlloModal();
             document.getElementById('saveModal').classList.add('hidden');
-            document.getElementById('newCourseModal').classList.add('hidden');
             document.getElementById('importModal').classList.add('hidden');
             document.getElementById('loadDemoModal').classList.add('hidden');
             document.getElementById('redistributeModal').classList.add('hidden');

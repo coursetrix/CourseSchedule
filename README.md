@@ -117,7 +117,7 @@ Source-available under the **PolyForm Noncommercial License**.
 
 - Free for personal and educational use
 - Commercial use requires written permission from the author
-- [View full license](https://github.com/coursetrix/CourseSchedule/blob/main/LICENSE)
+- [View full license](https://github.com/coursetrix/Coursetrix/blob/main/LICENSE)
 
 ---
 

@@ -248,7 +248,7 @@ async function exportCommonCartridge() {
 
         let assignRows = '';
         (mod.assignments || []).forEach(a => {
-            const due = a.dueDate ? formatShortDate(a.dueDate) : '—';
+            const due = a.dueDate ? formatShortDate(a.dueDate) : '-';
             assignRows += `
         <tr>
           <td>${escXml(a.name)}</td>
@@ -297,7 +297,7 @@ async function exportCommonCartridge() {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(a.href);
-    showToast('Common Cartridge exported — import the .imscc file into Moodle.');
+    showToast('Common Cartridge exported. Import the .imscc file into Moodle.');
 }
 
 function escXml(str) {
@@ -652,7 +652,7 @@ function renderAssignmentTypeSummary() {
                 <thead>
                     <tr>
                         <th>Assignment Type</th>
-                        <th>Description <span class="th-optional">(optional, max 120 characters — shown in syllabus)</span></th>
+                        <th>Description <span class="th-optional">(optional, max 120 characters)</span></th>
                         <th>Weight (%)</th>
                     </tr>
                 </thead>
@@ -679,7 +679,7 @@ function renderAssignmentTypeSummary() {
             </table>
         `;
     } else {
-        // Calculate totals per type — extra credit points stay out of type
+        // Calculate totals per type, extra credit points stay out of type
         // totals and the course total, and roll up into their own line instead
         const totals = {};
         let extraCreditTotal = 0;
@@ -701,7 +701,7 @@ function renderAssignmentTypeSummary() {
                 <thead>
                     <tr>
                         <th>Assignment Type</th>
-                        <th>Description <span class="th-optional">(optional, max 120 characters — shown in syllabus)</span></th>
+                        <th>Description <span class="th-optional">(optional, max 120 characters)</span></th>
                         <th>Total Points</th>
                     </tr>
                 </thead>
@@ -735,7 +735,7 @@ function renderAssignmentTypeSummary() {
 function updateTypeDescription(type, value) {
     state.typeDescriptions[type] = value;
     saveToLocalStorage();
-    // No re-render — keeps focus in the input while typing (same as updateTypeWeight)
+    // No re-render, keeps focus in the input while typing (same as updateTypeWeight)
 }
 
 function updateTypeWeight(type, value) {
@@ -766,14 +766,14 @@ function getSummaryData() {
 }
 
 // REMOVED: generateSummaryWordTable, copySummaryTableToClipboard, generateSummaryMarkdown,
-// copySummaryAsMarkdown, generateSummaryCsv, downloadSummaryCsv — export buttons removed
+// copySummaryAsMarkdown, generateSummaryCsv, downloadSummaryCsv, export buttons removed
 // ============================================
 // MODULE MANAGEMENT
 // ============================================
 
 let moduleSortable = null;
 
-// Standing nudge when module dates fall outside the course date range —
+// Standing nudge when module dates fall outside the course date range,
 // typically after the course dates changed and the offered redistribution
 // was declined. Cleared by fixing the dates (or redistributing).
 function updateDatesRangeNotice() {
@@ -788,7 +788,7 @@ function updateDatesRangeNotice() {
         });
     }
     if (out > 0) {
-        const range = (cs && ce) ? ` (${formatDate(cs)} – ${formatDate(ce)})` : '';
+        const range = (cs && ce) ? ` (${formatDate(cs)} to ${formatDate(ce)})` : '';
         el.textContent = `⚠ ${out === 1 ? '1 module has' : out + ' modules have'} dates outside the course dates${range}. Redistribute Dates can reflow the schedule to fit.`;
         el.style.display = '';
     } else {
@@ -798,7 +798,7 @@ function updateDatesRangeNotice() {
 
 // Returns 'missing' if a module has no start/end date, 'order' if its dates
 // fall out of chronological order relative to the previous module, else null.
-// Self-heals on every render — nothing is stored, so fixing the dates (by hand
+// Self-heals on every render, nothing is stored, so fixing the dates (by hand
 // or via Redistribute Dates) clears the flag automatically.
 function getModuleDateIssue(module, index) {
     if (!module.startDate || !module.endDate) return 'missing';
@@ -818,7 +818,7 @@ function getAssignmentDateIssue(module, assignment, index) {
 }
 
 // Clicked from an assignment's amber date-flag dot. Offers to set the due
-// date to the module's end date — a quick fix for a missing or out-of-order
+// date to the module's end date, a quick fix for a missing or out-of-order
 // due date, confirmed before anything changes.
 function fixAssignmentDueDate(moduleId, assignmentId) {
     const module = state.modules.find(m => m.id === moduleId);
@@ -971,7 +971,7 @@ function openModuleModal(moduleId = null, duplicateFromId = null) {
     // Show date range hint
     const moduleDateHint = document.getElementById('moduleDateHint');
     if (state.courseStartDate && state.courseEndDate) {
-        moduleDateHint.textContent = `Dates must fall within course dates (${formatDate(state.courseStartDate)} \u2013 ${formatDate(state.courseEndDate)})`;
+        moduleDateHint.textContent = `Dates must fall within course dates (${formatDate(state.courseStartDate)} to ${formatDate(state.courseEndDate)})`;
     } else if (state.courseStartDate) {
         moduleDateHint.textContent = `Dates must be on or after ${formatDate(state.courseStartDate)}`;
     } else if (state.courseEndDate) {
@@ -1102,7 +1102,7 @@ function saveModule() {
             if (clearedDates > 0) {
                 showToast(`Module duplicated. ${clearedDates} due date${clearedDates === 1 ? '' : 's'} didn't fit the new date range and ${clearedDates === 1 ? 'was' : 'were'} cleared.`);
             } else if (newModule.assignments.length > 0) {
-                showToast('Module duplicated — assignment due dates updated to the new dates.');
+                showToast('Module duplicated. Assignment due dates updated to the new dates.');
             } else {
                 showToast('Module duplicated.');
             }
@@ -1172,7 +1172,7 @@ function deleteModule(id) {
     }
 }
 
-// Modules can't be drag-reordered — instead this menu lists every other
+// Modules can't be drag-reordered, instead this menu lists every other
 // position in the list (mirroring openMoveMenu's assignment-move pattern)
 // and moveModuleTo() splices the module there.
 function openModuleMoveMenu(moduleId, btn) {
@@ -1286,7 +1286,7 @@ function openAssignmentModal(moduleId, assignmentId = null) {
     const hintMax = module.endDate || state.courseEndDate || '';
     const rangeLabel = (module.startDate || module.endDate) ? 'module' : 'course';
     if (hintMin && hintMax) {
-        assignmentDateHint.textContent = `Must fall within ${rangeLabel} dates (${formatDate(hintMin)} \u2013 ${formatDate(hintMax)})`;
+        assignmentDateHint.textContent = `Must fall within ${rangeLabel} dates (${formatDate(hintMin)} to ${formatDate(hintMax)})`;
     } else if (hintMin) {
         assignmentDateHint.textContent = `Must be on or after ${formatDate(hintMin)}`;
     } else if (hintMax) {
@@ -1295,10 +1295,10 @@ function openAssignmentModal(moduleId, assignmentId = null) {
         assignmentDateHint.textContent = '';
     }
 
-    // Populate type dropdown — blank option first so an item can carry no type
+    // Populate type dropdown, blank option first so an item can carry no type
     // at all (e.g. informational schedule entries that aren't graded work)
     const typeSelect = document.getElementById('assignmentType');
-    typeSelect.innerHTML = '<option value="">— None —</option>' + state.assignmentTypes.map(type =>
+    typeSelect.innerHTML = '<option value="">(None)</option>' + state.assignmentTypes.map(type =>
         `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`
     ).join('');
 
@@ -1354,7 +1354,7 @@ function openAssignmentModal(moduleId, assignmentId = null) {
     document.getElementById('assignmentName').focus();
 }
 
-// Points only apply to typed assignments in points mode — an untyped item is
+// Points only apply to typed assignments in points mode, an untyped item is
 // informational, and its points would never land in any assignment-type total.
 // Extra credit likewise only applies to typed assignments.
 function syncAssignmentPointsVisibility() {
@@ -1376,7 +1376,7 @@ function saveAssignment() {
     const name = document.getElementById('assignmentName').value.trim();
     const type = document.getElementById('assignmentType').value;
     const points = document.getElementById('assignmentPoints').value;
-    // Extra credit only applies to typed assignments — untyped items carry no points
+    // Extra credit only applies to typed assignments, untyped items carry no points
     const extraCredit = !!type && document.getElementById('assignmentExtraCredit').checked;
     const dueDate = document.getElementById('assignmentDue').value;
     const dueTime = document.getElementById('assignmentTime').value.trim();
@@ -1950,7 +1950,7 @@ function generateAlignmentMarkdown() {
     rows.forEach(({ pllo, alignedCllos, clloCoverage, covered }) => {
         const plloNum = getPploNumber(pllo.id);
         if (!covered) {
-            md += `| PLLO ${plloNum} | ${pllo.description} | — | *Not addressed in this course* |\n`;
+            md += `| PLLO ${plloNum} | ${pllo.description} | - | *Not addressed in this course* |\n`;
         } else {
             const clloNums = alignedCllos.map(c => `CLLO ${getClloNumber(c.id)}`).join(', ');
             const assignments = clloCoverage.map(({ cllo, assignmentsByModule, hasAssignments }) => {
@@ -1974,7 +1974,7 @@ function generateAlignmentCsv() {
     rows.forEach(({ pllo, alignedCllos, clloCoverage, covered }) => {
         const plloNum = getPploNumber(pllo.id);
         if (!covered) {
-            csv += `"PLLO ${plloNum}","${pllo.description}","—","Not addressed in this course"\n`;
+            csv += `"PLLO ${plloNum}","${pllo.description}","-","Not addressed in this course"\n`;
         } else {
             const clloNums = alignedCllos.map(c => `CLLO ${getClloNumber(c.id)}`).join(', ');
             const assignments = clloCoverage.map(({ cllo, assignmentsByModule, hasAssignments }) => {
@@ -2712,7 +2712,7 @@ function validateDateRange(input, minDate, maxDate, rangeLabel) {
     if (outOfRange) {
         let message = '';
         if (minDate && maxDate) {
-            message = `Date must fall within ${rangeLabel} dates (${formatDate(minDate)} \u2013 ${formatDate(maxDate)})`;
+            message = `Date must fall within ${rangeLabel} dates (${formatDate(minDate)} to ${formatDate(maxDate)})`;
         } else if (minDate) {
             message = `Date must be on or after ${formatDate(minDate)}`;
         } else {
@@ -2926,7 +2926,7 @@ function redistributeAssignmentDates() {
     const allHaveDates = state.modules.every(m => m.startDate && m.endDate);
     const distMethod = allHaveDates ? 'proportionally (preserving relative module lengths)' : 'evenly';
     document.getElementById('redistributeModalDesc').textContent =
-        `This will redistribute ${state.modules.length} module(s) and ${totalAssignments} assignment(s) ${distMethod} across the course date range (${formatDate(state.courseStartDate)} – ${formatDate(state.courseEndDate)}). Assignment due dates will be set to each module's end date.`;
+        `This will redistribute ${state.modules.length} module(s) and ${totalAssignments} assignment(s) ${distMethod} across the course date range (${formatDate(state.courseStartDate)} to ${formatDate(state.courseEndDate)}). Assignment due dates will be set to each module's end date.`;
     document.getElementById('redistributeModal').classList.remove('hidden');
 }
 
@@ -3012,7 +3012,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') addAssignmentType();
     });
 
-    // Suggestions popover for assignment types — appended to body to escape overflow:hidden panels
+    // Suggestions popover for assignment types, appended to body to escape overflow:hidden panels
     const suggestionsBtn = document.getElementById('suggestionsBtn');
     const newTypeInput = document.getElementById('newAssignmentType');
     const suggestionsList = document.createElement('div');
